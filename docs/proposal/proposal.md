@@ -63,22 +63,63 @@ https://hbr.org/2022/03/how-augmented-reality-can-and-cant-help-your-brand
 
 ### Programming language(s)
 
-> - C# for developing the AR experience in Unity.
 > - Kotlin/Java for the Android app development.
-> - Python or Node.js for backend support if needed for the catalogue database and server-side logic.
-
+> - XML for designing user interface layouts in Android Studio
+> - C# for developing the AR experience in Unity (optional depending on time constraints).
 
 ### Programming tools / Tech stack
 
-> Describe the compiler, database, web server, etc., and any other software tools you plan to use.
+> - Android Studio: Provides tools for coding, testing, and debugging the app. It also includes the Android SDK necessary for building the Android application.
+> - ARCore: This framework enables features like environmental understanding, motion tracking and light estimation.
+> - Unity (optional depending on time constraints): This will help to create complex interactions with 3D models.
+> - Firebase: Cloud-based backend service that provides real-time database capabilities, user authentication, and cloud storage (this will be used to store and manage the furniture catalogue and user preferences / saving capabilities).
+> - GitLab: For version control.
+> - JUnit: Will allow for unit testing.
+> - Espresso: Will allow for user interface testing.
+> - Figma: For creating mock-up designs of the applications user interface.
+>
+> Websites offering free to use 3D Models that we will use in creating an example furniture catalogue include:
+> - Sketchfab
+> - TurboSquid
+> - Free3D
+> - CGTrader
+> - Blend Swap
+
+
 
 ### Hardware
 
-> Describe any non-standard hardware components which will be required.
+> - Android Device: The device we will be using for development and testing is the Google Pixel 6a
+> - USB Cable: A standard USB cable to connect the device to the development computer for testing and debugging the app.
+> - Computer: A computer capable of running Android Studio and Unity. It should have at least 8 GB of RAM and a good processor to ensure smooth development and testing.
+
 
 ### Learning Challenges
 
-> List the main new things (technologies, languages, tools, etc) that you will have to learn.
+> ARCore
+> - Understanding how to implement augmented reality functionalities, including plane detection, object placement, and scaling in real-world environments. 
+> - Learning how ARCore interacts with the camera and sensors of the Android device.
+>
+> Android Studio
+> - Learning its features for code editing, debugging, and testing.
+> - Learning how to work with XML for layout design
+> - Understanding Gradle for project dependencies
+> - Understanding Android Studio Emulator and physical device deployment for testing.
+>
+> Firebase
+> - Understanding how to set up Firebase and how to integrate it into the Android app
+> - Managing user data and backend functionality
+>
+> 3D Model Integration
+> - Learning how to import and manipulate pre-made 3D models from various sources for use in your app. This will involve understanding different 3D file formats and how to adjust models within the Android development environment.
+>
+> Unity (optional and dependant on time constraints)
+> - C#
+>
+> JUnit and Espresso
+> - Creating tests to ensure the functionality of the application.
+
+
 
 ### Breakdown of work
 
