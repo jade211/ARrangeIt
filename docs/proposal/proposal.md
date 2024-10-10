@@ -4,7 +4,7 @@
 
 |                     |                   |
 |---------------------|-------------------|
-|Project Title:       | xxxxxx            |
+|Project Title:       | ARrangeIt         |
 |Student 1 Name:      | Jade Hudson       |
 |Student 1 ID:        | 21706905          |
 |Student 2 Name:      | Sruthi Santhosh   |
@@ -20,13 +20,13 @@
 
 ### Outline
 
-> The proposed project is an AR android app that enables users to browse a catalogue of furniture, place virtual furniture items in their physical space using their phone’s camera, and save the arrangement for future reference. The app will allow users to adjust the size and orientation of the virtual items and explore different styles and colours to suit their preferences. Key features will include furniture catalogue integration, room scanning, object scaling, and saving configurations.
+> The proposed project is an AR android app that enables users to browse a catalogue of furniture, place virtual furniture items in their physical space using their phones camera, and save the arrangement for future reference. The app will allow users to adjust the size and orientation of the virtual items and explore different styles and colours to suit their preferences. Key features will include furniture catalogue integration, room scanning, object scaling, and saving configurations.
 
 ### Background
 
 > The idea for this project came from the need for a more optimised, interactive shopping experience for home decor. Traditional shopping for furniture often leaves customers uncertain about how items will look or fit in their homes. AR technology bridges this gap by allowing users to visualise furniture in real-time, at scale and in their own spaces.
 >
->This app is inspired by existing AR home design tools, such as the IKEA home design feature. Through our experience with this feature, we have found it lacks many optimisations and have identified several areas that could be improved. Firstly, it's limited to Apple devices, restricting access for many users. Secondly, the usability of the feature could be enhanced as the scaling is difficult to use. Introducing helper buttons could streamline the scaling process to ensure the user's scaling preference is met. Additionally, we noticed the colouring of the products chosen by the user do not appear the correct shade shown in the catalogue due to the app highlighting the product when placed in the room. Our app aims to target these optimisations and also allow users to place multiple pieces of furniture to ensure the room can be fully styled, which is not available on the IKEA app.
+>This app is inspired by existing AR home design tools, such as the IKEA home design feature. Through our experience with this feature, we have found it lacks many optimisations and have identified several areas that could be improved. Firstly, it's limited to Apple devices, restricting access for many users. Secondly, the usability of the feature could be enhanced as the scaling is difficult to use. Introducing helper buttons could streamline the scaling process to ensure the user's scaling preference is met. Additionally, we noticed that the furniture placing feature does not account for existing objects in the space. Our app aims to target these optimisations and also allow users to place multiple pieces of furniture to ensure the room can be fully styled, which is not available on the IKEA app.
 >
 >We’ve also drawn inspiration from other AR tools, such as Specsavers' online feature that allows users to try on glasses virtually before purchasing. The combination of both of these inspirations led to the development of this idea.
 
@@ -56,9 +56,9 @@
 >
 > By overlaying virtual 3D furniture models in the user's real-world environment, the app eliminates the guesswork of fitting and styling. Furthermore, the ability to scale, rotate, and place multiple items in the same scene provides a realistic and practical approach to room design.
 
-SOURCES:
-https://www.diyweek.net/retailers-have-up-to-six-months-to-develop-ar-apps-or-risk-losing-customers and 
-https://hbr.org/2022/03/how-augmented-reality-can-and-cant-help-your-brand
+Sources:
+- https://www.diyweek.net/retailers-have-up-to-six-months-to-develop-ar-apps-or-risk-losing-customers
+- https://hbr.org/2022/03/how-augmented-reality-can-and-cant-help-your-brand
 
 
 ### Programming language(s)
@@ -123,27 +123,23 @@ https://hbr.org/2022/03/how-augmented-reality-can-and-cant-help-your-brand
 
 ### Breakdown of work
 
-> Clearly identify who will undertake which parts of the project.
+#### Jade Hudson
+> - **ARCore Integration & Camera Setup:** Integrate the ARCore framework into the app, setting up real-time camera functionality and implementing the initial AR session that handles real-time plane detection and object placement.
 >
-> It must be clear from the explanation of this breakdown of work both that each student is responsible for
-> separate, clearly-defined tasks, and that those responsibilities substantially cover all of the work required
-> for the project.
+> - **UI/UX Design and Front-End Development:** Design and code the app’s user interface, focusing on the layout of catalogue browsing, furniture selection and AR furniture placement buttons. This will mainly be done using Figma to design app mockup prototypes and XML in Android Studio for designing the user interface.
+>
+> - **Authentication and Backend Integration:** Implement user authentication using Firebase for the secure login feature. This will involve setting up Firebase for managing user authentication and coding the logic to allow users to log in, save preferences and retrieve their saved room configurations.
+>
+> - **Furniture Catalogue Integration:** Select and integreate the 3D furniture models into the catalogue. This will involve sourcing 3D models and then using Firebase to store the models in the catalogue, ensuring the app can query and filter the models based on colour, size etc.
 
-#### Student 1
+#### Sruthi Santhosh
 
-> *Student 1 should complete this section.*
+> -  **Implement Object Placement and Movement Functionality:** Code basic object placement functionality whereby users can select a point on the plane and place, rotate and scale the furniture. This will be done using ARCore.
+>
+> -  **3D Model Loading and Manipulation:** Handle the technical aspects of importing and rendering the 3D models into the AR space. This will be done using Android Studio with ARCore for rendering the models into the app.
+>
+> - **Advanced Interaction Buttons (Move Forward/Backward):** Implement additional interaction buttons that allow users to move objects forwards and backward within the AR environment.
+>
+> - **Testing and Debugging:** Conduct testing of all app features including user, unit and UI testing. The main testing will be done using JUnit and Espresso.
 
-#### Student 2
-
-> *Student 2 should complete this section.*
-
-## Example
-
-> Example: Here's how you can include images in markdown documents...
-
-<!-- Basically, just use HTML! -->
-
-<p align="center">
-  <img src="./res/cat.png" width="300px">
-</p>
 
