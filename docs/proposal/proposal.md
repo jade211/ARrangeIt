@@ -36,7 +36,6 @@
 > The project will provide several functionalities:
 > - Real-time AR visualisation of 3D furniture models in users’ rooms.
 > - Ability to browse and filter furniture items in a catalogue based on item, colour, material, and price.
-> - Room scanning for suggesting suitable furniture based on room dimensions and style.
 > - Object scaling and rotation for accurate placement of items in a room.
 > - Customisation of furniture finishes and the ability to save room configurations.
 > - An AR measurement tool to help users measure the dimensions of their rooms or furniture.
@@ -63,7 +62,7 @@ Sources:
 
 ### Programming language(s)
 
-> - Kotlin/Java for the Android app development.
+> - Java for the Android app development.
 > - XML for designing user interface layouts in Android Studio
 > - C# for developing the AR experience in Unity (optional depending on time constraints).
 
