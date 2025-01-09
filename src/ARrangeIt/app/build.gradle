@@ -46,4 +46,9 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
     implementation libs.core
+    implementation 'de.javagl:obj:0.4.0'
+//    implementation 'io.github.sceneview:sceneview:2.2.1'
+//    implementation 'io.github.sceneview:arsceneview:2.2.1'
+//    implementation libs.sceneview;
+//    implementation libs.arsceneview;
 }
