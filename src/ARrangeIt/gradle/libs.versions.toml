@@ -9,17 +9,28 @@ appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
+sceneview = "2.2.1"
 
 [libraries]
+activity-compose = { module = "androidx.activity:activity-compose" }
+arsceneview = { module = "io.github.sceneview:arsceneview" }
+compose-bom = { module = "androidx.compose:compose-bom" }
 core = { module = "com.google.ar:core", version.ref = "core" }
+core-ktx = { module = "androidx.core:core-ktx" }
 core-v1140 = { module = "com.google.ar:core", version.ref = "coreVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+material3 = { module = "androidx.material3:material3" }
+sceneview = { module = "io.github.sceneview:sceneview", version.ref = "sceneview" }
+ui = { module = "androidx.compose.ui:ui" }
+ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
