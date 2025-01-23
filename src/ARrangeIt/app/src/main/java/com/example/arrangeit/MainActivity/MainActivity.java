@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements SampleRender.Rend
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_ar);
         surfaceView = findViewById(R.id.surfaceview);
         displayRotationHelper = new DisplayRotationHelper(/* context= */ this);
         tapHelper = new TapHelper(/* context= */ this);
@@ -706,6 +706,40 @@ class WrappedAnchor {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
 //package com.example.arrangeit.MainActivity;
 //
 //import android.Manifest;
