@@ -16,7 +16,7 @@
         android:textStyle="italic"
         android:textSize="50dp"
         android:textColor="@color/black"
-        android:text="ArrangeIt" />
+        android:text="ARrangeIt" />
 
     <TextView
         android:layout_width="match_parent"
@@ -32,6 +32,7 @@
         android:layout_marginTop="150dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email"
@@ -46,6 +47,7 @@
         android:layout_marginTop="2dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
@@ -53,6 +55,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
+        android:id="@+id/sign_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
@@ -80,6 +83,7 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/sign_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register now"
