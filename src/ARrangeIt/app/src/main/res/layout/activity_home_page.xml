@@ -6,16 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".HomePage">
-
+    tools:context=".HomePage"
+    android:padding="50dp">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Home Page"
         android:textSize="40dp"
-        android:textStyle="italic"
-        tools:ignore="MissingConstraints" />
+        android:textStyle="italic" />
 
     <Button
         android:id="@+id/ar_core"

@@ -36,7 +36,7 @@
             android:name=".RegisterPage"
             android:exported="false" />
         <activity
-            android:name=".MainActivity.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true">
             <intent-filter>
