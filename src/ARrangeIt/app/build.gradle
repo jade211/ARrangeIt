@@ -31,6 +31,14 @@ android {
     }
 }
 
+android {
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
 dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
@@ -38,6 +46,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-core:21.0.0'
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -45,8 +54,13 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    testImplementation 'androidx.test:core:1.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     implementation libs.core
     implementation 'de.javagl:obj:0.4.0'
+
 //    implementation 'io.github.sceneview:sceneview:2.2.1'
 //    implementation 'io.github.sceneview:arsceneview:2.2.1'
 //    implementation libs.sceneview;

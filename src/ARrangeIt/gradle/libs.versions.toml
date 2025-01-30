@@ -2,6 +2,7 @@
 agp = "8.7.0"
 core = "1.47.0"
 coreVersion = "1.14.0"
+firebaseEmulator = "19.0.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -19,6 +20,7 @@ compose-bom = { module = "androidx.compose:compose-bom" }
 core = { module = "com.google.ar:core", version.ref = "core" }
 core-ktx = { module = "androidx.core:core-ktx" }
 core-v1140 = { module = "com.google.ar:core", version.ref = "coreVersion" }
+firebase-emulator = { module = "com.google.firebase:firebase-emulator", version.ref = "firebaseEmulator" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
