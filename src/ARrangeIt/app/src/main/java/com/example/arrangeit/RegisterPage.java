@@ -2,8 +2,6 @@ package com.example.arrangeit;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +15,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.example.arrangeit.helpers.FieldValidatorHelper;
 
 public class RegisterPage extends AppCompatActivity {
     TextInputEditText editTextEmail, editTextPassword;
@@ -52,12 +51,12 @@ public class RegisterPage extends AppCompatActivity {
                 email = String.valueOf(editTextEmail.getText());
                 password = String.valueOf(editTextPassword.getText());
 
-                if (!isValidEmail(email)) {
+                if (!FieldValidatorHelper.isValidEmail(email)) {
                     Toast.makeText(RegisterPage.this, "Enter a valid email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (!isValidPassword(password)) {
+                if (!FieldValidatorHelper.isValidPassword(password)) {
                     Toast.makeText(RegisterPage.this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -78,16 +77,5 @@ public class RegisterPage extends AppCompatActivity {
                 });
             }
         });
-
-
-
-
-    }
-    public boolean isValidEmail(String email) {
-        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    public boolean isValidPassword(String password) {
-        return !TextUtils.isEmpty(password) && password.length() >= 6;
     }
 }
