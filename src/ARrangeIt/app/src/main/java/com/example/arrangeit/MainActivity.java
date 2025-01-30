@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import android.util.Patterns;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -49,12 +50,13 @@ public class MainActivity extends AppCompatActivity {
                 email = String.valueOf(editTextEmail.getText());
                 password = String.valueOf(editTextPassword.getText());
 
-                if(TextUtils.isEmpty(email)) {
-                    Toast.makeText(MainActivity.this, "Enter Email", Toast.LENGTH_SHORT).show();
+                if (!isValidEmail(email)) {
+                    Toast.makeText(MainActivity.this, "Enter a valid email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(TextUtils.isEmpty(password)) {
-                    Toast.makeText(MainActivity.this, "Enter Password", Toast.LENGTH_SHORT).show();
+
+                if (!isValidPassword(password)) {
+                    Toast.makeText(MainActivity.this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -69,12 +71,20 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }
                         else {
-                            Toast.makeText(MainActivity.this, "Log In Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Log In Failed - Not a valid user", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
 
             }
         });
+    }
+
+    public boolean isValidEmail(String email) {
+        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    public boolean isValidPassword(String password) {
+        return !TextUtils.isEmpty(password) && password.length() >= 6;
     }
 }
