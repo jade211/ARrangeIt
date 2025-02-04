@@ -28,7 +28,6 @@ public class FieldValidatorHelper {
         }
     }
 
-    // Validate password
     public static String validatePassword(String password) {
         if (password.isEmpty()) {
             return "Password cannot be empty";
