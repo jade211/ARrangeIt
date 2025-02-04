@@ -16,6 +16,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.arrangeit.helpers.FieldValidatorHelper;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 password = String.valueOf(editTextPassword.getText());
 
                 if (!FieldValidatorHelper.isValidEmail(email)) {
-                    Toast.makeText(MainActivity.this, "Enter a valid email address", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -66,11 +68,15 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }
                         else {
-                            Toast.makeText(MainActivity.this, "Log In Failed - Not a valid user", Toast.LENGTH_SHORT).show();
+                            try {
+                                throw task.getException();
+                            } catch (FirebaseAuthInvalidCredentialsException e) {
+                                    Toast.makeText(MainActivity.this, e.getErrorCode() + " " + "The email or password you have entered is incorrect. Please try again.", Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                Toast.makeText(MainActivity.this, "Login failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
-
+                    }});
             }
         });
     }
