@@ -29,8 +29,8 @@ public class LoginRegisterFieldsUnitTest {
 
     @Test
     public void testInvalidPassword() {
-        assertFalse(FieldValidatorHelper.isValidPassword("123")); // Too short
-        assertFalse(FieldValidatorHelper.isValidPassword(""));    // Empty
-        assertFalse(FieldValidatorHelper.isValidPassword(null));  // Null
+        assertFalse(FieldValidatorHelper.isValidPassword("123"));
+        assertFalse(FieldValidatorHelper.isValidPassword(""));
+        assertFalse(FieldValidatorHelper.isValidPassword(null));
     }
 }

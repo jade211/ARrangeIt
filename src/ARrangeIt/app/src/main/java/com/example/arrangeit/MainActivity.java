@@ -54,10 +54,6 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (!FieldValidatorHelper.isValidPassword(password)) {
-                    Toast.makeText(MainActivity.this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
-                    return;
-                }
 
                 firebaseAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
