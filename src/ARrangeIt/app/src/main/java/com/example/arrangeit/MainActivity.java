@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 throw task.getException();
                             } catch (FirebaseAuthInvalidCredentialsException e) {
-                                    Toast.makeText(MainActivity.this, e.getErrorCode() + " " + "The email or password you have entered is incorrect. Please try again.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, "The email or password you have entered is incorrect. Please try again.", Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Toast.makeText(MainActivity.this, "Login failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }

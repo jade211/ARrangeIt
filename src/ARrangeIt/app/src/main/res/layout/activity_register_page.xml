@@ -27,6 +27,7 @@
         android:textSize="60dp" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="150dp"
@@ -39,9 +40,8 @@
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
-
-
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
@@ -64,17 +64,12 @@
         android:background="@drawable/round_btn"
         android:layout_marginTop="100dp" />
 
-
-
-
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginTop="20dp"
-        android:gravity="center" >
+        android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -90,9 +85,6 @@
             android:text="Sign in"
             android:textColor="@color/blue"
             android:textSize="15dp"
-            android:textStyle="bold"
-            />
-
+            android:textStyle="bold" />
     </LinearLayout>
-
 </LinearLayout>
