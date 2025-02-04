@@ -14,7 +14,8 @@
         android:gravity="center"
         android:text="Home Page"
         android:textSize="40dp"
-        android:textStyle="italic" />
+        android:textStyle="italic"
+        android:layout_marginBottom="10dp"/>
 
     <Button
         android:id="@+id/ar_core"
@@ -22,6 +23,16 @@
         android:layout_height="wrap_content"
         android:background="@drawable/round_btn"
         android:text="AR CORE"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        android:layout_marginBottom="5dp"/>
+
+    <Button
+        android:id="@+id/log_out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_btn"
+        android:text="Log Out"
+        android:textSize="20dp"
+        android:layout_marginTop="5dp"/>
 
 </LinearLayout>
