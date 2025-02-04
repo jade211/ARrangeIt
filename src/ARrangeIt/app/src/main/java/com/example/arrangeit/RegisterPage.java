@@ -16,6 +16,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.arrangeit.helpers.FieldValidatorHelper;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 public class RegisterPage extends AppCompatActivity {
     TextInputEditText editTextEmail, editTextPassword;
@@ -52,7 +54,7 @@ public class RegisterPage extends AppCompatActivity {
                 password = String.valueOf(editTextPassword.getText());
 
                 if (!FieldValidatorHelper.isValidEmail(email)) {
-                    Toast.makeText(RegisterPage.this, "Enter a valid email address", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterPage.this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -71,7 +73,13 @@ public class RegisterPage extends AppCompatActivity {
                             finish();
                         }
                         else {
-                            Toast.makeText(RegisterPage.this, "Registration Failed", Toast.LENGTH_SHORT).show();
+                            try {
+                                throw task.getException();
+                            } catch (FirebaseAuthUserCollisionException e) {
+                                Toast.makeText(RegisterPage.this, "This email is already in use. Please use a different email.", Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                Toast.makeText(RegisterPage.this, "Registration failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
