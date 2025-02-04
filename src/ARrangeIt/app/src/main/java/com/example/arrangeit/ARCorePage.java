@@ -35,6 +35,7 @@ import com.google.ar.core.TrackingFailureReason;
 import com.google.ar.core.TrackingState;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.media.Image;
 import android.opengl.GLES30;
@@ -45,6 +46,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
@@ -69,6 +71,7 @@ import com.example.arrangeit.samplerender.VertexBuffer;
 import com.example.arrangeit.samplerender.arcore.BackgroundRenderer;
 import com.example.arrangeit.samplerender.arcore.PlaneRenderer;
 import com.example.arrangeit.samplerender.arcore.SpecularCubemapFilter;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class ARCorePage extends AppCompatActivity implements SampleRender.Renderer {
@@ -143,12 +146,23 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
     private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
     private final float[] viewLightDirection = new float[4]; // view x world light direction
 
+    Button homepage_button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_ar);
         surfaceView = findViewById(R.id.surfaceview);
+        homepage_button = findViewById(R.id.homepage_button);
+        homepage_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ARCorePage.this, HomePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         displayRotationHelper = new DisplayRotationHelper(/* context= */ this);
         tapHelper = new TapHelper(/* context= */ this);
         surfaceView.setOnTouchListener(tapHelper);
