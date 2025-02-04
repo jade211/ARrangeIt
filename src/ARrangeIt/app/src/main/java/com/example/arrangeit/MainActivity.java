@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -17,7 +19,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.arrangeit.helpers.FieldValidatorHelper;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.android.material.textfield.TextInputLayout;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     Button signIn;
     TextView signUp;
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    TextInputLayout emailInputLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,25 @@ public class MainActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.password);
         signIn = findViewById(R.id.sign_in);
         signUp = findViewById(R.id.sign_up);
+        emailInputLayout = findViewById(R.id.email_input_layout);
+
+        editTextEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String emailError = FieldValidatorHelper.validateEmail(editTextEmail.getText().toString());
+                emailInputLayout.setError(emailError);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,13 +70,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String email, password;
-                email = String.valueOf(editTextEmail.getText());
+                email = editTextEmail.getText().toString();
+                String emailError = FieldValidatorHelper.validateEmail(email);
+                if (emailError != null) {
+                    emailInputLayout.setError(emailError);
+                    return;
+                } else {
+                    emailInputLayout.setError(null);
+                }
+
                 password = String.valueOf(editTextPassword.getText());
 
-                if (!FieldValidatorHelper.isValidEmail(email)) {
-                    Toast.makeText(MainActivity.this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
-                    return;
-                }
 
 
                 firebaseAuth.signInWithEmailAndPassword(email, password)
