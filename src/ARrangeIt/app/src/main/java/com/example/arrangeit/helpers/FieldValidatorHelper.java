@@ -11,6 +11,7 @@ public class FieldValidatorHelper {
     }
 
     public static boolean isValidPassword(String password) {
-        return password != null && password.length() >= 6;
+        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
+        return password.matches(passwordPattern);
     }
 }

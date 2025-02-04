@@ -57,7 +57,7 @@ public class RegisterPage extends AppCompatActivity {
                 }
 
                 if (!FieldValidatorHelper.isValidPassword(password)) {
-                    Toast.makeText(RegisterPage.this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterPage.this, "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a digit, and a special character.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
