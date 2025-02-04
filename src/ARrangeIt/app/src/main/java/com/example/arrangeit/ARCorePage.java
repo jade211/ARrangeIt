@@ -1,4 +1,4 @@
-package com.example.arrangeit.MainActivity;
+package com.example.arrangeit;
 
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.NotYetAvailableException;
@@ -35,6 +35,7 @@ import com.google.ar.core.TrackingFailureReason;
 import com.google.ar.core.TrackingState;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.media.Image;
 import android.opengl.GLES30;
@@ -45,13 +46,13 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.arrangeit.R;
 import com.example.arrangeit.helpers.CameraPermissionHelper;
 import com.example.arrangeit.helpers.DepthSettings;
 import com.example.arrangeit.helpers.DisplayRotationHelper;
@@ -70,10 +71,11 @@ import com.example.arrangeit.samplerender.VertexBuffer;
 import com.example.arrangeit.samplerender.arcore.BackgroundRenderer;
 import com.example.arrangeit.samplerender.arcore.PlaneRenderer;
 import com.example.arrangeit.samplerender.arcore.SpecularCubemapFilter;
+import com.google.firebase.auth.FirebaseAuth;
 
 
-public class MainActivity extends AppCompatActivity implements SampleRender.Renderer {
-    private static final String TAG = MainActivity.class.getSimpleName();
+public class ARCorePage extends AppCompatActivity implements SampleRender.Renderer {
+    private static final String TAG = ARCorePage.class.getSimpleName();
     private static final String SEARCHING_PLANE_MESSAGE = "Searching for surfaces...";
     private static final String WAITING_FOR_TAP_MESSAGE = "Tap on a surface to place an object.";
     private static final float[] sphericalHarmonicFactors = {
@@ -144,12 +146,23 @@ public class MainActivity extends AppCompatActivity implements SampleRender.Rend
     private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
     private final float[] viewLightDirection = new float[4]; // view x world light direction
 
+    Button homepage_button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_ar);
         surfaceView = findViewById(R.id.surfaceview);
+        homepage_button = findViewById(R.id.homepage_button);
+        homepage_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ARCorePage.this, HomePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         displayRotationHelper = new DisplayRotationHelper(/* context= */ this);
         tapHelper = new TapHelper(/* context= */ this);
         surfaceView.setOnTouchListener(tapHelper);
@@ -163,8 +176,8 @@ public class MainActivity extends AppCompatActivity implements SampleRender.Rend
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        PopupMenu popup = new PopupMenu(MainActivity.this, v);
-                        popup.setOnMenuItemClickListener(MainActivity.this::settingsMenuClick);
+                        PopupMenu popup = new PopupMenu(ARCorePage.this, v);
+                        popup.setOnMenuItemClickListener(ARCorePage.this::settingsMenuClick);
                         popup.inflate(R.menu.settings_menu);
                         popup.show();
                     }
@@ -706,113 +719,8 @@ class WrappedAnchor {
 
 
 
-//package com.example.arrangeit.MainActivity;
-//
-//import android.Manifest;
-//import android.content.pm.PackageManager;
-//import android.os.Bundle;
-//import android.widget.Button;
-//import android.widget.Toast;
-//
-//import androidx.activity.EdgeToEdge;
-//import androidx.appcompat.app.AppCompatActivity;
-//import androidx.core.app.ActivityCompat;
-//import androidx.core.content.ContextCompat;
-//
-//import com.example.arrangeit.R;
-//import com.google.ar.core.ArCoreApk;
-//import com.google.ar.core.Config;
-//import com.google.ar.core.Session;
-//
-//import io.github.sceneview.ar.ARSceneView;
-//
-//public class MainActivity extends AppCompatActivity {
-//
-//    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
-//    private ARSceneView arSceneView;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        EdgeToEdge.enable(this);
-//        setContentView(R.layout.activity_main);
-//
-//        Button startARButton = findViewById(R.id.start_ar_button);
-//        startARButton.setOnClickListener(v -> checkCameraPermission());
-//    }
-//
-//    private void checkCameraPermission() {
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.CAMERA},
-//                    CAMERA_PERMISSION_REQUEST_CODE);
-//        } else {
-//            initialiseARSceneView();
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                initialiseARSceneView();
-//            } else {
-//                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
-//
-//    private void initialiseARSceneView() {
-//        try {
-//            if (ArCoreApk.getInstance().checkAvailability(this).isSupported()) {
-//                Toast.makeText(this, "ARCore is supported!", Toast.LENGTH_SHORT).show();
-//                setContentView(R.layout.activity_ar);
-//                arSceneView = findViewById(R.id.sceneView);
-//
-//                // Set lifecycle
-//                arSceneView.setLifecycle(getLifecycle());
-//
-//                // Configure the session explicitly
-//                configureSession(arSceneView);
-//
-//            } else {
-//                Toast.makeText(this, "ARCore is not supported on this device", Toast.LENGTH_LONG).show();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Toast.makeText(this, "Failed to initialize ARSceneView: " + e.getMessage(), Toast.LENGTH_LONG).show();
-//        }
-//    }
-//
-//    private void configureSession(ARSceneView arSceneView) {
-//        // Get the current AR session
-//        Session session = arSceneView.getSession();
-//        if (session != null) {
-//            Config config = session.getConfig();
-//
-//            // Set configuration options
-//            config.setDepthMode(
-//                    session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)
-//                            ? Config.DepthMode.AUTOMATIC
-//                            : Config.DepthMode.DISABLED
-//            );
-//            config.setInstantPlacementMode(Config.InstantPlacementMode.LOCAL_Y_UP);
-//            config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
-//
-//            // Apply the configuration to the session
-//            session.configure(config);
-//        } else {
-//            Toast.makeText(this, "Session is null, cannot configure", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-//
-////    @Override
-////    protected void onDestroy() {
-////        super.onDestroy();
-////        if (arSceneView != null) {
-////            arSceneView.destroy();
-////        }
-////    }
-//}
+
+
+
+
+
