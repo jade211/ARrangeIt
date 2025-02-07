@@ -17,9 +17,9 @@ before_script:
   - unzip -d cmdline-tools cmdline-tools.zip
   - rm cmdline-tools.zip
   - cd cmdline-tools
-  - mv cmdline-tools latest  # Move extracted folder to 'latest' directory (if it's not already)
-  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin/  # Point to the 'latest' folder
-  - ls ${ANDROID_HOME}/cmdline-tools/latest/bin/  # List the contents of the folder to verify sdkmanager exists
+  - mv cmdline-tools latest 
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin/ 
+  - ls ${ANDROID_HOME}/cmdline-tools/latest/bin/  
   - yes | sdkmanager --licenses || true
   - sdkmanager "platforms;android-${ANDROID_SDK}"
   - sdkmanager "platform-tools"
@@ -41,6 +41,13 @@ build-job:
     paths:
       - ./app/build/outputs/
 
+lint-job:
+  stage: build
+  script:
+    - ./gradlew lintDebug
+  artifacts:
+    paths:
+      - ./app/build/reports/lint/
 
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
