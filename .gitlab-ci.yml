@@ -1,3 +1,16 @@
+include:
+  - template: Android.gitlab-ci.yml
+
+variables:
+  ANDROID_SDK: "34"
+  ANDROID_BUILD_TOOLS: "34.0.0"
+
+
+before_script:
+  - cd src/ARrangeIt
+  - chmod +x ./gradlew 
+
+
 stages:          # List of stages for jobs, and their order of execution
   - build
   - test
@@ -7,7 +20,6 @@ build-job:       # This job runs in the build stage, which runs first.
   stage: build
   script:
     - echo "Compiling the code..."
-    - ./gradlew assembleDebug
     - echo "Build complete."
 
 unit-test-job:   # This job runs in the test stage.
