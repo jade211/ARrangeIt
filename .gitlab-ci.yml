@@ -39,9 +39,9 @@ build-job:
     - ./gradlew assembleDebug 
     - ls -R app/build/outputs/
   artifacts:
+    when: always
     paths:
-      - app/build/outputs/apk/debug/app-debug.apk 
-
+      - src/ARrangeIt/app/build/outputs/**
 # lint-job:
 #   stage: build
 #   script:
