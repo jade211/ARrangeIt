@@ -37,10 +37,10 @@ build-job:
   stage: build
   script:
     - ./gradlew assembleDebug 
-    - ls ./app/build/outputs/ 
+    - ls -R app/build/outputs/
   artifacts:
     paths:
-      - ./app/build/outputs/
+      - .app/build/outputs/apk/debug/*.apk
 
 # lint-job:
 #   stage: build
