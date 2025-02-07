@@ -15,10 +15,12 @@ before_script:
   - wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
   - unzip cmdline-tools.zip -d $ANDROID_HOME
   - rm cmdline-tools.zip
-  - export PATH=$PATH:$ANDROID_HOME/cmdline-tools/bin
-  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --licenses || true
-  - $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-${ANDROID_SDK}"
-  - $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+  - mv $ANDROID_HOME/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+  - export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+  - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+  - $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-${ANDROID_SDK}"
+  - $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+
   - chmod +x ./gradlew  # Ensure Gradle wrapper is executable
 
 
