@@ -2,7 +2,6 @@ include:
   - template: Android.gitlab-ci.yml
 
 variables:
-  ANDROID_HOME: "/android-sdk"  # Set the SDK root directory
   ANDROID_SDK: "34"
   ANDROID_BUILD_TOOLS: "34.0.0"
 
@@ -10,17 +9,21 @@ variables:
 before_script:
   - cd src/ARrangeIt
   - apt-get update -y
-  - apt-get install -y unzip wget
-  - mkdir -p "$ANDROID_HOME"
-  - wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
-  - unzip cmdline-tools.zip -d $ANDROID_HOME
+  - apt-get install -y unzip wget tar curl lib32stdc++6 lib32z1
+  - export ANDROID_HOME="${PWD}/android-home"
+  - mkdir "$ANDROID_HOME"
+  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
+  - cd $ANDROID_HOME
+  - unzip -d cmdline-tools cmdline-tools.zip
   - rm cmdline-tools.zip
-  - mv $ANDROID_HOME/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-  - export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-  - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-  - $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-${ANDROID_SDK}"
-  - $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
-
+  - cd cmdline-tools
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+  - yes | sdkmanager --licenses || true
+  - sdkmanager "platforms;android-${ANDROID_SDK}"
+  - sdkmanager "platform-tools"
+  - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+  - cd ..
+  - cd ..
   - chmod +x ./gradlew  # Ensure Gradle wrapper is executable
 
 
