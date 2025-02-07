@@ -1,6 +1,12 @@
 include:
   - template: Android.gitlab-ci.yml
 
+variables:
+  ANDROID_SDK_ROOT: "/android-sdk"  # Set the SDK root directory
+  ANDROID_SDK: "34"
+  ANDROID_BUILD_TOOLS: "34.0.0"
+
+
 before_script:
   - cd src/ARrangeIt
   - mkdir -p "$ANDROID_SDK_ROOT"
