@@ -14,11 +14,12 @@ before_script:
   - mkdir -p "$ANDROID_HOME"
   - wget -O $ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
   - cd $ANDROID_HOME
-  - ls
   - unzip -d cmdline-tools cmdline-tools.zip
   - rm cmdline-tools.zip
   - cd cmdline-tools
-  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+  - mv cmdline-tools latest  # Move extracted folder to 'latest' directory (if it's not already)
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin/  # Point to the 'latest' folder
+  - ls ${ANDROID_HOME}/cmdline-tools/latest/bin/  # List the contents of the folder to verify sdkmanager exists
   - yes | sdkmanager --licenses || true
   - sdkmanager "platforms;android-${ANDROID_SDK}"
   - sdkmanager "platform-tools"
