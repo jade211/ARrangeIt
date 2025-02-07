@@ -3,8 +3,11 @@ include:
 
 before_script:
   - cd src/ARrangeIt
-  - mkdir -p "$ANDROID_SDK_ROOT/licenses"
-  - yes | sdkmanager --licenses || true
+  - mkdir -p "$ANDROID_SDK_ROOT"
+  - wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
+  - unzip cmdline-tools.zip -d $ANDROID_SDK_ROOT
+  - rm cmdline-tools.zip
+  - yes | $ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager --licenses || true
   - chmod +x ./gradlew  # Ensure Gradle wrapper is executable
 
 
