@@ -55,13 +55,12 @@ lint-job:
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
   script:
-    - Echo "Running Unit Tests"
     - ./gradlew testDebug
-    - ls -R app/build/test-results/testDebugUnitTest/
+    - ls -R app/build/test-results/testDebugUnitTest/  
   artifacts:
     when: always
     paths:
-      - src/ARrangeIt/app/build/test-results/testDebugUnitTest/** 
+      - src/ARrangeIt/app/build/test-results/testDebugUnitTest/**
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
