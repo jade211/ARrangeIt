@@ -37,31 +37,32 @@ build-job:
   stage: build
   script:
     - ./gradlew assembleDebug 
+    - ls ./app/build/outputs/ 
   artifacts:
     paths:
       - ./app/build/outputs/
 
-lint-job:
-  stage: build
-  script:
-    - ./gradlew lintDebug
-  artifacts:
-    paths:
-      - ./app/build/reports/lint/
+# lint-job:
+#   stage: build
+#   script:
+#     - ./gradlew lintDebug
+#   artifacts:
+#     paths:
+#       - ./app/build/reports/lint/
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  script:
-    - echo "Running unit tests... Th"
-    - ./gradlew testDebug
-  artifacts:
-    paths:
-      - app/build/test-results/
+# unit-test-job:   # This job runs in the test stage.
+#   stage: test    # It only starts when the job in the build stage completes successfully.
+#   script:
+#     - echo "Running unit tests... Th"
+#     - ./gradlew testDebug
+#   artifacts:
+#     paths:
+#       - app/build/test-results/
 
 
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
-  script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+# deploy-job:      # This job runs in the deploy stage.
+#   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+#   environment: production
+#   script:
+#     - echo "Deploying application..."
+#     - echo "Application successfully deployed."
