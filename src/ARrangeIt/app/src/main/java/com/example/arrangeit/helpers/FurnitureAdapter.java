@@ -1,6 +1,7 @@
 package com.example.arrangeit.helpers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.example.arrangeit.FurnitureDetailActivity;
 import com.example.arrangeit.R;
 import java.util.List;
 
@@ -37,6 +39,12 @@ public class FurnitureAdapter extends RecyclerView.Adapter<FurnitureAdapter.View
         holder.price.setText("$" + item.getPrice());
 
         Glide.with(context).load("file:///android_asset/" + item.getImage()).into(holder.image);
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, FurnitureDetailActivity.class);
+            intent.putExtra("furniture_item", item); // No casting needed
+            context.startActivity(intent);
+        });
 
 
     }

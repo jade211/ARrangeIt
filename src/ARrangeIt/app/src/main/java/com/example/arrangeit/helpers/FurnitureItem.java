@@ -9,6 +9,13 @@ public class FurnitureItem implements Serializable {
     private String image;
     private String model;
 
+    public FurnitureItem(String name, String description, double price, String image) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.image = image;
+    }
+
     public String getId() {
         return id;
 

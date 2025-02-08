@@ -38,6 +38,9 @@
             android:name=".FurnitureCataloguePage"
             android:exported="false" />
         <activity
+            android:name=".FurnitureDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true">
