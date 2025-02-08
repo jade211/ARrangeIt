@@ -2,6 +2,7 @@
 agp = "8.7.0"
 androidxCore = "1.6.1"
 androidxJunit = "1.1.5"
+coil = "2.x.x"
 core = "1.47.0"
 coreTesting = "2.2.0"
 coreVersion = "1.14.0"
@@ -11,18 +12,23 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
+ktorClientOkhttp = "2.3.3"
 material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
+postgrestKt = "1.4.0"
 rules = "1.6.1"
 runner = "1.0.2"
 runnerVersion = "1.6.2"
 sceneview = "2.2.1"
 firebaseAuth = "23.1.0"
+recyclerview = "1.4.0"
+storageKt = "1.4.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose" }
 arsceneview = { module = "io.github.sceneview:arsceneview" }
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 compose-bom = { module = "androidx.compose:compose-bom" }
 core = { module = "com.google.ar:core", version.ref = "core" }
 core-ktx = { module = "androidx.core:core-ktx" }
@@ -35,20 +41,24 @@ ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitV
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 junit-v115 = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorClientOkhttp" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material3 = { module = "androidx.material3:material3" }
+postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "postgrestKt" }
 rules = { module = "androidx.test:rules", version.ref = "rules" }
 runner = { module = "com.android.support.test:runner", version.ref = "runner" }
 sceneview = { module = "io.github.sceneview:sceneview", version.ref = "sceneview" }
+storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "storageKt" }
 test-core = { module = "androidx.test:core", version.ref = "androidxCore" }
 test-runner = { module = "androidx.test:runner", version.ref = "runnerVersion" }
 ui = { module = "androidx.compose.ui:ui" }
 ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
