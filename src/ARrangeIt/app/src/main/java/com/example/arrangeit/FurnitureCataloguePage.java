@@ -10,9 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.arrangeit.helpers.FurnitureAdapter;
 import com.example.arrangeit.helpers.FurnitureItem;
-import com.example.arrangeit.helpers.ModelLoader;
-
+import android.util.Log;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class FurnitureCataloguePage extends AppCompatActivity {
 
@@ -20,6 +23,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     private FurnitureAdapter furnitureAdapter;
     private List<FurnitureItem> furnitureItems;
     Button homepage_button;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +31,6 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         setContentView(R.layout.activity_furniture_catalogue);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        furnitureItems = ModelLoader.loadCatalogue(this);
-
         homepage_button = findViewById(R.id.homepage_button);
         homepage_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,12 +40,35 @@ public class FurnitureCataloguePage extends AppCompatActivity {
                 finish();
             }
         });
+        db = FirebaseFirestore.getInstance();
+        furnitureItems = new ArrayList<>();
+        loadFurnitureCatalogue();
+    }
 
-        if (furnitureItems != null) {
-            furnitureAdapter = new FurnitureAdapter(this, furnitureItems);
-            recyclerView.setAdapter(furnitureAdapter);
-        } else {
-            Toast.makeText(this, "Failed to load furniture catalogue", Toast.LENGTH_SHORT).show();
-        }
+    private void loadFurnitureCatalogue() {
+        db.collection("furniture")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    furnitureItems.clear();
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        String name = doc.getString("name");
+                        String description = doc.getString("description");
+                        String colours = doc.getString("colours");
+                        String texture = doc.getString("texture");
+                        String dimensions = doc.getString("dimensions");
+                        double price = doc.getDouble("price");
+                        String imageUrl = doc.getString("imageUrl");
+                        String modelUrl = doc.getString("modelUrl");
+
+                        furnitureItems.add(new FurnitureItem(name, description, price, colours, imageUrl, modelUrl, texture, dimensions));
+                    }
+
+                    furnitureAdapter = new FurnitureAdapter(FurnitureCataloguePage.this, furnitureItems);
+                    recyclerView.setAdapter(furnitureAdapter);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(FurnitureCataloguePage.this, "Failed to load furniture catalogue", Toast.LENGTH_SHORT).show();
+                    Log.e("Firebase", "Error fetching data", e);
+                });
     }
 }

@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.arrangeit.helpers.FurnitureItem;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class FurnitureDetailActivity extends AppCompatActivity {
 
@@ -35,11 +37,15 @@ public class FurnitureDetailActivity extends AppCompatActivity {
 
         FurnitureItem item = (FurnitureItem) getIntent().getSerializableExtra("furniture_item");
 
-        if (item != null) {
-            itemName.setText(item.getName());
-            itemDescription.setText(item.getDescription());
-            itemPrice.setText("$" + item.getPrice());
-            Glide.with(this).load("file:///android_asset/" + item.getImage()).into(itemImage);
+        if (furnitureItem != null) {
+            itemName.setText(furnitureItem.getName());
+            itemDescription.setText(furnitureItem.getDescription());
+            itemPrice.setText("$" + furnitureItem.getPrice());
+
+            StorageReference imageRef = FirebaseStorage.getInstance().getReference().child(furnitureItem.getImageUrl());
+            Glide.with(this)
+                    .load(imageRef)
+                    .into(itemImage);
         }
     }
 }

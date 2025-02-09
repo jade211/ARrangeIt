@@ -6,14 +6,22 @@ public class FurnitureItem implements Serializable {
     private String name;
     private String description;
     private double price;
-    private String image;
-    private String model;
+    private String modelUrl;
+    private String imageUrl;
+    private String colours;
+    private String dimensions;
+    private String texture;
 
-    public FurnitureItem(String name, String description, double price, String image) {
+    public FurnitureItem(String name, String description, double price, String colours, String dimensions, String imageUrl, String modelUrl, String texture) {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.image = image;
+        this.colours = colours;
+        this.dimensions = dimensions;
+        this.imageUrl = imageUrl;
+        this.modelUrl = modelUrl;
+        this.texture = texture;
+
     }
 
     public String getId() {
@@ -32,11 +40,20 @@ public class FurnitureItem implements Serializable {
         return price;
 
     }
-    public String getImage() {
-        return image;
+    public String getModelUrl() {
+        return modelUrl;
     }
 
-    public String getModel() {
-        return model;
+    public String getImageUrl() {
+        return modelUrl;
+    }
+    public String getColours() {
+        return colours;
+    }
+    public String getTexture() {
+        return texture;
+    }
+    public String getDimensions() {
+        return dimensions;
     }
 }
