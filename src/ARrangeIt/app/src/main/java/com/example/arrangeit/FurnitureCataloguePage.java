@@ -1,6 +1,9 @@
 package com.example.arrangeit;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +19,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FurnitureAdapter furnitureAdapter;
     private List<FurnitureItem> furnitureItems;
+    Button homepage_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,16 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         furnitureItems = ModelLoader.loadCatalogue(this);
+
+        homepage_button = findViewById(R.id.homepage_button);
+        homepage_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FurnitureCataloguePage.this, HomePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         if (furnitureItems != null) {
             furnitureAdapter = new FurnitureAdapter(this, furnitureItems);
