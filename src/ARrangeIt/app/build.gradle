@@ -78,11 +78,12 @@ dependencies {
     implementation libs.core
     testImplementation 'org.mockito:mockito-core:5.4.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
 
     // Supabase dependencies
-    implementation 'io.github.jan-tennert.supabase:postgrest-kt:1.4.0' // For database operations
-    implementation 'io.github.jan-tennert.supabase:storage-kt:1.4.0'   // For file storage operations
-    implementation 'io.ktor:ktor-client-okhttp:2.3.3'                 // HTTP client for Supabase
+    implementation 'io.github.jan-tennert.supabase:postgrest-kt:1.4.0'
+    implementation 'io.github.jan-tennert.supabase:storage-kt:1.4.0'
+    implementation 'io.ktor:ktor-client-okhttp:2.3.3'
     implementation 'com.google.code.gson:gson:2.10.1'
 //    implementation 'com.google.android.filament:filament-android:1.37.0'
 

@@ -41,7 +41,7 @@ public class FurnitureAdapter extends RecyclerView.Adapter<FurnitureAdapter.View
         holder.name.setText(item.getName());
         holder.price.setText("$" + item.getPrice());
 
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("models/images/arm_chair.png");
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(item.getImageUrl());
         storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
             Glide.with(context).load(uri).into(holder.image);
         }).addOnFailureListener(exception -> {
@@ -53,8 +53,6 @@ public class FurnitureAdapter extends RecyclerView.Adapter<FurnitureAdapter.View
             intent.putExtra("furniture_item", item);
             context.startActivity(intent);
         });
-
-
     }
 
     @Override

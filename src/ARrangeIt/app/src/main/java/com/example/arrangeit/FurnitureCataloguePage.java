@@ -61,6 +61,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
                         String modelUrl = doc.getString("modelUrl");
 
                         furnitureItems.add(new FurnitureItem(name, description, price, colours, imageUrl, modelUrl, texture, dimensions));
+
                     }
 
                     furnitureAdapter = new FurnitureAdapter(FurnitureCataloguePage.this, furnitureItems);
