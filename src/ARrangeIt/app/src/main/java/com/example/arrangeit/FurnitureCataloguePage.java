@@ -30,6 +30,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     private List<FurnitureItem> filteredFurnitureItems;
     private Spinner colorFilterSpinner;
     private Button applyFilterButton;
+    private EditText priceFilterEditText;
 
 
     @Override
@@ -41,7 +42,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         homepage_button = findViewById(R.id.homepage_button);
         colorFilterSpinner = findViewById(R.id.colorFilterSpinner);
         applyFilterButton = findViewById(R.id.applyFilterButton);
-
+        priceFilterEditText = findViewById(R.id.priceFilterEditText);
 
         homepage_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,11 +105,14 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     }
     private void applyFilters() {
         String selectedColor = colorFilterSpinner.getSelectedItem().toString();
+        String priceText = priceFilterEditText.getText().toString();
+        double maxPrice = priceText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(priceText);
         filteredFurnitureItems.clear();
 
         for (FurnitureItem item : furnitureItems) {
             boolean matchesColor = selectedColor.equals("All") || item.getColours().equalsIgnoreCase(selectedColor);
-            if (matchesColor) {
+            boolean matchesPrice = item.getPrice() <= maxPrice;
+            if (matchesColor && matchesPrice) {
                 filteredFurnitureItems.add(item);
             }
         }
