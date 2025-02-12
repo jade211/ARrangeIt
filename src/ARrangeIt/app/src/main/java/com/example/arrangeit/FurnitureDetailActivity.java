@@ -19,7 +19,9 @@ public class FurnitureDetailActivity extends AppCompatActivity {
     private TextView itemName;
     private TextView itemDescription;
     private TextView itemPrice;
-    private TextView itemDimensions;
+    private TextView itemHeight;
+    private TextView itemWidth;
+    private TextView itemDepth;
     private TextView itemColours;
     private TextView itemTexture;
 
@@ -41,7 +43,9 @@ public class FurnitureDetailActivity extends AppCompatActivity {
         itemName = findViewById(R.id.itemName);
         itemDescription = findViewById(R.id.itemDescription);
         itemPrice = findViewById(R.id.itemPrice);
-        itemDimensions = findViewById(R.id.itemDimensions);
+        itemHeight = findViewById(R.id.itemHeight);
+        itemWidth = findViewById(R.id.itemWidth);
+        itemDepth = findViewById(R.id.itemDepth);
         itemColours = findViewById(R.id.itemColours);
         itemTexture = findViewById(R.id.itemTexture);
 
@@ -51,7 +55,9 @@ public class FurnitureDetailActivity extends AppCompatActivity {
             itemName.setText(item.getName());
             itemDescription.setText(item.getDescription());
             itemPrice.setText("$" + item.getPrice());
-            itemDimensions.setText("Dimensions: " + item.getDimensions());
+            itemHeight.setText("Height: " + item.getHeight() + "cm");
+            itemWidth.setText("Width: " + item.getWidth() + "cm");
+            itemDepth.setText("Depth: " + item.getDepth() + "cm");
             itemColours.setText("Colours: " + item.getColours());
             itemTexture.setText("Texture: " + item.getTexture());
 

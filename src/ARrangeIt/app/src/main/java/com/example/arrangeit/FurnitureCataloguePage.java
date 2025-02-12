@@ -71,12 +71,14 @@ public class FurnitureCataloguePage extends AppCompatActivity {
                         String description = doc.getString("description");
                         String colours = doc.getString("colours");
                         String texture = doc.getString("texture");
-                        String dimensions = doc.getString("dimensions");
+                        double height = doc.getDouble("height");
+                        double width = doc.getDouble("width");
+                        double depth = doc.getDouble("depth");
                         double price = doc.getDouble("price");
                         String imageUrl = doc.getString("imageUrl");
                         String modelUrl = doc.getString("modelUrl");
 
-                        furnitureItems.add(new FurnitureItem(name, description, price, colours, imageUrl, modelUrl, texture, dimensions));
+                        furnitureItems.add(new FurnitureItem(name, description, price, colours, imageUrl, modelUrl, texture, height, width, depth));
                     }
                     filteredFurnitureItems.addAll(furnitureItems);
                     furnitureAdapter = new FurnitureAdapter(FurnitureCataloguePage.this, filteredFurnitureItems);

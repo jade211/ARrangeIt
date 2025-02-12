@@ -9,10 +9,13 @@ public class FurnitureItem implements Serializable {
     private String modelUrl;
     private String imageUrl;
     private String colours;
-    private String dimensions;
+    private double height;
+    private double width;
+    private double depth;
+
     private String texture;
 
-    public FurnitureItem(String name, String description, double price, String colours, String imageUrl, String modelUrl, String texture, String dimensions) {
+    public FurnitureItem(String name, String description, double price, String colours, String imageUrl, String modelUrl, String texture, double height, double width, double depth) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -20,7 +23,9 @@ public class FurnitureItem implements Serializable {
         this.imageUrl = imageUrl;
         this.modelUrl = modelUrl;
         this.texture = texture;
-        this.dimensions = dimensions;
+        this.height = height;
+        this.width = width;
+        this.depth = depth;
     }
 
 
@@ -53,7 +58,13 @@ public class FurnitureItem implements Serializable {
     public String getTexture() {
         return texture;
     }
-    public String getDimensions() {
-        return dimensions;
+    public double getHeight() {
+        return height;
+    }
+    public double getWidth() {
+        return width;
+    }
+    public double getDepth() {
+        return depth;
     }
 }
