@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.arrangeit.helpers.FurnitureAdapter;
 import com.example.arrangeit.helpers.FurnitureItem;
 import android.util.Log;
+
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     private EditText heightFilterEditText;
     private EditText widthFilterEditText;
     private EditText depthFilterEditText;
+    private Button filterButton;
 
 
     @Override
@@ -43,6 +46,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         setContentView(R.layout.activity_furniture_catalogue);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         homepage_button = findViewById(R.id.homepage_button);
         colourFilterSpinner = findViewById(R.id.colourFilterSpinner);
         typeFilterSpinner = findViewById(R.id.typeFilterSpinner);
@@ -51,6 +55,22 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         heightFilterEditText = findViewById(R.id.heightFilterEditText);
         widthFilterEditText = findViewById(R.id.widthFilterEditText);
         depthFilterEditText = findViewById(R.id.depthFilterEditText);
+
+        filterButton = findViewById(R.id.filterButton);
+        FlexboxLayout filterOptionsLayout = findViewById(R.id.filterOptionsLayout);
+        applyFilterButton = findViewById(R.id.applyFilterButton);
+
+        filterButton.setOnClickListener(view -> {
+            if (filterOptionsLayout.getVisibility() == View.GONE) {
+                filterOptionsLayout.setVisibility(View.VISIBLE);
+                applyFilterButton.setVisibility(View.VISIBLE);
+                filterButton.setText("Hide Filters");
+            } else {
+                filterOptionsLayout.setVisibility(View.GONE);
+                applyFilterButton.setVisibility(View.GONE);
+                filterButton.setText("Filter");
+            }
+        });
 
         homepage_button.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_color">Select Color</string>
+    <string name="select_type">Select Type</string>
     <string name="app_name" translatable="false">ArrangeIt</string>
     <string name="depth_use_explanation" translatable="false">When Depth is enabled on supported devices, virtual objects adapt to the environment by blending in with the real world.</string>
     <string name="button_text_enable_depth" translatable="false">Enable</string>
