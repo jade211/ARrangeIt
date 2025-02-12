@@ -36,6 +36,24 @@
         android:layout_height="wrap_content"
         android:hint="Enter max price" />
 
+    <EditText
+        android:id="@+id/depthFilterEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter max depth" />
+
+    <EditText
+        android:id="@+id/heightFilterEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter max height" />
+
+    <EditText
+        android:id="@+id/widthFilterEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter max width" />
+
 
     <Button
         android:id="@+id/applyFilterButton"

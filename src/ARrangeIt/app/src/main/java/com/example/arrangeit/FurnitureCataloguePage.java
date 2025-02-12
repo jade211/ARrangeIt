@@ -31,6 +31,9 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     private Spinner colorFilterSpinner;
     private Button applyFilterButton;
     private EditText priceFilterEditText;
+    private EditText heightFilterEditText;
+    private EditText widthFilterEditText;
+    private EditText depthFilterEditText;
 
 
     @Override
@@ -43,6 +46,9 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         colorFilterSpinner = findViewById(R.id.colorFilterSpinner);
         applyFilterButton = findViewById(R.id.applyFilterButton);
         priceFilterEditText = findViewById(R.id.priceFilterEditText);
+        heightFilterEditText = findViewById(R.id.heightFilterEditText);
+        widthFilterEditText = findViewById(R.id.widthFilterEditText);
+        depthFilterEditText = findViewById(R.id.depthFilterEditText);
 
         homepage_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,12 +115,22 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         String selectedColor = colorFilterSpinner.getSelectedItem().toString();
         String priceText = priceFilterEditText.getText().toString();
         double maxPrice = priceText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(priceText);
+
+        String heightText = heightFilterEditText.getText().toString();
+        double maxHeight = heightText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(heightText);
+        String widthText = widthFilterEditText.getText().toString();
+        double maxWidth = widthText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(widthText);
+        String depthText = depthFilterEditText.getText().toString();
+        double maxDepth = depthText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(depthText);
         filteredFurnitureItems.clear();
 
         for (FurnitureItem item : furnitureItems) {
             boolean matchesColor = selectedColor.equals("All") || item.getColours().equalsIgnoreCase(selectedColor);
             boolean matchesPrice = item.getPrice() <= maxPrice;
-            if (matchesColor && matchesPrice) {
+            boolean matchesHeight = item.getHeight() <= maxHeight;
+            boolean matchesWidth = item.getWidth() <= maxWidth;
+            boolean matchesDepth = item.getDepth() <= maxDepth;
+            if (matchesColor && matchesPrice && matchesHeight && matchesWidth && matchesDepth) {
                 filteredFurnitureItems.add(item);
             }
         }
