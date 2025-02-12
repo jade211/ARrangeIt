@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class HomePage extends AppCompatActivity {
 
-    Button ar_core, log_out;
+    Button ar_core, log_out, catalogue;
     FirebaseAuth firebaseAuth;
 
     @Override
@@ -23,6 +23,7 @@ public class HomePage extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         ar_core = findViewById(R.id.ar_core);
         log_out = findViewById(R.id.log_out);
+        catalogue = findViewById(R.id.catalogue);
 
         ar_core.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,6 +40,15 @@ public class HomePage extends AppCompatActivity {
                 firebaseAuth.signOut();
                 Toast.makeText(HomePage.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(HomePage.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        catalogue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomePage.this, FurnitureCataloguePage.class);
                 startActivity(intent);
                 finish();
             }

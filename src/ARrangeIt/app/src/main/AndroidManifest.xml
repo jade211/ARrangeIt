@@ -6,7 +6,6 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature
         android:name="android.hardware.camera.ar"
         android:required="true" />
@@ -34,6 +33,12 @@
             android:exported="false" />
         <activity
             android:name=".RegisterPage"
+            android:exported="false" />
+        <activity
+            android:name=".FurnitureCataloguePage"
+            android:exported="false" />
+        <activity
+            android:name=".FurnitureDetailActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
