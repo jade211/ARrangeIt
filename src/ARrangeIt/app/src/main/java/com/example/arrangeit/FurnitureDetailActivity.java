@@ -17,6 +17,7 @@ public class FurnitureDetailActivity extends AppCompatActivity {
 
     private ImageView itemImage;
     private TextView itemName;
+    private TextView itemType;
     private TextView itemDescription;
     private TextView itemPrice;
     private TextView itemHeight;
@@ -41,6 +42,7 @@ public class FurnitureDetailActivity extends AppCompatActivity {
 
         itemImage = findViewById(R.id.itemImage);
         itemName = findViewById(R.id.itemName);
+//        itemType = findViewById(R.id.itemType);
         itemDescription = findViewById(R.id.itemDescription);
         itemPrice = findViewById(R.id.itemPrice);
         itemHeight = findViewById(R.id.itemHeight);
@@ -53,6 +55,7 @@ public class FurnitureDetailActivity extends AppCompatActivity {
 
         if (item != null) {
             itemName.setText(item.getName());
+//            itemType.setText(item.getType());
             itemDescription.setText(item.getDescription());
             itemPrice.setText("$" + item.getPrice());
             itemHeight.setText("Height: " + item.getHeight() + "cm");

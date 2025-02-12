@@ -28,7 +28,8 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     Button homepage_button;
     private FirebaseFirestore db;
     private List<FurnitureItem> filteredFurnitureItems;
-    private Spinner colorFilterSpinner;
+    private Spinner colourFilterSpinner;
+    private Spinner typeFilterSpinner;
     private Button applyFilterButton;
     private EditText priceFilterEditText;
     private EditText heightFilterEditText;
@@ -43,7 +44,8 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         homepage_button = findViewById(R.id.homepage_button);
-        colorFilterSpinner = findViewById(R.id.colorFilterSpinner);
+        colourFilterSpinner = findViewById(R.id.colourFilterSpinner);
+        typeFilterSpinner = findViewById(R.id.typeFilterSpinner);
         applyFilterButton = findViewById(R.id.applyFilterButton);
         priceFilterEditText = findViewById(R.id.priceFilterEditText);
         heightFilterEditText = findViewById(R.id.heightFilterEditText);
@@ -63,7 +65,8 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         filteredFurnitureItems = new ArrayList<>();
         loadFurnitureCatalogue();
 
-        setupColorFilterSpinner();
+        setupColourFilterSpinner();
+        setupTypeFilterSpinner();
         applyFilterButton.setOnClickListener(view -> applyFilters());
     }
 
@@ -74,6 +77,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
                     furnitureItems.clear();
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         String name = doc.getString("name");
+                        String type = doc.getString("type");
                         String description = doc.getString("description");
                         String colours = doc.getString("colours");
                         String texture = doc.getString("texture");
@@ -84,7 +88,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
                         String imageUrl = doc.getString("imageUrl");
                         String modelUrl = doc.getString("modelUrl");
 
-                        furnitureItems.add(new FurnitureItem(name, description, price, colours, imageUrl, modelUrl, texture, height, width, depth));
+                        furnitureItems.add(new FurnitureItem(name, type, description, price, colours, imageUrl, modelUrl, texture, height, width, depth));
                     }
                     filteredFurnitureItems.addAll(furnitureItems);
                     furnitureAdapter = new FurnitureAdapter(FurnitureCataloguePage.this, filteredFurnitureItems);
@@ -97,25 +101,37 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     }
 
 
-    private void setupColorFilterSpinner() {
-        List<String> colors = new ArrayList<>();
-        colors.add("All");
-        colors.add("Red");
-        colors.add("Blue");
-        colors.add("Green");
-        colors.add("Grey");
-        colors.add("Pink");
-        colors.add("Brown");
+    private void setupColourFilterSpinner() {
+        List<String> colours = new ArrayList<>();
+        colours.add("All");
+        colours.add("Red");
+        colours.add("Blue");
+        colours.add("Green");
+        colours.add("Grey");
+        colours.add("Pink");
+        colours.add("Brown");
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colors);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, colours);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        colorFilterSpinner.setAdapter(adapter);
+        colourFilterSpinner.setAdapter(adapter);
     }
+    private void setupTypeFilterSpinner() {
+        List<String> types = new ArrayList<>();
+        types.add("All");
+        types.add("Chair");
+        types.add("Table");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, types);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeFilterSpinner.setAdapter(adapter);
+    }
+
+
     private void applyFilters() {
-        String selectedColor = colorFilterSpinner.getSelectedItem().toString();
+        String selectedColour = colourFilterSpinner.getSelectedItem().toString();
+        String selectedType = typeFilterSpinner.getSelectedItem().toString();
         String priceText = priceFilterEditText.getText().toString();
         double maxPrice = priceText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(priceText);
-
         String heightText = heightFilterEditText.getText().toString();
         double maxHeight = heightText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(heightText);
         String widthText = widthFilterEditText.getText().toString();
@@ -125,12 +141,13 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         filteredFurnitureItems.clear();
 
         for (FurnitureItem item : furnitureItems) {
-            boolean matchesColor = selectedColor.equals("All") || item.getColours().equalsIgnoreCase(selectedColor);
+            boolean matchesColour = selectedColour.equals("All") || item.getColours().equalsIgnoreCase(selectedColour);
+            boolean matchesType = selectedType.equals("All") || item.getType().equalsIgnoreCase(selectedType);
             boolean matchesPrice = item.getPrice() <= maxPrice;
             boolean matchesHeight = item.getHeight() <= maxHeight;
             boolean matchesWidth = item.getWidth() <= maxWidth;
             boolean matchesDepth = item.getDepth() <= maxDepth;
-            if (matchesColor && matchesPrice && matchesHeight && matchesWidth && matchesDepth) {
+            if (matchesColour && matchesType && matchesPrice && matchesHeight && matchesWidth && matchesDepth) {
                 filteredFurnitureItems.add(item);
             }
         }

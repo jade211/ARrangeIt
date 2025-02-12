@@ -25,7 +25,13 @@
         android:paddingBottom="16dp"/>
 
     <Spinner
-        android:id="@+id/colorFilterSpinner"
+        android:id="@+id/colourFilterSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:prompt="@string/select_color" />
+
+    <Spinner
+        android:id="@+id/typeFilterSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:prompt="@string/select_color" />

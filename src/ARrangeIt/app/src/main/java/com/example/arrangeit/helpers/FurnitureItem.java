@@ -4,6 +4,7 @@ import java.io.Serializable;
 public class FurnitureItem implements Serializable {
     private String id;
     private String name;
+    private String type;
     private String description;
     private double price;
     private String modelUrl;
@@ -15,8 +16,9 @@ public class FurnitureItem implements Serializable {
 
     private String texture;
 
-    public FurnitureItem(String name, String description, double price, String colours, String imageUrl, String modelUrl, String texture, double height, double width, double depth) {
+    public FurnitureItem(String name, String type, String description, double price, String colours, String imageUrl, String modelUrl, String texture, double height, double width, double depth) {
         this.name = name;
+        this.type = type;
         this.description = description;
         this.price = price;
         this.colours = colours;
@@ -33,18 +35,23 @@ public class FurnitureItem implements Serializable {
         return id;
 
     }
+
     public String getName() {
         return name;
-
     }
+
+    public String getType() {
+        return type;
+    }
+
     public String getDescription() {
         return description;
-
     }
+
     public double getPrice() {
         return price;
-
     }
+
     public String getModelUrl() {
         return modelUrl;
     }
@@ -52,18 +59,23 @@ public class FurnitureItem implements Serializable {
     public String getImageUrl() {
         return imageUrl;
     }
+
     public String getColours() {
         return colours;
     }
+
     public String getTexture() {
         return texture;
     }
+
     public double getHeight() {
         return height;
     }
+
     public double getWidth() {
         return width;
     }
+
     public double getDepth() {
         return depth;
     }
