@@ -80,7 +80,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
     testImplementation 'org.robolectric:robolectric:4.14'
-    testImplementation libs.core.v150
+    testImplementation libs.core.v1140
 
     implementation 'io.ktor:ktor-client-okhttp:2.3.3'
     implementation 'com.google.code.gson:gson:2.10.1'
