@@ -154,15 +154,47 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
 
         setContentView(R.layout.activity_ar);
         surfaceView = findViewById(R.id.surfaceview);
-        homepage_button = findViewById(R.id.homepage_button);
-        homepage_button.setOnClickListener(new View.OnClickListener() {
+        ImageButton settingsButton = findViewById(R.id.settings_button);
+        Button navArCore = findViewById(R.id.nav_ar_core);
+        Button navCatalogue = findViewById(R.id.nav_catalogue);
+        Button navLogOut = findViewById(R.id.nav_log_out);
+
+        navArCore.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ARCorePage.this, HomePage.class);
+            public void onClick(View v) {
+                // Already in ARCore, no action needed
+            }
+        });
+
+        navCatalogue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ARCorePage.this, FurnitureCataloguePage.class);
                 startActivity(intent);
                 finish();
             }
         });
+
+        navLogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Toast.makeText(ARCorePage.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ARCorePage.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+//        homepage_button = findViewById(R.id.homepage_button);
+//        homepage_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(ARCorePage.this, HomePage.class);
+//                startActivity(intent);
+//                finish();
+//            }
+//        });
         displayRotationHelper = new DisplayRotationHelper(/* context= */ this);
         tapHelper = new TapHelper(/* context= */ this);
         surfaceView.setOnTouchListener(tapHelper);
@@ -171,7 +203,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         installRequested = false;
         depthSettings.onCreate(this);
         instantPlacementSettings.onCreate(this);
-        ImageButton settingsButton = findViewById(R.id.settings_button);
+//        ImageButton settingsButton = findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
