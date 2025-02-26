@@ -5,32 +5,45 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
+    android:background="@drawable/background2"
     android:orientation="vertical"
     android:padding="40dp"
     tools:context="com.example.arrangeit.RegisterPage">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="italic"
-        android:textSize="50dp"
-        android:textColor="@color/black"
-        android:text="ARrangeIt" />
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="255dp"
+        android:layout_height="238dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/logo1" />
+
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Registration"
+        android:text="Create an Account"
         android:textColor="@color/black"
-        android:textStyle="italic"
-        android:textSize="60dp" />
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please enter your details to register"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        android:gravity="center"
+        android:layout_marginBottom="20dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/email_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="10dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/email"
@@ -44,7 +57,7 @@
         android:id="@+id/password_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="10dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:endIconMode="password_toggle">
         <com.google.android.material.textfield.TextInputEditText
@@ -62,7 +75,7 @@
         android:textSize="20dp"
         android:text="Register"
         android:background="@drawable/round_btn"
-        android:layout_marginTop="100dp" />
+        android:layout_marginTop="70dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
