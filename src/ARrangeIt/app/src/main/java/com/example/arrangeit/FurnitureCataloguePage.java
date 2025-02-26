@@ -27,7 +27,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     private RecyclerView recyclerView;
     FurnitureAdapter furnitureAdapter;
     List<FurnitureItem> furnitureItems;
-    Button homepage_button;
+    Button back_button;
     FirebaseFirestore db;
     List<FurnitureItem> filteredFurnitureItems;
     Spinner colourFilterSpinner;
@@ -47,7 +47,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        homepage_button = findViewById(R.id.homepage_button);
+        back_button = findViewById(R.id.back_button);
         colourFilterSpinner = findViewById(R.id.colourFilterSpinner);
         typeFilterSpinner = findViewById(R.id.typeFilterSpinner);
         applyFilterButton = findViewById(R.id.applyFilterButton);
@@ -72,10 +72,10 @@ public class FurnitureCataloguePage extends AppCompatActivity {
             }
         });
 
-        homepage_button.setOnClickListener(new View.OnClickListener() {
+        back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(FurnitureCataloguePage.this, HomePage.class);
+                Intent intent = new Intent(FurnitureCataloguePage.this, ARCorePage.class);
                 startActivity(intent);
                 finish();
             }
