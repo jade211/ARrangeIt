@@ -76,7 +76,7 @@
         android:layout_gravity="center"
         android:padding="5dp"
         android:textSize="15dp"
-        android:layout_margin="5dp"></TextView>
+        android:layout_margin="5dp"/>
 
     <Button
         android:id="@+id/sign_in"

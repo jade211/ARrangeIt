@@ -78,26 +78,34 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 View dialogView = getLayoutInflater().inflate(R.layout.forgot_password_dialogue, null);
                 EditText emailBox = dialogView.findViewById(R.id.emailBox);
+                TextView emailErrorText = dialogView.findViewById(R.id.emailErrorText);
                 builder.setView(dialogView);
                 AlertDialog dialog = builder.create();
-                dialogView.findViewById(R.id.btnReset).setOnClickListener(new View.OnClickListener() {
+                dialogView.findViewById(R.id.buttonReset).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         String userEmail = emailBox.getText().toString();
-                        firebaseAuth.sendPasswordResetEmail(userEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()){
-                                    Toast.makeText(MainActivity.this, "Email has been sent", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                } else {
-                                    Toast.makeText(MainActivity.this, "Unable to send", Toast.LENGTH_SHORT).show();
+                        String emailError = FieldValidatorHelper.validateEmail(userEmail);
+                        if (emailError != null) {
+                            emailErrorText.setText(emailError);
+                            emailErrorText.setVisibility(View.VISIBLE);
+                        } else {
+                            emailErrorText.setVisibility(View.GONE);
+                            firebaseAuth.sendPasswordResetEmail(userEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(MainActivity.this, "Email has been sent", Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "Unable to send", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 });
-                dialogView.findViewById(R.id.btnCancel).setOnClickListener(new View.OnClickListener() {
+                dialogView.findViewById(R.id.buttonCancel).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         dialog.dismiss();
