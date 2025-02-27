@@ -1,6 +1,7 @@
 [versions]
 agp = "8.7.0"
 androidxCore = "1.6.1"
+androidxCoreVersion = "1.5.0"
 androidxJunit = "1.1.5"
 coil = "2.x.x"
 core = "1.47.0"
@@ -34,6 +35,7 @@ core = { module = "com.google.ar:core", version.ref = "core" }
 core-ktx = { module = "androidx.core:core-ktx" }
 core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 core-v1140 = { module = "com.google.ar:core", version.ref = "coreVersion" }
+core-v150 = { module = "androidx.test:core", version.ref = "androidxCoreVersion" }
 espresso-core-v351 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
 firebase-emulator = { module = "com.google.firebase:firebase-emulator", version.ref = "firebaseEmulator" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

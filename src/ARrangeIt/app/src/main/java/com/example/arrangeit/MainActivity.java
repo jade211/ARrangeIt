@@ -1,12 +1,15 @@
 package com.example.arrangeit;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.Editable;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     TextView signUp;
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     TextInputLayout emailInputLayout;
+    TextView forgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         signIn = findViewById(R.id.sign_in);
         signUp = findViewById(R.id.sign_up);
         emailInputLayout = findViewById(R.id.email_input_layout);
+        forgotPassword = findViewById(R.id.forgot_password);
 
         editTextEmail.addTextChangedListener(new TextWatcher() {
             @Override
@@ -66,6 +71,54 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                View dialogView = getLayoutInflater().inflate(R.layout.forgot_password_dialogue, null);
+                EditText emailBox = dialogView.findViewById(R.id.emailBox);
+                TextView emailErrorText = dialogView.findViewById(R.id.emailErrorText);
+                builder.setView(dialogView);
+                AlertDialog dialog = builder.create();
+                dialogView.findViewById(R.id.buttonReset).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String userEmail = emailBox.getText().toString();
+                        String emailError = FieldValidatorHelper.validateEmail(userEmail);
+                        if (emailError != null) {
+                            emailErrorText.setText(emailError);
+                            emailErrorText.setVisibility(View.VISIBLE);
+                        } else {
+                            emailErrorText.setVisibility(View.GONE);
+                            firebaseAuth.sendPasswordResetEmail(userEmail).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(MainActivity.this, "Email has been sent", Toast.LENGTH_SHORT).show();
+                                        dialog.dismiss();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "Unable to send", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+                dialogView.findViewById(R.id.buttonCancel).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                if (dialog.getWindow() != null){
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+                }
+                dialog.show();
+            }
+        });
+
+
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
                             Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, HomePage.class);
+                            Intent intent = new Intent(MainActivity.this, ARCorePage.class);
                             startActivity(intent);
                             finish();
                         }

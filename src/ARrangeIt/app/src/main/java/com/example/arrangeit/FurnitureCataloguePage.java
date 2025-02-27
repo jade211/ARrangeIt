@@ -25,18 +25,18 @@ import java.util.List;
 public class FurnitureCataloguePage extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private FurnitureAdapter furnitureAdapter;
-    private List<FurnitureItem> furnitureItems;
-    Button homepage_button;
-    private FirebaseFirestore db;
-    private List<FurnitureItem> filteredFurnitureItems;
-    private Spinner colourFilterSpinner;
-    private Spinner typeFilterSpinner;
+    FurnitureAdapter furnitureAdapter;
+    List<FurnitureItem> furnitureItems;
+    Button back_button;
+    FirebaseFirestore db;
+    List<FurnitureItem> filteredFurnitureItems;
+    Spinner colourFilterSpinner;
+    Spinner typeFilterSpinner;
     private Button applyFilterButton;
-    private EditText priceFilterEditText;
-    private EditText heightFilterEditText;
-    private EditText widthFilterEditText;
-    private EditText depthFilterEditText;
+    EditText priceFilterEditText;
+    EditText heightFilterEditText;
+    EditText widthFilterEditText;
+    EditText depthFilterEditText;
     private Button filterButton;
 
 
@@ -47,7 +47,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        homepage_button = findViewById(R.id.homepage_button);
+        back_button = findViewById(R.id.back_button);
         colourFilterSpinner = findViewById(R.id.colourFilterSpinner);
         typeFilterSpinner = findViewById(R.id.typeFilterSpinner);
         applyFilterButton = findViewById(R.id.applyFilterButton);
@@ -72,10 +72,10 @@ public class FurnitureCataloguePage extends AppCompatActivity {
             }
         });
 
-        homepage_button.setOnClickListener(new View.OnClickListener() {
+        back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(FurnitureCataloguePage.this, HomePage.class);
+                Intent intent = new Intent(FurnitureCataloguePage.this, ARCorePage.class);
                 startActivity(intent);
                 finish();
             }
@@ -90,7 +90,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         applyFilterButton.setOnClickListener(view -> applyFilters());
     }
 
-    private void loadFurnitureCatalogue() {
+    void loadFurnitureCatalogue() {
         db.collection("furniture")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -121,7 +121,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     }
 
 
-    private void setupColourFilterSpinner() {
+    void setupColourFilterSpinner() {
         List<String> colours = new ArrayList<>();
         colours.add("All");
         colours.add("Red");
@@ -135,7 +135,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         colourFilterSpinner.setAdapter(adapter);
     }
-    private void setupTypeFilterSpinner() {
+    void setupTypeFilterSpinner() {
         List<String> types = new ArrayList<>();
         types.add("All");
         types.add("Chair");
@@ -147,7 +147,7 @@ public class FurnitureCataloguePage extends AppCompatActivity {
     }
 
 
-    private void applyFilters() {
+    void applyFilters() {
         String selectedColour = colourFilterSpinner.getSelectedItem().toString();
         String selectedType = typeFilterSpinner.getSelectedItem().toString();
         String priceText = priceFilterEditText.getText().toString();

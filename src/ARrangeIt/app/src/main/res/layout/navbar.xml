@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@android:color/white"
+    android:padding="10dp"
+    android:layout_gravity="bottom"
+    android:fitsSystemWindows="true"
+    android:layout_marginBottom="?android:attr/actionBarSize">
+
+    <Button
+        android:id="@+id/nav_ar_core"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="AR Core"
+        android:background="@android:color/transparent"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/nav_catalogue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Catalogue"
+        android:background="@android:color/transparent"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/nav_log_out"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Log Out"
+        android:background="@android:color/transparent"
+        android:textColor="@android:color/black" />
+</LinearLayout>
