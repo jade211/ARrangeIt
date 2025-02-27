@@ -4,7 +4,10 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@android:color/white"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:layout_gravity="bottom"
+    android:fitsSystemWindows="true"
+    android:layout_marginBottom="?android:attr/actionBarSize">
 
     <Button
         android:id="@+id/nav_ar_core"
