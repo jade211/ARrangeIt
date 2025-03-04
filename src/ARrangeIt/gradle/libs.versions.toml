@@ -1,4 +1,5 @@
 [versions]
+activityVersion = "1.8.0"
 agp = "8.7.0"
 androidxCore = "1.6.1"
 androidxCoreVersion = "1.5.0"
@@ -9,6 +10,7 @@ coreTesting = "2.2.0"
 coreVersion = "1.14.0"
 espressoCoreVersion = "3.5.1"
 firebaseEmulator = "19.0.1"
+fragment = "1.8.6"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -28,6 +30,7 @@ storageKt = "1.4.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose" }
+activity-v180 = { module = "androidx.activity:activity", version.ref = "activityVersion" }
 arsceneview = { module = "io.github.sceneview:arsceneview" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 compose-bom = { module = "androidx.compose:compose-bom" }
@@ -38,6 +41,7 @@ core-v1140 = { module = "com.google.ar:core", version.ref = "coreVersion" }
 core-v150 = { module = "androidx.test:core", version.ref = "androidxCoreVersion" }
 espresso-core-v351 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
 firebase-emulator = { module = "com.google.firebase:firebase-emulator", version.ref = "firebaseEmulator" }
+fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
