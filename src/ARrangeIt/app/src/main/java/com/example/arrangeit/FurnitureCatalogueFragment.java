@@ -1,6 +1,5 @@
 package com.example.arrangeit;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +10,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.arrangeit.helpers.FurnitureAdapter;
 import com.example.arrangeit.helpers.FurnitureItem;
 import com.google.android.flexbox.FlexboxLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class FurnitureCatalogueFragment extends Fragment {
     private EditText widthFilterEditText;
     private EditText depthFilterEditText;
     private FirebaseFirestore db;
-    private ImageButton filterIcon; // New: Filter icon
+    private ImageButton filterIcon;
     private EditText searchBar;
 
     @Override
@@ -46,6 +47,7 @@ public class FurnitureCatalogueFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        ProgressBar loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
 
         ImageButton closeButton = view.findViewById(R.id.closeButton);
         closeButton.setOnClickListener(v -> {
@@ -73,6 +75,8 @@ public class FurnitureCatalogueFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         furnitureItems = new ArrayList<>();
         filteredFurnitureItems = new ArrayList<>();
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
         loadFurnitureCatalogue();
 
         setupColourFilterSpinner();
@@ -120,6 +124,7 @@ public class FurnitureCatalogueFragment extends Fragment {
         db.collection("furniture")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!isAdded() || getView() == null) return;
                     furnitureItems.clear();
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         String name = doc.getString("name");
@@ -139,8 +144,22 @@ public class FurnitureCatalogueFragment extends Fragment {
                     filteredFurnitureItems.addAll(furnitureItems);
                     furnitureAdapter = new FurnitureAdapter(getContext(), filteredFurnitureItems);
                     recyclerView.setAdapter(furnitureAdapter);
+
+
+                    ProgressBar loadingProgressBar = getView().findViewById(R.id.loadingProgressBar);
+                    if (loadingProgressBar != null) {
+                        loadingProgressBar.setVisibility(View.GONE);
+                    }
+                    recyclerView.setVisibility(View.VISIBLE);
                 })
                 .addOnFailureListener(e -> {
+                    if (!isAdded() || getView() == null) return;
+
+                    ProgressBar loadingProgressBar = getView().findViewById(R.id.loadingProgressBar);
+                    if (loadingProgressBar != null) {
+                        loadingProgressBar.setVisibility(View.GONE);
+                    }
+                    Toast.makeText(getContext(), "Failed to load furniture data", Toast.LENGTH_SHORT).show();
                 });
     }
 
