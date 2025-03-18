@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,6 +34,8 @@ public class FurnitureCatalogueFragment extends Fragment {
     private EditText widthFilterEditText;
     private EditText depthFilterEditText;
     private FirebaseFirestore db;
+    private ImageButton filterIcon; // New: Filter icon
+    private EditText searchBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,26 +59,42 @@ public class FurnitureCatalogueFragment extends Fragment {
         setupColourFilterSpinner();
         setupTypeFilterSpinner();
 
-        Button filterButton = view.findViewById(R.id.filterButton);
+        searchBar = view.findViewById(R.id.searchBar);
+        filterIcon = view.findViewById(R.id.filterIcon);
+
         FlexboxLayout filterOptionsLayout = view.findViewById(R.id.filterOptionsLayout);
         Button applyFilterButton = view.findViewById(R.id.applyFilterButton);
 
-        filterButton.setOnClickListener(v -> {
+        filterIcon.setOnClickListener(v -> {
             if (filterOptionsLayout.getVisibility() == View.GONE) {
                 filterOptionsLayout.setVisibility(View.VISIBLE);
                 applyFilterButton.setVisibility(View.VISIBLE);
-                filterButton.setText("Hide Filters");
             } else {
                 filterOptionsLayout.setVisibility(View.GONE);
                 applyFilterButton.setVisibility(View.GONE);
-                filterButton.setText("Filter");
             }
         });
-
-        // Set up the apply filter button
         applyFilterButton.setOnClickListener(v -> applyFilters());
 
+        searchBar.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                performSearch();
+                return true;
+            }
+            return false;
+        });
+
         return view;
+    }
+    void performSearch() {
+        String query = searchBar.getText().toString().toLowerCase().trim();
+        filteredFurnitureItems.clear();
+        for (FurnitureItem item : furnitureItems) {
+            if (item.getName().toLowerCase().contains(query)) {
+                filteredFurnitureItems.add(item);
+            }
+        }
+        furnitureAdapter.notifyDataSetChanged();
     }
 
     void loadFurnitureCatalogue() {
@@ -102,7 +122,6 @@ public class FurnitureCatalogueFragment extends Fragment {
                     recyclerView.setAdapter(furnitureAdapter);
                 })
                 .addOnFailureListener(e -> {
-                    // Handle failure
                 });
     }
 
@@ -122,7 +141,7 @@ public class FurnitureCatalogueFragment extends Fragment {
     }
 
     void setupTypeFilterSpinner() {
-        List<String> types = new ArrayList<>(); // Corrected: Use ArrayList instead of ArraycolourList
+        List<String> types = new ArrayList<>();
         types.add("All");
         types.add("Chair");
         types.add("Table");
@@ -156,7 +175,6 @@ public class FurnitureCatalogueFragment extends Fragment {
                 filteredFurnitureItems.add(item);
             }
         }
-
         furnitureAdapter.notifyDataSetChanged();
     }
 }

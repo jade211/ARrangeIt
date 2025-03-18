@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@drawable/white_box">
+
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/round_btn"
+        android:text="Back to Camera"
+        android:textSize="15dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -17,13 +26,35 @@
         android:paddingTop="30dp"
         android:paddingBottom="16dp"/>
 
-    <Button
-        android:id="@+id/filterButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Filter"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"/>
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <EditText
+            android:id="@+id/searchBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Search furniture..."
+            android:padding="12dp"
+            android:background="@drawable/search_bg"
+            android:drawableStart="@drawable/search"
+            android:drawablePadding="8dp"
+            android:imeOptions="actionSearch"
+            android:inputType="text" />
+
+        <ImageButton
+            android:id="@+id/filterIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@drawable/filter"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Filter"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/filterOptionsLayout"
@@ -35,7 +66,6 @@
         android:padding="8dp"
         android:visibility="gone">
 
-        <!-- Colour Filter -->
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -59,7 +89,6 @@
                 android:spinnerMode="dropdown"/>
         </LinearLayout>
 
-        <!-- Type Filter -->
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -83,7 +112,6 @@
                 android:spinnerMode="dropdown"/>
         </LinearLayout>
 
-        <!-- Max Price Filter -->
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -106,7 +134,6 @@
                 android:hint="Enter max price"/>
         </LinearLayout>
 
-        <!-- Max Depth Filter -->
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -129,7 +156,6 @@
                 android:hint="Enter max depth"/>
         </LinearLayout>
 
-        <!-- Max Height Filter -->
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -152,7 +178,6 @@
                 android:hint="Enter max height"/>
         </LinearLayout>
 
-        <!-- Max Width Filter -->
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
