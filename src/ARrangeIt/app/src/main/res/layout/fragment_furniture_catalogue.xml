@@ -7,14 +7,16 @@
     android:padding="16dp"
     android:background="@drawable/white_box">
 
-    <Button
-        android:id="@+id/back_button"
+    <ImageButton
+        android:id="@+id/closeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/round_btn"
-        android:text="Back to Camera"
-        android:textSize="15dp" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/collapse_catalogue"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:contentDescription="Close" />
 
     <TextView
         android:layout_width="wrap_content"

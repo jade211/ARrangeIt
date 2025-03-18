@@ -1,5 +1,6 @@
 package com.example.arrangeit;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import androidx.fragment.app.Fragment;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.arrangeit.helpers.FurnitureAdapter;
 import com.example.arrangeit.helpers.FurnitureItem;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
@@ -43,6 +46,22 @@ public class FurnitureCatalogueFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        ImageButton closeButton = view.findViewById(R.id.closeButton);
+        closeButton.setOnClickListener(v -> {
+            if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+                getParentFragmentManager().popBackStack();
+            } else {
+                getParentFragmentManager().beginTransaction()
+                        .remove(FurnitureCatalogueFragment.this)
+                        .commit();
+            }
+            FrameLayout fragmentContainer = getActivity().findViewById(R.id.fragment_container);
+            if (fragmentContainer != null) {
+                fragmentContainer.setVisibility(View.GONE);
+            }
+        });
+
 
         colourFilterSpinner = view.findViewById(R.id.colourFilterSpinner);
         typeFilterSpinner = view.findViewById(R.id.typeFilterSpinner);

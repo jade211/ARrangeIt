@@ -148,8 +148,6 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
     private final float[] viewLightDirection = new float[4]; // view x world light direction
     private boolean isCatalogueVisible = false;
 
-    Button homepage_button;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,35 +155,27 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         setContentView(R.layout.activity_ar);
         surfaceView = findViewById(R.id.surfaceview);
         ImageButton settingsButton = findViewById(R.id.settings_button);
-        Button navArCore = findViewById(R.id.nav_ar_core);
-        Button navCatalogue = findViewById(R.id.nav_catalogue);
+        // Button navArCore = findViewById(R.id.nav_ar_core);
+
         Button navLogOut = findViewById(R.id.nav_log_out);
+        Button navCatalogue = findViewById(R.id.nav_catalogue);
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
-        navArCore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        navCatalogue.setOnClickListener(v -> {
+            if (fragmentContainer.getVisibility() == View.GONE) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
+                        .addToBackStack(null)
+                        .commit();
+                fragmentContainer.setVisibility(View.VISIBLE);
+            } else {
+                getSupportFragmentManager().beginTransaction()
+                        .remove(getSupportFragmentManager().findFragmentById(R.id.fragment_container))
+                        .commit();
+                fragmentContainer.setVisibility(View.GONE);
             }
         });
 
-        navCatalogue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isCatalogueVisible) {
-                    getSupportFragmentManager().beginTransaction()
-                            .hide(getSupportFragmentManager().findFragmentById(R.id.fragment_container))
-                            .commit();
-                    fragmentContainer.setVisibility(View.GONE);
-                    isCatalogueVisible = false;
-                } else {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
-                            .commit();
-                    fragmentContainer.setVisibility(View.VISIBLE);
-                    isCatalogueVisible = true;
-                }
-            }
-        });
 
         navLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
