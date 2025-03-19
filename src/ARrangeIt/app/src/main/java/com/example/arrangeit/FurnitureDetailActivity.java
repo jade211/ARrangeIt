@@ -30,7 +30,7 @@ public class FurnitureDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_furniture_detail);
-        View catalogue_button = findViewById(R.id.catalogue_button);
+        View catalogue_button = findViewById(R.id.back_button);
         catalogue_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -1,88 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#FFFFFF">
+    android:fillViewport="true"
+    android:background="#FFFFFF"
+    android:paddingBottom="56dp">
 
-    <Button
-        android:id="@+id/catalogue_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/round_btn"
-        android:text="Back to Catalogue"
-        android:textSize="15dp" />
-
-    <ImageView
-        android:id="@+id/itemImage"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher"
-        android:layout_gravity="center"/>
-
-    <TextView
-        android:id="@+id/itemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Furniture Name"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"/>
-
-    <TextView
-        android:id="@+id/itemPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="$0.00"
-        android:textSize="18sp"
-        android:textColor="@android:color/holo_green_dark"
-        android:textStyle="bold"
-        android:layout_marginTop="4dp"/>
-
-    <TextView
-        android:id="@+id/itemDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Furniture Description"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
-
-    <TextView
-        android:id="@+id/itemHeight"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:paddingTop="8dp"/>
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/itemWidth"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:paddingTop="8dp"/>
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/collapse_catalogue"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:padding="8dp" />
 
-    <TextView
-        android:id="@+id/itemDepth"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:paddingTop="8dp"/>
+        <ImageView
+            android:id="@+id/itemImage"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"/>
 
-    <TextView
-        android:id="@+id/itemColours"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:paddingTop="8dp"/>
+        <TextView
+            android:id="@+id/itemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Furniture Name"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
 
-    <TextView
-        android:id="@+id/itemTexture"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:paddingTop="8dp"/>
+        <TextView
+            android:id="@+id/itemPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="€0.00"
+            android:textSize="18sp"
+            android:textColor="@android:color/holo_green_dark"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"/>
 
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/itemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Furniture Description"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dimensions"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/itemHeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Height: None"
+            android:textSize="14sp"
+            android:paddingTop="4dp"/>
+
+        <TextView
+            android:id="@+id/itemWidth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Width: None"
+            android:textSize="14sp"
+            android:paddingTop="4dp"/>
+
+        <TextView
+            android:id="@+id/itemDepth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Depth: None"
+            android:textSize="14sp"
+            android:paddingTop="4dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Colours"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/itemColours"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="None"
+            android:textSize="14sp"
+            android:paddingTop="4dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Texture"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/itemTexture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="None"
+            android:textSize="14sp"
+            android:paddingTop="4dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+
+        <Button
+            android:id="@+id/place_in_session_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Place in Session"
+            android:textSize="16sp"
+            android:background="@drawable/round_btn"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="16dp"/>
+    </LinearLayout>
+</ScrollView>
