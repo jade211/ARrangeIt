@@ -49,12 +49,12 @@ public class FurnitureDetailFragment extends Fragment {
             if (item != null) {
                 itemName.setText(item.getName());
                 itemDescription.setText(item.getDescription());
-                itemPrice.setText("$" + item.getPrice());
+                itemPrice.setText("€" + item.getPrice());
                 itemHeight.setText("Height: " + item.getHeight() + "cm");
                 itemWidth.setText("Width: " + item.getWidth() + "cm");
                 itemDepth.setText("Depth: " + item.getDepth() + "cm");
-                itemColours.setText("Colours: " + item.getColours());
-                itemTexture.setText("Texture: " + item.getTexture());
+                itemColours.setText(item.getColours());
+                itemTexture.setText(item.getTexture());
 
 
                 StorageReference imageRef = FirebaseStorage.getInstance().getReference(item.getImageUrl());
@@ -65,7 +65,7 @@ public class FurnitureDetailFragment extends Fragment {
             }
         }
 
-        View catalogue_button = view.findViewById(R.id.catalogue_button);
+        View catalogue_button = view.findViewById(R.id.back_button);
         catalogue_button.setOnClickListener(v -> {
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.fragment_container, new FurnitureCatalogueFragment());
