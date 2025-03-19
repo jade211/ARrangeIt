@@ -58,170 +58,430 @@
             android:layout_gravity="center_vertical" />
     </LinearLayout>
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/filterOptionsLayout"
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:flexWrap="wrap"
-        app:alignItems="stretch"
-        app:justifyContent="flex_start"
-        android:padding="8dp"
-        android:visibility="gone">
+        android:fillViewport="true"
+        android:paddingBottom="60dp"
+        android:overScrollMode="always">
 
         <LinearLayout
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:padding="8dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/filterOptionsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:alignItems="stretch"
+            app:justifyContent="flex_start"
+            android:padding="8dp"
+            android:visibility="gone">
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Colour"
-                android:textSize="14sp"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="4dp"/>
+                android:layout_margin="8dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
 
-            <Spinner
-                android:id="@+id/colourFilterSpinner"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:prompt="@string/select_color"
-                android:spinnerMode="dropdown"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Colour"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/colourFilterSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:prompt="@string/select_color"
+                    android:spinnerMode="dropdown"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Type Filter -->
+        <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Type"
-                android:textSize="14sp"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="4dp"/>
-
-            <Spinner
-                android:id="@+id/typeFilterSpinner"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:prompt="@string/select_type"
-                android:spinnerMode="dropdown"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Type"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/typeFilterSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:prompt="@string/select_type"
+                    android:spinnerMode="dropdown"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Price Filter -->
+        <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Max Price"
-                android:textSize="14sp"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="4dp"/>
-
-            <EditText
-                android:id="@+id/priceFilterEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter max price"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Max Price"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/priceFilterEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter max price"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Depth Filter -->
+        <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Max Depth"
-                android:textSize="14sp"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="4dp"/>
-
-            <EditText
-                android:id="@+id/depthFilterEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter max depth"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Max Depth"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/depthFilterEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter max depth"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Height Filter -->
+        <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Max Height"
-                android:textSize="14sp"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="4dp"/>
-
-            <EditText
-                android:id="@+id/heightFilterEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter max height"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Max Height"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/heightFilterEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter max height"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Width Filter -->
+        <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Max Width"
-                android:textSize="14sp"
-                android:layout_gravity="center_horizontal"
-                android:paddingBottom="4dp"/>
-
-            <EditText
-                android:id="@+id/widthFilterEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter max width"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Max Width"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/widthFilterEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter max width"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Sort by Price -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sort by Price"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="8dp"/>
+
+                <Spinner
+                    android:id="@+id/sortByPriceSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:prompt="@string/sort_by_price"
+                    android:spinnerMode="dropdown"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </com.google.android.flexbox.FlexboxLayout>
+            <Button
+                android:id="@+id/applyFilterButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apply Filter"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+</ScrollView>
 
-    <Button
-        android:id="@+id/applyFilterButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Apply Filter"
-        android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
-        android:visibility="gone"/>
 
-    <ProgressBar
-        android:id="@+id/loadingProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+<ProgressBar
+android:id="@+id/loadingProgressBar"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_gravity="center"
+android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"/>
-</LinearLayout>
+        android:layout_height="479dp"
+        android:scrollbars="vertical" />
+    </LinearLayout>
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:paddingBottom="16dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Colour"-->
+<!--                android:textSize="14sp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:paddingBottom="4dp"/>-->
+
+<!--            <Spinner-->
+<!--                android:id="@+id/colourFilterSpinner"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:prompt="@string/select_color"-->
+<!--                android:spinnerMode="dropdown"/>-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:paddingBottom="16dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Type"-->
+<!--                android:textSize="14sp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:paddingBottom="4dp"/>-->
+
+<!--            <Spinner-->
+<!--                android:id="@+id/typeFilterSpinner"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:prompt="@string/select_type"-->
+<!--                android:spinnerMode="dropdown"/>-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:paddingBottom="16dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Max Price"-->
+<!--                android:textSize="14sp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:paddingBottom="4dp"/>-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/priceFilterEditText"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Enter max price"/>-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:paddingBottom="16dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Max Depth"-->
+<!--                android:textSize="14sp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:paddingBottom="4dp"/>-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/depthFilterEditText"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Enter max depth"/>-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:paddingBottom="16dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Max Height"-->
+<!--                android:textSize="14sp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:paddingBottom="4dp"/>-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/heightFilterEditText"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Enter max height"/>-->
+<!--        </LinearLayout>-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:paddingEnd="16dp"-->
+<!--            android:paddingBottom="16dp">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Max Width"-->
+<!--                android:textSize="14sp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:paddingBottom="4dp"/>-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/widthFilterEditText"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Enter max width"/>-->
+<!--        </LinearLayout>-->
+<!--    </com.google.android.flexbox.FlexboxLayout>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/applyFilterButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Apply Filter"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        android:visibility="gone"/>-->
+
+<!--    <ProgressBar-->
+<!--        android:id="@+id/loadingProgressBar"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:visibility="gone" />-->
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/recyclerView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:scrollbars="vertical"/>-->
+<!--</LinearLayout>-->

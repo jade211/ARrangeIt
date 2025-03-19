@@ -24,6 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 
 public class FurnitureCatalogueFragment extends Fragment {
 
@@ -40,6 +41,8 @@ public class FurnitureCatalogueFragment extends Fragment {
     private FirebaseFirestore db;
     private ImageButton filterIcon;
     private EditText searchBar;
+    private Spinner sortByPriceSpinner;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,6 +74,8 @@ public class FurnitureCatalogueFragment extends Fragment {
         heightFilterEditText = view.findViewById(R.id.heightFilterEditText);
         widthFilterEditText = view.findViewById(R.id.widthFilterEditText);
         depthFilterEditText = view.findViewById(R.id.depthFilterEditText);
+        sortByPriceSpinner = view.findViewById(R.id.sortByPriceSpinner);
+
 
         db = FirebaseFirestore.getInstance();
         furnitureItems = new ArrayList<>();
@@ -81,6 +86,7 @@ public class FurnitureCatalogueFragment extends Fragment {
 
         setupColourFilterSpinner();
         setupTypeFilterSpinner();
+        setupSortByPriceSpinner();
 
         searchBar = view.findViewById(R.id.searchBar);
         filterIcon = view.findViewById(R.id.filterIcon);
@@ -189,6 +195,17 @@ public class FurnitureCatalogueFragment extends Fragment {
         typeFilterSpinner.setAdapter(adapter);
     }
 
+    void setupSortByPriceSpinner() {
+        List<String> sortOptions = new ArrayList<>();
+        sortOptions.add("None");
+        sortOptions.add("Price: Low to High");
+        sortOptions.add("Price: High to Low");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, sortOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortByPriceSpinner.setAdapter(adapter);
+    }
+
     void applyFilters() {
         String selectedColour = colourFilterSpinner.getSelectedItem().toString();
         String selectedType = typeFilterSpinner.getSelectedItem().toString();
@@ -200,6 +217,7 @@ public class FurnitureCatalogueFragment extends Fragment {
         double maxWidth = widthText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(widthText);
         String depthText = depthFilterEditText.getText().toString();
         double maxDepth = depthText.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(depthText);
+        String sortByPrice = sortByPriceSpinner.getSelectedItem().toString();
         filteredFurnitureItems.clear();
 
         for (FurnitureItem item : furnitureItems) {
@@ -213,6 +231,18 @@ public class FurnitureCatalogueFragment extends Fragment {
                 filteredFurnitureItems.add(item);
             }
         }
+        if (sortByPrice.equals("Price: Low to High")) {
+            filteredFurnitureItems.sort(Comparator.comparingDouble(FurnitureItem::getPrice));
+        } else if (sortByPrice.equals("Price: High to Low")) {
+            filteredFurnitureItems.sort((item1, item2) -> Double.compare(item2.getPrice(), item1.getPrice()));
+        }
+
         furnitureAdapter.notifyDataSetChanged();
+        FlexboxLayout filterOptionsLayout = getView().findViewById(R.id.filterOptionsLayout);
+        Button applyFilterButton = getView().findViewById(R.id.applyFilterButton);
+        if (filterOptionsLayout != null && applyFilterButton != null) {
+            filterOptionsLayout.setVisibility(View.GONE);
+            applyFilterButton.setVisibility(View.GONE);
+        }
     }
 }
