@@ -178,6 +178,10 @@ public class FurnitureCatalogueFragment extends Fragment {
         colours.add("Grey");
         colours.add("Pink");
         colours.add("Brown");
+        colours.add("Brass");
+        colours.add("Copper");
+        colours.add("Black");
+        colours.add("Teal");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, colours);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -188,6 +192,11 @@ public class FurnitureCatalogueFragment extends Fragment {
         List<String> types = new ArrayList<>();
         types.add("All");
         types.add("Chair");
+        types.add("Sofa");
+        types.add("Bedside table");
+        types.add("Lighting");
+        types.add("Storage");
+        types.add("Bed");
         types.add("Table");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, types);
