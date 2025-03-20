@@ -30,7 +30,7 @@ public class FurnitureDetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_furniture_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_furniture_detail, container, false);
 
         itemImage = view.findViewById(R.id.itemImage);
         itemName = view.findViewById(R.id.itemName);
