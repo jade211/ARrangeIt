@@ -1,38 +1,56 @@
-<!-- bottom_nav_bar.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@android:color/white"
-    android:padding="10dp">
+    android:padding="4dp">
 
-    <!-- AR Core Button -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/nav_ar_core"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="AR Core"
-        android:background="@android:color/transparent"
-        android:textColor="@android:color/black" />
+        android:text="Home"
+        android:drawableTop="@drawable/ic_home"
+        android:background="@drawable/nav_button_selector"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:padding="8dp"
+        android:drawablePadding="4dp"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:backgroundTint="@null" />
 
-    <!-- Catalogue Button -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/nav_catalogue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Catalogue"
-        android:background="@android:color/transparent"
-        android:textColor="@android:color/black" />
+        android:drawableTop="@drawable/ic_catalogue"
+        android:background="@drawable/nav_button_selector"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:padding="8dp"
+        android:drawablePadding="4dp"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:backgroundTint="@null"/>
 
-    <!-- Log Out Button -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/nav_log_out"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Log Out"
-        android:background="@android:color/transparent"
-        android:textColor="@android:color/black" />
+        android:drawableTop="@drawable/ic_logout"
+        android:background="@drawable/nav_button_selector"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:padding="8dp"
+        android:drawablePadding="4dp"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:backgroundTint="@null"/>
 </LinearLayout>

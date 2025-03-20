@@ -29,16 +29,7 @@
             android:name=".ARCorePage"
             android:exported="false" />
         <activity
-            android:name=".HomePage"
-            android:exported="false" />
-        <activity
             android:name=".RegisterPage"
-            android:exported="false" />
-        <activity
-            android:name=".FurnitureCataloguePage"
-            android:exported="false" />
-        <activity
-            android:name=".FurnitureDetailActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

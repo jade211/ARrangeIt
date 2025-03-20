@@ -81,6 +81,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
     testImplementation 'org.robolectric:robolectric:4.14'
     testImplementation libs.core.v1140
+    implementation libs.fragment
 
     implementation 'io.ktor:ktor-client-okhttp:2.3.3'
     implementation 'com.google.code.gson:gson:2.10.1'
