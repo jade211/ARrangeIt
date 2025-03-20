@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
-        android:paddingBottom="25dp"
+        android:paddingBottom="40dp"
         android:overScrollMode="always">
 
         <LinearLayout
@@ -114,7 +114,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Type Filter -->
         <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -146,7 +145,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Price Filter -->
         <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -177,7 +175,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Depth Filter -->
         <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -208,7 +205,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Height Filter -->
         <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -239,7 +235,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Width Filter -->
         <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -270,7 +265,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Sort by Price -->
         <androidx.cardview.widget.CardView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -326,5 +320,5 @@ android:visibility="gone" />
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scrollbars="vertical"
-        android:layout_marginBottom="30dp"/>
+        android:layout_marginBottom="40dp"/>
     </LinearLayout>

@@ -49,6 +49,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
@@ -158,7 +159,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         // Button navArCore = findViewById(R.id.nav_ar_core);
 
         Button navLogOut = findViewById(R.id.nav_log_out);
-        Button navCatalogue = findViewById(R.id.nav_catalogue);
+        Button navCatalogue= findViewById(R.id.nav_catalogue);
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
         navCatalogue.setOnClickListener(v -> {
