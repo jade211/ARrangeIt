@@ -1,5 +1,7 @@
 package com.example.arrangeit;
 
+import com.example.arrangeit.helpers.MarkerLineView;
+import com.example.arrangeit.helpers.CoordinateHelper;
 import com.google.ar.core.Pose;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.NotYetAvailableException;
@@ -38,6 +40,7 @@ import com.google.ar.core.TrackingState;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PointF;
 import android.media.Image;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
@@ -153,6 +156,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
     private Anchor secondMeasurementAnchor;
     private boolean isFirstPointSet = false;
     private boolean isMeasuring = false;
+    private MarkerLineView markerLineView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,6 +210,10 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                 Toast.makeText(this, "Measurement mode deactivated", Toast.LENGTH_SHORT).show();
             }
         });
+
+        FrameLayout overlay = findViewById(R.id.overlay);
+        markerLineView = new MarkerLineView(this);
+        overlay.addView(markerLineView);
 
 
 
@@ -466,6 +474,8 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
             return;
         }
         Camera camera = frame.getCamera();
+        camera.getViewMatrix(viewMatrix, 0);
+        camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
         try {
             backgroundRenderer.setUseDepthVisualization(
                     render, depthSettings.depthColorVisualizationEnabled());
@@ -582,12 +592,27 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                         || (trackable instanceof InstantPlacementPoint)
                         || (trackable instanceof DepthPoint)) {
                     if (isMeasuring) {
+                        // Get the hit pose in world coordinates
+                        Pose hitPose = hit.getHitPose();
+                        float[] worldCoords = new float[]{hitPose.tx(), hitPose.ty(), hitPose.tz(), 1.0f};
+
+                        // Convert world coordinates to screen coordinates
+                        float[] screenCoords = CoordinateHelper.worldToScreenCoordinates(
+                                worldCoords,
+                                viewMatrix,
+                                projectionMatrix,
+                                surfaceView.getWidth(),
+                                surfaceView.getHeight()
+                        );
+
                         if (!isFirstPointSet) {
                             firstMeasurementAnchor = hit.createAnchor();
                             isFirstPointSet = true;
+                            markerLineView.setFirstPoint(new PointF(screenCoords[0], screenCoords[1]));
                             runOnUiThread(() -> Toast.makeText(this, "First point set. Tap to set the second point", Toast.LENGTH_SHORT).show());
                         } else {
                             secondMeasurementAnchor = hit.createAnchor();
+                            markerLineView.setSecondPoint(new PointF(screenCoords[0], screenCoords[1]));
                             calculateDistance();
                             isFirstPointSet = false;
                             isMeasuring = false;
