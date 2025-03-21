@@ -1,5 +1,6 @@
 package com.example.arrangeit;
 
+import com.google.ar.core.Pose;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
@@ -148,6 +149,10 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
     private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
     private final float[] viewLightDirection = new float[4]; // view x world light direction
     private boolean isCatalogueVisible = false;
+    private Anchor firstMeasurementAnchor;
+    private Anchor secondMeasurementAnchor;
+    private boolean isFirstPointSet = false;
+    private boolean isMeasuring = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,6 +193,21 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                 finish();
             }
         });
+
+        Button navMeasure = findViewById(R.id.nav_measure);
+        navMeasure.setOnClickListener(v -> {
+            isMeasuring = !isMeasuring;
+            if (isMeasuring) {
+                Toast.makeText(this, "Tap to set the first point", Toast.LENGTH_SHORT).show();
+            } else {
+                firstMeasurementAnchor = null;
+                secondMeasurementAnchor = null;
+                isFirstPointSet = false;
+                Toast.makeText(this, "Measurement mode deactivated", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
 
         displayRotationHelper = new DisplayRotationHelper(/* context= */ this);
         tapHelper = new TapHelper(/* context= */ this);
@@ -561,17 +581,44 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                         == OrientationMode.ESTIMATED_SURFACE_NORMAL)
                         || (trackable instanceof InstantPlacementPoint)
                         || (trackable instanceof DepthPoint)) {
-                    if (wrappedAnchors.size() >= 20) {
-                        wrappedAnchors.get(0).getAnchor().detach();
-                        wrappedAnchors.remove(0);
+                    if (isMeasuring) {
+                        if (!isFirstPointSet) {
+                            firstMeasurementAnchor = hit.createAnchor();
+                            isFirstPointSet = true;
+                            runOnUiThread(() -> Toast.makeText(this, "First point set. Tap to set the second point", Toast.LENGTH_SHORT).show());
+                        } else {
+                            secondMeasurementAnchor = hit.createAnchor();
+                            calculateDistance();
+                            isFirstPointSet = false;
+                            isMeasuring = false;
+                        }
+                    } else {
+                        if (wrappedAnchors.size() >= 20) {
+                            wrappedAnchors.get(0).getAnchor().detach();
+                            wrappedAnchors.remove(0);
+                        }
+                        wrappedAnchors.add(new WrappedAnchor(hit.createAnchor(), trackable));
+                        this.runOnUiThread(this::showOcclusionDialogIfNeeded);
+                        break;
                     }
-
-                    wrappedAnchors.add(new WrappedAnchor(hit.createAnchor(), trackable));
-                    // For devices that support the Depth API
-                    this.runOnUiThread(this::showOcclusionDialogIfNeeded);
-                    break;
                 }
             }
+        }
+    }
+
+    private void calculateDistance() {
+        if (firstMeasurementAnchor != null && secondMeasurementAnchor != null) {
+            Pose firstPose = firstMeasurementAnchor.getPose();
+            Pose secondPose = secondMeasurementAnchor.getPose();
+
+            float dx = firstPose.tx() - secondPose.tx();
+            float dy = firstPose.ty() - secondPose.ty();
+            float dz = firstPose.tz() - secondPose.tz();
+
+            float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+            float distanceInCm = distanceInMeters * 100;
+
+            runOnUiThread(() -> Toast.makeText(this, "Distance: " + distanceInCm + " cm", Toast.LENGTH_LONG).show());
         }
     }
     private void showOcclusionDialogIfNeeded() {
