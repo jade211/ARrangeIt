@@ -11,8 +11,10 @@ import android.view.View;
 public class MarkerLineView extends View {
     private Paint markerPaint;
     private Paint linePaint;
+    private Paint textPaint;
     private PointF firstPoint = null;
     private PointF secondPoint = null;
+    private String distanceText = "";
 
     public MarkerLineView(Context context) {
         super(context);
@@ -29,10 +31,19 @@ public class MarkerLineView extends View {
         markerPaint.setColor(Color.RED);
         markerPaint.setStyle(Paint.Style.FILL);
         markerPaint.setAntiAlias(true);
+
         linePaint = new Paint();
-        linePaint.setColor(Color.BLUE);
+        linePaint.setColor(Color.BLACK);
         linePaint.setStrokeWidth(5);
         linePaint.setAntiAlias(true);
+
+        textPaint = new Paint();
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(60);
+        textPaint.setAntiAlias(true);
+        textPaint.setStyle(Paint.Style.FILL);
+        textPaint.setShadowLayer(5, 0, 0, Color.BLACK);
+        textPaint.setFakeBoldText(true);
     }
 
     public void setFirstPoint(PointF point) {
@@ -42,6 +53,11 @@ public class MarkerLineView extends View {
 
     public void setSecondPoint(PointF point) {
         this.secondPoint = point;
+        invalidate();
+    }
+
+    public void setDistanceText(String text) {
+        this.distanceText = text;
         invalidate();
     }
 
@@ -56,6 +72,10 @@ public class MarkerLineView extends View {
         }
         if (firstPoint != null && secondPoint != null) {
             canvas.drawLine(firstPoint.x, firstPoint.y, secondPoint.x, secondPoint.y, linePaint);
+
+            float midX = (firstPoint.x + secondPoint.x) / 2;
+            float midY = (firstPoint.y + secondPoint.y) / 2;
+            canvas.drawText(distanceText, midX, midY - 30, textPaint);
         }
     }
 }

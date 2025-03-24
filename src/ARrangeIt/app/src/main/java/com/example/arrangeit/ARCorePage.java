@@ -592,11 +592,8 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                         || (trackable instanceof InstantPlacementPoint)
                         || (trackable instanceof DepthPoint)) {
                     if (isMeasuring) {
-                        // Get the hit pose in world coordinates
                         Pose hitPose = hit.getHitPose();
                         float[] worldCoords = new float[]{hitPose.tx(), hitPose.ty(), hitPose.tz(), 1.0f};
-
-                        // Convert world coordinates to screen coordinates
                         float[] screenCoords = CoordinateHelper.worldToScreenCoordinates(
                                 worldCoords,
                                 viewMatrix,
@@ -638,12 +635,13 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
 
             float dx = firstPose.tx() - secondPose.tx();
             float dy = firstPose.ty() - secondPose.ty();
-            float dz = firstPose.tz() - secondPose.tz();
+            float dz = firstPose.tz() - secondMeasurementAnchor.getPose().tz();
 
             float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
             float distanceInCm = distanceInMeters * 100;
+            String distanceText = String.format("%.1f cm", distanceInCm);
+            markerLineView.setDistanceText(distanceText);
 
-            runOnUiThread(() -> Toast.makeText(this, "Distance: " + distanceInCm + " cm", Toast.LENGTH_LONG).show());
         }
     }
     private void showOcclusionDialogIfNeeded() {
