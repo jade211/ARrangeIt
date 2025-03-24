@@ -157,6 +157,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
     private boolean isFirstPointSet = false;
     private boolean isMeasuring = false;
     private MarkerLineView markerLineView;
+    private Button clearButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,11 +203,18 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         navMeasure.setOnClickListener(v -> {
             isMeasuring = !isMeasuring;
             if (isMeasuring) {
-                Toast.makeText(this, "Tap to set the first point", Toast.LENGTH_SHORT).show();
-            } else {
+                markerLineView.clearPoints();
                 firstMeasurementAnchor = null;
                 secondMeasurementAnchor = null;
                 isFirstPointSet = false;
+                clearButton.setVisibility(View.GONE);
+                Toast.makeText(this, "Tap to set the first point", Toast.LENGTH_SHORT).show();
+            } else {
+                markerLineView.clearPoints();
+                firstMeasurementAnchor = null;
+                secondMeasurementAnchor = null;
+                isFirstPointSet = false;
+                clearButton.setVisibility(View.GONE);
                 Toast.makeText(this, "Measurement mode deactivated", Toast.LENGTH_SHORT).show();
             }
         });
@@ -236,6 +244,17 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                         popup.show();
                     }
                 });
+        clearButton = findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(v -> {
+            markerLineView.clearPoints();
+            firstMeasurementAnchor = null;
+            secondMeasurementAnchor = null;
+            isFirstPointSet = false;
+            isMeasuring = true;
+            clearButton.setVisibility(View.GONE);
+            Toast.makeText(this, "Measurement cleared. Tap to set first point", Toast.LENGTH_SHORT).show();
+        });
+        clearButton.setVisibility(View.GONE);
     }
 
     /** Menu button to launch feature specific settings. */
@@ -641,7 +660,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
             float distanceInCm = distanceInMeters * 100;
             String distanceText = String.format("%.1f cm", distanceInCm);
             markerLineView.setDistanceText(distanceText);
-
+            runOnUiThread(() -> clearButton.setVisibility(View.VISIBLE));
         }
     }
     private void showOcclusionDialogIfNeeded() {

@@ -33,6 +33,19 @@
         android:layout_gravity="end"
         android:visibility="gone"/>
 
+    <Button
+        android:id="@+id/clear_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_nav_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:text="Clear Measurement"
+        android:textSize="16sp"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="8dp"
+        android:background="@drawable/redo_button"
+        style="@style/RedoButtonStyle"/>
     <include
         android:id="@+id/bottom_nav_bar"
         layout="@layout/bottom_nav_bar"

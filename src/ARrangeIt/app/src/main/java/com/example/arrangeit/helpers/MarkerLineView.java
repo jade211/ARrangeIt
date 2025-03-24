@@ -61,6 +61,13 @@ public class MarkerLineView extends View {
         invalidate();
     }
 
+    public void clearPoints() {
+        this.firstPoint = null;
+        this.secondPoint = null;
+        this.distanceText = "";
+        invalidate();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
