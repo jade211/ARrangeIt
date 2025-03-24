@@ -173,6 +173,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
         navCatalogue.setOnClickListener(v -> {
+            clearMeasurementState();
             if (fragmentContainer.getVisibility() == View.GONE) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
@@ -191,6 +192,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         navLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clearMeasurementState();
                 FirebaseAuth.getInstance().signOut();
                 Toast.makeText(ARCorePage.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ARCorePage.this, MainActivity.class);
@@ -201,6 +203,11 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
 
         Button navMeasure = findViewById(R.id.nav_measure);
         navMeasure.setOnClickListener(v -> {
+            if (fragmentContainer.getVisibility() == View.VISIBLE) {
+                getSupportFragmentManager().popBackStack();
+                fragmentContainer.setVisibility(View.GONE);
+            }
+            clearMeasurementState();
             isMeasuring = !isMeasuring;
             if (isMeasuring) {
                 markerLineView.clearPoints();
@@ -810,6 +817,17 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         }
         session.configure(config);
     }
+
+    private void clearMeasurementState() {
+        runOnUiThread(() -> {
+            markerLineView.clearPoints();
+            firstMeasurementAnchor = null;
+            secondMeasurementAnchor = null;
+            isFirstPointSet = false;
+            isMeasuring = false;
+            clearButton.setVisibility(View.GONE);
+        });
+    }
 }
 
 class WrappedAnchor {
@@ -829,13 +847,3 @@ class WrappedAnchor {
         return trackable;
     }
 }
-
-
-
-
-
-
-
-
-
-
