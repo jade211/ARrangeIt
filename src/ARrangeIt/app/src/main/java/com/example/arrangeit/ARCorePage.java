@@ -654,22 +654,52 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         }
     }
 
+//    private void calculateDistance() {
+//        if (firstMeasurementAnchor != null && secondMeasurementAnchor != null) {
+//            Pose firstPose = firstMeasurementAnchor.getPose();
+//            Pose secondPose = secondMeasurementAnchor.getPose();
+//
+//            float dx = firstPose.tx() - secondPose.tx();
+//            float dy = firstPose.ty() - secondPose.ty();
+//            float dz = firstPose.tz() - secondMeasurementAnchor.getPose().tz();
+//
+//            float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+//            float distanceInCm = distanceInMeters * 100;
+//            String distanceText = String.format("%.1f cm", distanceInCm);
+//            markerLineView.setDistanceText(distanceText);
+//            runOnUiThread(() -> clearButton.setVisibility(View.VISIBLE));
+//        }
+//    }
+
     private void calculateDistance() {
         if (firstMeasurementAnchor != null && secondMeasurementAnchor != null) {
+            if (firstMeasurementAnchor.getTrackingState() != TrackingState.TRACKING ||
+                    secondMeasurementAnchor.getTrackingState() != TrackingState.TRACKING) {
+                runOnUiThread(() -> Toast.makeText(this,
+                        "Lost tracking of measurement points. Please retry.",
+                        Toast.LENGTH_SHORT).show());
+                return;
+            }
+
             Pose firstPose = firstMeasurementAnchor.getPose();
             Pose secondPose = secondMeasurementAnchor.getPose();
 
             float dx = firstPose.tx() - secondPose.tx();
             float dy = firstPose.ty() - secondPose.ty();
-            float dz = firstPose.tz() - secondMeasurementAnchor.getPose().tz();
-
+            float dz = firstPose.tz() - secondPose.tz();
             float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
             float distanceInCm = distanceInMeters * 100;
+            distanceInCm = Math.round(distanceInCm * 10) / 10.0f;
+
             String distanceText = String.format("%.1f cm", distanceInCm);
             markerLineView.setDistanceText(distanceText);
             runOnUiThread(() -> clearButton.setVisibility(View.VISIBLE));
         }
     }
+
+
+
+
     private void showOcclusionDialogIfNeeded() {
         boolean isDepthSupported = session.isDepthModeSupported(Config.DepthMode.AUTOMATIC);
         if (!depthSettings.shouldShowDepthEnableDialog() || !isDepthSupported) {
