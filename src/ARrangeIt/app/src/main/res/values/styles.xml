@@ -3,5 +3,15 @@
   </style>
   <style name="AppTheme" parent="AppBaseTheme">
   </style>
+  <style name="RedoButtonStyle" parent="Widget.MaterialComponents.Button">
+    <item name="android:textAllCaps">false</item>
+    <item name="android:background">@drawable/redo_button</item>
+    <item name="android:textColor">@android:color/white</item>
+    <item name="android:shadowColor">#80000000</item>
+    <item name="android:shadowDx">1</item>
+    <item name="android:shadowDy">1</item>
+    <item name="android:shadowRadius">2</item>
+    <item name="backgroundTint">@null</item>
+  </style>
 
 </resources>

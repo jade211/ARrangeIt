@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/white_box">
+    android:background="@drawable/transparent_bg">
+    <!--    android:background="@drawable/white_box">-->
 
     <ImageButton
         android:id="@+id/closeButton"

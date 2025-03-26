@@ -41,7 +41,7 @@ public class FurnitureAdapter extends RecyclerView.Adapter<FurnitureAdapter.View
         FurnitureItem item = furnitureItems.get(position);
 
         holder.name.setText(item.getName());
-        holder.price.setText("$" + item.getPrice());
+        holder.price.setText("€" + item.getPrice());
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(item.getImageUrl());
         storageReference.getDownloadUrl().addOnSuccessListener(uri -> {

@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#FFFFFF"
-    android:paddingBottom="56dp">
+    android:paddingBottom="56dp"
+    android:background="@drawable/transparent_bg" >
+    <!--    android:background="@drawable/white_box"-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,8 +38,7 @@
             android:layout_height="wrap_content"
             android:text="Furniture Name"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/itemPrice"
@@ -69,7 +69,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0"
+            android:background="#000000"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"/>
 
@@ -78,8 +78,7 @@
             android:layout_height="wrap_content"
             android:text="Dimensions"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/itemHeight"
@@ -108,7 +107,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0"
+            android:background="#000000"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"/>
 
@@ -117,8 +116,7 @@
             android:layout_height="wrap_content"
             android:text="Colours"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/itemColours"
@@ -131,7 +129,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0"
+            android:background="#000000"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"/>
 
@@ -140,8 +138,7 @@
             android:layout_height="wrap_content"
             android:text="Texture"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/itemTexture"
@@ -154,7 +151,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0"
+            android:background="#000000"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"/>
 

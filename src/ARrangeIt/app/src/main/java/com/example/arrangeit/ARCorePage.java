@@ -1,5 +1,8 @@
 package com.example.arrangeit;
 
+import com.example.arrangeit.helpers.MarkerLineView;
+import com.example.arrangeit.helpers.CoordinateHelper;
+import com.google.ar.core.Pose;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
@@ -37,6 +40,7 @@ import com.google.ar.core.TrackingState;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PointF;
 import android.media.Image;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
@@ -148,6 +152,12 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
     private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
     private final float[] viewLightDirection = new float[4]; // view x world light direction
     private boolean isCatalogueVisible = false;
+    private Anchor firstMeasurementAnchor;
+    private Anchor secondMeasurementAnchor;
+    private boolean isFirstPointSet = false;
+    private boolean isMeasuring = false;
+    private MarkerLineView markerLineView;
+    private Button clearButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +173,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
         navCatalogue.setOnClickListener(v -> {
+            clearMeasurementState();
             if (fragmentContainer.getVisibility() == View.GONE) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
@@ -181,6 +192,7 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         navLogOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clearMeasurementState();
                 FirebaseAuth.getInstance().signOut();
                 Toast.makeText(ARCorePage.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ARCorePage.this, MainActivity.class);
@@ -188,6 +200,37 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                 finish();
             }
         });
+
+        Button navMeasure = findViewById(R.id.nav_measure);
+        navMeasure.setOnClickListener(v -> {
+            if (fragmentContainer.getVisibility() == View.VISIBLE) {
+                getSupportFragmentManager().popBackStack();
+                fragmentContainer.setVisibility(View.GONE);
+            }
+            clearMeasurementState();
+            isMeasuring = !isMeasuring;
+            if (isMeasuring) {
+                markerLineView.clearPoints();
+                firstMeasurementAnchor = null;
+                secondMeasurementAnchor = null;
+                isFirstPointSet = false;
+                clearButton.setVisibility(View.GONE);
+                Toast.makeText(this, "Tap to set the first point", Toast.LENGTH_SHORT).show();
+            } else {
+                markerLineView.clearPoints();
+                firstMeasurementAnchor = null;
+                secondMeasurementAnchor = null;
+                isFirstPointSet = false;
+                clearButton.setVisibility(View.GONE);
+                Toast.makeText(this, "Measurement mode deactivated", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        FrameLayout overlay = findViewById(R.id.overlay);
+        markerLineView = new MarkerLineView(this);
+        overlay.addView(markerLineView);
+
+
 
         displayRotationHelper = new DisplayRotationHelper(/* context= */ this);
         tapHelper = new TapHelper(/* context= */ this);
@@ -208,6 +251,17 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                         popup.show();
                     }
                 });
+        clearButton = findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(v -> {
+            markerLineView.clearPoints();
+            firstMeasurementAnchor = null;
+            secondMeasurementAnchor = null;
+            isFirstPointSet = false;
+            isMeasuring = true;
+            clearButton.setVisibility(View.GONE);
+            Toast.makeText(this, "Measurement cleared. Tap to set first point", Toast.LENGTH_SHORT).show();
+        });
+        clearButton.setVisibility(View.GONE);
     }
 
     /** Menu button to launch feature specific settings. */
@@ -446,6 +500,8 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
             return;
         }
         Camera camera = frame.getCamera();
+        camera.getViewMatrix(viewMatrix, 0);
+        camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
         try {
             backgroundRenderer.setUseDepthVisualization(
                     render, depthSettings.depthColorVisualizationEnabled());
@@ -561,19 +617,89 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                         == OrientationMode.ESTIMATED_SURFACE_NORMAL)
                         || (trackable instanceof InstantPlacementPoint)
                         || (trackable instanceof DepthPoint)) {
-                    if (wrappedAnchors.size() >= 20) {
-                        wrappedAnchors.get(0).getAnchor().detach();
-                        wrappedAnchors.remove(0);
-                    }
+                    if (isMeasuring) {
+                        Pose hitPose = hit.getHitPose();
+                        float[] worldCoords = new float[]{hitPose.tx(), hitPose.ty(), hitPose.tz(), 1.0f};
+                        float[] screenCoords = CoordinateHelper.worldToScreenCoordinates(
+                                worldCoords,
+                                viewMatrix,
+                                projectionMatrix,
+                                surfaceView.getWidth(),
+                                surfaceView.getHeight()
+                        );
 
-                    wrappedAnchors.add(new WrappedAnchor(hit.createAnchor(), trackable));
-                    // For devices that support the Depth API
-                    this.runOnUiThread(this::showOcclusionDialogIfNeeded);
-                    break;
+                        if (!isFirstPointSet) {
+                            firstMeasurementAnchor = hit.createAnchor();
+                            isFirstPointSet = true;
+                            markerLineView.setFirstPoint(new PointF(screenCoords[0], screenCoords[1]));
+                            runOnUiThread(() -> Toast.makeText(this, "First point set. Tap to set the second point", Toast.LENGTH_SHORT).show());
+                        } else {
+                            secondMeasurementAnchor = hit.createAnchor();
+                            markerLineView.setSecondPoint(new PointF(screenCoords[0], screenCoords[1]));
+                            calculateDistance();
+                            isFirstPointSet = false;
+                            isMeasuring = false;
+                        }
+                    } else {
+                        if (wrappedAnchors.size() >= 20) {
+                            wrappedAnchors.get(0).getAnchor().detach();
+                            wrappedAnchors.remove(0);
+                        }
+                        wrappedAnchors.add(new WrappedAnchor(hit.createAnchor(), trackable));
+                        this.runOnUiThread(this::showOcclusionDialogIfNeeded);
+                        break;
+                    }
                 }
             }
         }
     }
+
+//    private void calculateDistance() {
+//        if (firstMeasurementAnchor != null && secondMeasurementAnchor != null) {
+//            Pose firstPose = firstMeasurementAnchor.getPose();
+//            Pose secondPose = secondMeasurementAnchor.getPose();
+//
+//            float dx = firstPose.tx() - secondPose.tx();
+//            float dy = firstPose.ty() - secondPose.ty();
+//            float dz = firstPose.tz() - secondMeasurementAnchor.getPose().tz();
+//
+//            float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+//            float distanceInCm = distanceInMeters * 100;
+//            String distanceText = String.format("%.1f cm", distanceInCm);
+//            markerLineView.setDistanceText(distanceText);
+//            runOnUiThread(() -> clearButton.setVisibility(View.VISIBLE));
+//        }
+//    }
+
+    private void calculateDistance() {
+        if (firstMeasurementAnchor != null && secondMeasurementAnchor != null) {
+            if (firstMeasurementAnchor.getTrackingState() != TrackingState.TRACKING ||
+                    secondMeasurementAnchor.getTrackingState() != TrackingState.TRACKING) {
+                runOnUiThread(() -> Toast.makeText(this,
+                        "Lost tracking of measurement points. Please retry.",
+                        Toast.LENGTH_SHORT).show());
+                return;
+            }
+
+            Pose firstPose = firstMeasurementAnchor.getPose();
+            Pose secondPose = secondMeasurementAnchor.getPose();
+
+            float dx = firstPose.tx() - secondPose.tx();
+            float dy = firstPose.ty() - secondPose.ty();
+            float dz = firstPose.tz() - secondPose.tz();
+            float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+            float distanceInCm = distanceInMeters * 100;
+            distanceInCm = Math.round(distanceInCm * 10) / 10.0f;
+
+            String distanceText = String.format("%.1f cm", distanceInCm);
+            markerLineView.setDistanceText(distanceText);
+            runOnUiThread(() -> clearButton.setVisibility(View.VISIBLE));
+        }
+    }
+
+
+
+
     private void showOcclusionDialogIfNeeded() {
         boolean isDepthSupported = session.isDepthModeSupported(Config.DepthMode.AUTOMATIC);
         if (!depthSettings.shouldShowDepthEnableDialog() || !isDepthSupported) {
@@ -721,6 +847,17 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
         }
         session.configure(config);
     }
+
+    private void clearMeasurementState() {
+        runOnUiThread(() -> {
+            markerLineView.clearPoints();
+            firstMeasurementAnchor = null;
+            secondMeasurementAnchor = null;
+            isFirstPointSet = false;
+            isMeasuring = false;
+            clearButton.setVisibility(View.GONE);
+        });
+    }
 }
 
 class WrappedAnchor {
@@ -740,13 +877,3 @@ class WrappedAnchor {
         return trackable;
     }
 }
-
-
-
-
-
-
-
-
-
-

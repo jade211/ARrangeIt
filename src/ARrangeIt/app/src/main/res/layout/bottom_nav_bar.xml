@@ -39,6 +39,22 @@
         android:backgroundTint="@null"/>
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/nav_measure"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Measure Tool"
+        android:drawableTop="@drawable/ic_measure"
+        android:background="@drawable/nav_button_selector"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:padding="8dp"
+        android:drawablePadding="4dp"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:backgroundTint="@null"/>
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/nav_log_out"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
