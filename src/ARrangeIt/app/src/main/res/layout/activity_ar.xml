@@ -9,6 +9,12 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="top" />
+    
+    <fragment
+        android:id="@+id/arFragment"
+        android:name="com.google.ar.sceneform.ux.ArFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <FrameLayout
         android:id="@+id/overlay"
@@ -46,6 +52,14 @@
         android:paddingVertical="8dp"
         android:background="@drawable/redo_button"
         style="@style/RedoButtonStyle"/>
+    <Button
+        android:id="@+id/complete_measurement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Complete Measurement"
+        android:visibility="gone"
+        android:layout_above="@+id/clear_button"
+        android:layout_centerHorizontal="true"/>
     <include
         android:id="@+id/bottom_nav_bar"
         layout="@layout/bottom_nav_bar"
