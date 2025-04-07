@@ -156,10 +156,10 @@
             android:layout_marginBottom="16dp"/>
 
         <Button
-            android:id="@+id/place_in_session_button"
+            android:id="@+id/place_in_ar_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Place in Session"
+            android:text="Place in AR"
             android:textSize="16sp"
             android:background="@drawable/round_btn"
             android:textColor="#FFFFFF"

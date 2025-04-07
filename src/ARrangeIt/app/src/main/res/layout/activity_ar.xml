@@ -60,6 +60,18 @@
         android:visibility="gone"
         android:layout_above="@+id/clear_button"
         android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/test_local_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_nav_bar"
+        android:text="Test"
+        android:textSize="16sp"
+        android:background="@drawable/round_btn"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="16dp"/>
     <include
         android:id="@+id/bottom_nav_bar"
         layout="@layout/bottom_nav_bar"

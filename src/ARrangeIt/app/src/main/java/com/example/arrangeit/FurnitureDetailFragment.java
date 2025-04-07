@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
@@ -28,6 +30,8 @@ public class FurnitureDetailFragment extends Fragment {
     private TextView itemColours;
     private TextView itemTexture;
 
+    private FurnitureItem furnitureItem;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_furniture_detail, container, false);
@@ -42,25 +46,38 @@ public class FurnitureDetailFragment extends Fragment {
         itemColours = view.findViewById(R.id.itemColours);
         itemTexture = view.findViewById(R.id.itemTexture);
 
+        Button placeInArButton = view.findViewById(R.id.place_in_ar_button);
+
         Bundle args = getArguments();
         if (args != null) {
-            FurnitureItem item = (FurnitureItem) args.getSerializable("furniture_item");
+            furnitureItem = (FurnitureItem) args.getSerializable("furniture_item");
+            
+            if (furnitureItem != null) {
+                itemName.setText(furnitureItem.getName());
+                itemDescription.setText(furnitureItem.getDescription());
+                itemPrice.setText("€" + furnitureItem.getPrice());
+                itemHeight.setText("Height: " + furnitureItem.getHeight() + "cm");
+                itemWidth.setText("Width: " + furnitureItem.getWidth() + "cm");
+                itemDepth.setText("Depth: " + furnitureItem.getDepth() + "cm");
+                itemColours.setText(furnitureItem.getColours());
+                itemTexture.setText(furnitureItem.getTexture());
 
-            if (item != null) {
-                itemName.setText(item.getName());
-                itemDescription.setText(item.getDescription());
-                itemPrice.setText("€" + item.getPrice());
-                itemHeight.setText("Height: " + item.getHeight() + "cm");
-                itemWidth.setText("Width: " + item.getWidth() + "cm");
-                itemDepth.setText("Depth: " + item.getDepth() + "cm");
-                itemColours.setText(item.getColours());
-                itemTexture.setText(item.getTexture());
-
-
-                StorageReference imageRef = FirebaseStorage.getInstance().getReference(item.getImageUrl());
+                StorageReference imageRef = FirebaseStorage.getInstance().getReference(furnitureItem.getImageUrl());
                 imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     Glide.with(requireContext()).load(uri).into(itemImage);
                 }).addOnFailureListener(exception -> {
+                    Toast.makeText(getContext(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                });
+
+                placeInArButton.setOnClickListener(v -> {
+                    if (furnitureItem.getModelUrl() != null && !furnitureItem.getModelUrl().isEmpty()) {
+                        if (getActivity() instanceof ARCorePage) {
+                            ((ARCorePage) requireActivity()).setFurnitureModelUrl(furnitureItem.getModelUrl());
+                            requireActivity().getSupportFragmentManager().popBackStack();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "3D model not available", Toast.LENGTH_SHORT).show();
+                    }
                 });
             }
         }
