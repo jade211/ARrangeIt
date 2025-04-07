@@ -22,16 +22,6 @@
         android:layout_height="match_parent"
         android:background="@android:color/transparent" />
 
-    <ImageButton
-        android:id="@+id/settings_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="25dp"
-        android:src="@drawable/ic_settings"
-        android:background="@android:color/transparent"/>
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="300dp"
@@ -62,16 +52,35 @@
         android:layout_centerHorizontal="true"/>
 
     <Button
-        android:id="@+id/test_local_button"
+        android:id="@+id/delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/bottom_nav_bar"
-        android:text="Test"
-        android:textSize="16sp"
-        android:background="@drawable/round_btn"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="15dp"
+        android:text="Delete"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/rotate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rotate"
+        android:visibility="gone"
+        android:layout_above="@id/delete_button"
+        android:layout_alignStart="@id/delete_button"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/move_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Move"
+        android:visibility="gone"
+        android:layout_above="@id/rotate_button"
+        android:layout_alignStart="@id/delete_button"
+        android:layout_marginBottom="8dp"/>
+
     <include
         android:id="@+id/bottom_nav_bar"
         layout="@layout/bottom_nav_bar"

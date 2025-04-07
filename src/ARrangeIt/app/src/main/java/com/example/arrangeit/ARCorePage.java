@@ -20,6 +20,8 @@ import com.google.ar.core.Pose;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
+import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.assets.RenderableSource;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -53,8 +55,17 @@ public class ARCorePage extends AppCompatActivity {
     private MarkerLineView markerLineView;
     private Button clearButton;
     private Button navMeasure;
-    private boolean isCatalogueVisible = false;
-    private String errorMsg;
+
+    private ModelRenderable furnitureRenderable;
+    private String currentModelUrl;
+
+    private TransformableNode currentFurnitureNode;
+    private Button deleteButton;
+    private Button rotateButton;
+    private Button moveButton;
+    private boolean isRotateMode = false;
+    private ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +96,9 @@ public class ARCorePage extends AppCompatActivity {
         Button navCatalogue = findViewById(R.id.nav_catalogue);
         Button navMeasure = findViewById(R.id.nav_measure);
         clearButton = findViewById(R.id.clear_button);
-
-        Button testLocalButton = findViewById(R.id.test_local_button);
-        testLocalButton.setOnClickListener(v -> {
-            loadModelFromAssets("sample_model.glb");
-        });
+        deleteButton = findViewById(R.id.delete_button);
+        rotateButton = findViewById(R.id.rotate_button);
+        moveButton = findViewById(R.id.move_button);
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
 
@@ -118,12 +127,10 @@ public class ARCorePage extends AppCompatActivity {
         Button completeMeasurement = findViewById(R.id.complete_measurement);
         completeMeasurement.setOnClickListener(v -> {
             if (isFirstPointSet) {
-                // If first point is set but not second
                 Toast.makeText(this, 
                     "Please set second point or press Clear to cancel", 
                     Toast.LENGTH_SHORT).show();
             } else {
-                // No active measurement - exit measurement mode
                 isMeasuring = false;
                 clearMeasurement();
                 completeMeasurement.setVisibility(View.GONE);
@@ -160,6 +167,14 @@ public class ARCorePage extends AppCompatActivity {
             Toast.makeText(this, "Measurement cleared. Tap to set first point", Toast.LENGTH_SHORT).show();
         });
         clearButton.setVisibility(View.GONE);
+
+        deleteButton.setOnClickListener(v -> deleteCurrentModel());
+        rotateButton.setOnClickListener(v -> setRotateMode(true));
+        moveButton.setOnClickListener(v -> setRotateMode(false));
+
+        deleteButton.setVisibility(View.GONE);
+        rotateButton.setVisibility(View.GONE);
+        moveButton.setVisibility(View.GONE);
 
     }
 
@@ -208,17 +223,6 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
-    private void placeFurniture(HitResult hitResult) {
-        AnchorNode anchorNode = new AnchorNode();
-        anchorNode.setAnchor(hitResult.createAnchor());
-        anchorNode.setParent(arFragment.getArSceneView().getScene());
-
-        TransformableNode furnitureNode = new TransformableNode(arFragment.getTransformationSystem());
-        furnitureNode.setParent(anchorNode);
-        furnitureNode.setRenderable(selectedFurnitureRenderable);
-        furnitureNode.select();
-    }
-
     private void addMarkerToNode(AnchorNode anchorNode) {
         if (measurementMarkerRenderable == null) return;
         
@@ -231,24 +235,6 @@ public class ARCorePage extends AppCompatActivity {
         markerNode.setRenderable(measurementMarkerRenderable);
         markerNode.setEnabled(true);
     }
-
-//    private float[] convertToScreenCoordinates(Pose pose) {
-//        Camera camera = arFragment.getArSceneView().getScene().getCamera();
-//        float[] viewMatrix = new float[16];
-//        float[] projectionMatrix = new float[16];
-//
-//        // Updated matrix access
-//        Matrix.invert(viewMatrix, camera.getViewMatrix());
-//        System.arraycopy(camera.getProjectionMatrix(), 0, projectionMatrix, 0, 16);
-//
-//        return CoordinateHelper.worldToScreenCoordinates(
-//            new float[]{pose.tx(), pose.ty(), pose.tz(), 1.0f},
-//            viewMatrix,
-//            projectionMatrix,
-//            arFragment.getArSceneView().getWidth(),
-//            arFragment.getArSceneView().getHeight()
-//        );
-//    }
 
     private float[] convertToScreenCoordinates(Pose pose) {
         Camera camera = arFragment.getArSceneView().getScene().getCamera();
@@ -354,166 +340,314 @@ public class ARCorePage extends AppCompatActivity {
         clearButton.setVisibility(View.GONE);
     }
 
-    public void setFurnitureModelUrl(String modelUrl) {
-        try {
-            if (arFragment == null || arFragment.getArSceneView() == null || arFragment.getArSceneView().getSession() == null) {
-                Toast.makeText(this, "AR session not ready. Please try again.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-    
-            clearExistingFurniture();
-            
-            clearMeasurementState();
-            isMeasuring = false;
-            
-            Toast.makeText(this, "Loading model...", Toast.LENGTH_SHORT).show();
-            
-            loadModelFromFirebase(modelUrl);
-        } catch (Exception e) {
-            Log.e(TAG, "Error setting model: " + e.getMessage(), e);
-            Toast.makeText(this, "Error setting model: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void clearExistingFurniture() {
-        if (arFragment != null && arFragment.getArSceneView() != null) {
-            for (com.google.ar.sceneform.Node node : new ArrayList<>(arFragment.getArSceneView().getScene().getChildren())) {
-                if (node instanceof AnchorNode) {
-                    arFragment.getArSceneView().getScene().removeChild(node);
-                }
-            }
-        }
-        selectedFurnitureRenderable = null;
-    }
-    
-
-    private void loadModelFromFirebase(String modelUrl) {
-        if (modelUrl == null || modelUrl.isEmpty()) {
-            Toast.makeText(this, "Invalid model URL", Toast.LENGTH_SHORT).show();
+    public void loadModelFromFirebase(String modelUrl) {
+        if (modelUrl.equals(currentModelUrl) && furnitureRenderable != null) {
+            selectedFurnitureRenderable = furnitureRenderable;
+            Toast.makeText(this, "Model ready to place", Toast.LENGTH_SHORT).show();
             return;
         }
     
-        try {
-            StorageReference modelRef = FirebaseStorage.getInstance().getReferenceFromUrl(modelUrl);
-            
-            File localFile = File.createTempFile("model", ".glb", getCacheDir());
-            localFile.deleteOnExit();
+        currentModelUrl = modelUrl;
+        selectedFurnitureRenderable = null;
+        
+        Toast.makeText(this, "Loading 3D model...", Toast.LENGTH_SHORT).show();
     
-            modelRef.getFile(localFile)
+        try {
+            File modelFile = File.createTempFile("model", "glb", getCacheDir());
+            
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference modelRef = storage.getReference(modelUrl);
+            
+            modelRef.getFile(modelFile)
                 .addOnSuccessListener(taskSnapshot -> {
-                    try {
-                        Uri modelUri = Uri.fromFile(localFile);
-                        loadModelRenderable(modelUri);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Model loading error: " + e.getMessage(), e);
-                        runOnUiThread(() -> 
-                            Toast.makeText(this, "Error loading model", Toast.LENGTH_LONG).show());
-                    }
+                    buildModel(modelFile);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Download failed: " + e.getMessage(), e);
-                    runOnUiThread(() -> 
-                        Toast.makeText(this, "Download failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
-                })
-                .addOnProgressListener(snapshot -> {
-                    double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
-                    Log.d(TAG, "Download progress: " + progress + "%");
+                    Toast.makeText(this, "Failed to download model: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Model download failed", e);
                 });
-        } catch (Exception e) {
-            Log.e(TAG, "Firebase error: " + e.getMessage(), e);
-            runOnUiThread(() -> 
-                Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+        } catch (IOException e) {
+            Toast.makeText(this, "Failed to create temp file", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Temp file creation failed", e);
         }
     }
-
-    // private void loadModelRenderable(Uri modelUri) {
-    //     ModelRenderable.builder()
-    //         .setSource(this, modelUri)
-    //         .build()
-    //         .thenAccept(renderable -> {
-    //             selectedFurnitureRenderable = renderable;
-    //             runOnUiThread(() -> 
-    //                 Toast.makeText(this, "Model loaded. Tap on a surface to place it.", Toast.LENGTH_SHORT).show());
-    //         })
-    //         .exceptionally(throwable -> {
-    //             Log.e(TAG, "Failed to load model", throwable);
-    //             runOnUiThread(() -> {
-    //                 Toast.makeText(this, "Failed to load model. Please try another model.", Toast.LENGTH_LONG).show();
-    //                 throwable.printStackTrace();
-    //             });
-    //             return null;
-    //         });
+    
+    private void buildModel(File file) {
+        RenderableSource renderableSource = RenderableSource
+            .builder()
+            .setSource(this, Uri.parse(file.getPath()), RenderableSource.SourceType.GLB)
+            .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+            .build();
+    
+        ModelRenderable
+            .builder()
+            .setSource(this, renderableSource)
+            .setRegistryId(file.getPath())
+            .build()
+            .thenAccept(modelRenderable -> {
+                furnitureRenderable = modelRenderable;
+                selectedFurnitureRenderable = modelRenderable;
+                Toast.makeText(this, "Model loaded - tap to place", Toast.LENGTH_SHORT).show();
+            })
+            .exceptionally(throwable -> {
+                Toast.makeText(this, "Failed to build model", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Model build failed", throwable);
+                return null;
+            });
+    }
+    
+    // private void placeFurniture(HitResult hitResult) {
+    //     if (selectedFurnitureRenderable == null) {
+    //         Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
+    //         return;
+    //     }
+    
+    //     Anchor anchor = hitResult.createAnchor();
+    //     AnchorNode anchorNode = new AnchorNode(anchor);
+    //     anchorNode.setParent(arFragment.getArSceneView().getScene());
+    
+    //     TransformableNode furnitureNode = new TransformableNode(arFragment.getTransformationSystem());
+    //     furnitureNode.setParent(anchorNode);
+    //     furnitureNode.setRenderable(selectedFurnitureRenderable);
+    //     furnitureNode.select();
+        
+    //     furnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
     // }
 
-    private void loadModelRenderable(Uri modelUri) {
-    Log.d(TAG, "Loading model from URI: " + modelUri.toString());
-
+    // private void placeFurniture(HitResult hitResult) {
+    //     if (selectedFurnitureRenderable == null) {
+    //         Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
+    //         return;
+    //     }
     
-    // Add more detailed error handling
-    ModelRenderable.builder()
-        .setSource(this, modelUri)
-        .build()
-        .thenAccept(renderable -> {
-            Log.d(TAG, "Model successfully loaded");
-            selectedFurnitureRenderable = renderable;
-            runOnUiThread(() -> 
-                Toast.makeText(this, "Model loaded successfully", Toast.LENGTH_SHORT).show());
-        })
-        .exceptionally(throwable -> {
-            Throwable cause = throwable.getCause();
-            if (cause != null) {
-                Log.e(TAG, "Model loading failed: " + cause.getMessage(), cause);
-                
-                // Specific error messages
-                errorMsg = "Model loading failed";
-                if (cause.getMessage().contains("not a valid GLTF")) {
-                    errorMsg = "Invalid GLB file format";
-                } else if (cause.getMessage().contains("texture")) {
-                    errorMsg = "Texture loading failed";
-                }
-                
-                runOnUiThread(() -> 
-                    Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show());
-            }
-            return null;
-        });
-}
-
-    private void loadModelFromAssets(String modelName) {
-        try {
-            // Create a file in cache directory
-            // File file = new File(getCacheDir(), modelName);
-            Log.d(TAG, "Attempting to load model: " + modelName);
-            File file = new File(getCacheDir(), modelName);
+    //     // Deselect previous model if any
+    //     if (currentFurnitureNode != null) {
+    //         currentFurnitureNode.setSelected(false); // Remove this line
+    //         // Replace with:
+    //         arFragment.getTransformationSystem().getSelectionVisualizer().onDeselected(currentFurnitureNode);
+    //     }
+    
+    //     Anchor anchor = hitResult.createAnchor();
+    //     AnchorNode anchorNode = new AnchorNode(anchor);
+    //     anchorNode.setParent(arFragment.getArSceneView().getScene());
+    //     placedFurnitureNodes.add(anchorNode);
+    
+    //     currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
+    //     currentFurnitureNode.setParent(anchorNode);
+    //     currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
+    //     currentFurnitureNode.select(); // This will show the selection visualizer
+        
+    //     // Set default scale
+    //     currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
+        
+    //     // Enable controllers
+    //     currentFurnitureNode.getTranslationController().setEnabled(true);
+    //     currentFurnitureNode.getRotationController().setEnabled(true);
+    //     currentFurnitureNode.getScaleController().setEnabled(false);
+    
+    //     // Show manipulation buttons
+    //     deleteButton.setVisibility(View.VISIBLE);
+    //     rotateButton.setVisibility(View.VISIBLE);
+    //     moveButton.setVisibility(View.VISIBLE);
+        
+    //     // Update the tap listener
+    //     currentFurnitureNode.setOnTapListener((hitTestResult, motionEvent) -> {
+    //         // Deselect current model
+    //         if (currentFurnitureNode != null) {
+    //             arFragment.getTransformationSystem().getSelectionVisualizer().onDeselected(currentFurnitureNode);
+    //         }
             
-            String[] assetsList = getAssets().list("models");
-            if (assetsList == null || !Arrays.asList(assetsList).contains(modelName)) {
-                Log.e(TAG, "Model not found in assets/models/");
-                runOnUiThread(() -> Toast.makeText(this, "Model file not found", Toast.LENGTH_LONG).show());
-                return;
+    //         // Select the tapped model
+    //         currentFurnitureNode = (TransformableNode) hitTestResult.getNode();
+    //         currentFurnitureNode.select(); // This will show the selection visualizer
+            
+    //         // Show manipulation buttons
+    //         deleteButton.setVisibility(View.VISIBLE);
+    //         rotateButton.setVisibility(View.VISIBLE);
+    //         moveButton.setVisibility(View.VISIBLE);
+            
+    //         return true;
+    //     });
+    // }  
+
+    // private void setRotateMode(boolean rotateMode) {
+    //     isRotateMode = rotateMode;
+    //     if (currentFurnitureNode != null) {
+    //         currentFurnitureNode.getTranslationController().setEnabled(!rotateMode);
+    //         currentFurnitureNode.getRotationController().setEnabled(rotateMode);
+            
+    //         if (rotateMode) {
+    //             Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
+    //         } else {
+    //             Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
+    //         }
+    //     }
+    // }
+    
+    // // private void deleteCurrentModel() {
+    // //     if (currentFurnitureNode != null) {
+    // //         AnchorNode parentAnchor = (AnchorNode) currentFurnitureNode.getParent();
+    // //         if (parentAnchor != null) {
+    // //             // Remove from scene
+    // //             arFragment.getArSceneView().getScene().removeChild(parentAnchor);
+    // //             // Remove from our tracking list
+    // //             placedFurnitureNodes.remove(parentAnchor);
+    // //             // Clean up anchor
+    // //             parentAnchor.setAnchor(null);
+    // //         }
+            
+    // //         // Reset current node
+    // //         currentFurnitureNode = null;
+            
+    // //         // Hide manipulation buttons
+    // //         deleteButton.setVisibility(View.GONE);
+    // //         rotateButton.setVisibility(View.GONE);
+    // //         moveButton.setVisibility(View.GONE);
+            
+    // //         Toast.makeText(this, "Model removed", Toast.LENGTH_SHORT).show();
+    // //     }
+    // // }
+
+    // private void deleteCurrentModel() {
+    //     if (currentFurnitureNode != null) {
+    //         // Deselect first
+    //         arFragment.getTransformationSystem().getSelectionVisualizer().onDeselected(currentFurnitureNode);
+            
+    //         AnchorNode parentAnchor = (AnchorNode) currentFurnitureNode.getParent();
+    //         if (parentAnchor != null) {
+    //             arFragment.getArSceneView().getScene().removeChild(parentAnchor);
+    //             placedFurnitureNodes.remove(parentAnchor);
+    //             parentAnchor.setAnchor(null);
+    //         }
+            
+    //         currentFurnitureNode = null;
+            
+    //         // Hide manipulation buttons
+    //         deleteButton.setVisibility(View.GONE);
+    //         rotateButton.setVisibility(View.GONE);
+    //         moveButton.setVisibility(View.GONE);
+            
+    //         Toast.makeText(this, "Model removed", Toast.LENGTH_SHORT).show();
+    //     }
+    // }
+    
+    // // Call this when you want to clear all placed models
+    // private void clearAllModels() {
+    //     for (AnchorNode anchorNode : placedFurnitureNodes) {
+    //         arFragment.getArSceneView().getScene().removeChild(anchorNode);
+    //         anchorNode.setAnchor(null);
+    //     }
+    //     placedFurnitureNodes.clear();
+    //     currentFurnitureNode = null;
+        
+    //     // Hide manipulation buttons
+    //     deleteButton.setVisibility(View.GONE);
+    //     rotateButton.setVisibility(View.GONE);
+    //     moveButton.setVisibility(View.GONE);
+    // }
+
+    private void placeFurniture(HitResult hitResult) {
+        if (selectedFurnitureRenderable == null) {
+            Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+    
+        // Deselect previous model if any
+        if (currentFurnitureNode != null) {
+            deselectCurrentModel();
+        }
+    
+        Anchor anchor = hitResult.createAnchor();
+        AnchorNode anchorNode = new AnchorNode(anchor);
+        anchorNode.setParent(arFragment.getArSceneView().getScene());
+        placedFurnitureNodes.add(anchorNode);
+    
+        currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
+        currentFurnitureNode.setParent(anchorNode);
+        currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
+        currentFurnitureNode.select(); // This shows the selection visualizer
+        
+        // Set default scale
+        currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
+        
+        // Enable controllers
+        currentFurnitureNode.getTranslationController().setEnabled(true);
+        currentFurnitureNode.getRotationController().setEnabled(false); // Start with move mode
+        currentFurnitureNode.getScaleController().setEnabled(false);
+    
+        // Show manipulation buttons
+        showManipulationButtons();
+        
+        // Set tap listener for selecting models
+        currentFurnitureNode.setOnTapListener((hitTestResult, motionEvent) -> {
+            Node tappedNode = hitTestResult.getNode();
+            if (tappedNode instanceof TransformableNode) {
+                deselectCurrentModel();
+                currentFurnitureNode = (TransformableNode) tappedNode;
+                currentFurnitureNode.select();
+                showManipulationButtons();
             }
-            if (!file.exists()) {
-                // Copy from assets if not already in cache
-                try (InputStream is = getAssets().open("models/" + modelName);
-                     OutputStream os = new FileOutputStream(file)) {
-                    byte[] buffer = new byte[4 * 1024];
-                    int read;
-                    while ((read = is.read(buffer)) != -1) {
-                        os.write(buffer, 0, read);
-                    }
-                    os.flush();
-                }
-            }
-            // Load from cached file
-            loadModelRenderable(Uri.fromFile(file));
-        } catch (IOException e) {
-            Log.e(TAG, "Error loading from assets", e);
-            runOnUiThread(() -> 
-                Toast.makeText(this, "Failed to load model from assets", Toast.LENGTH_LONG).show());
+            return ;
+        });
+    }
+    
+    private void deselectCurrentModel() {
+        if (currentFurnitureNode != null) {
+            currentFurnitureNode.setEnabled(false); // This effectively deselects
+            currentFurnitureNode.setEnabled(true); // Re-enable for interaction
         }
     }
-
-
+    
+    private void showManipulationButtons() {
+        deleteButton.setVisibility(View.VISIBLE);
+        rotateButton.setVisibility(View.VISIBLE);
+        moveButton.setVisibility(View.VISIBLE);
+    }
+    
+    private void hideManipulationButtons() {
+        deleteButton.setVisibility(View.GONE);
+        rotateButton.setVisibility(View.GONE);
+        moveButton.setVisibility(View.GONE);
+    }
+    
+    private void setRotateMode(boolean rotateMode) {
+        isRotateMode = rotateMode;
+        if (currentFurnitureNode != null) {
+            currentFurnitureNode.getTranslationController().setEnabled(!rotateMode);
+            currentFurnitureNode.getRotationController().setEnabled(rotateMode);
+            
+            if (rotateMode) {
+                Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    private void deleteCurrentModel() {
+        if (currentFurnitureNode != null) {
+            AnchorNode parentAnchor = (AnchorNode) currentFurnitureNode.getParent();
+            if (parentAnchor != null) {
+                arFragment.getArSceneView().getScene().removeChild(parentAnchor);
+                placedFurnitureNodes.remove(parentAnchor);
+                parentAnchor.setAnchor(null);
+            }
+            
+            currentFurnitureNode = null;
+            hideManipulationButtons();
+            Toast.makeText(this, "Model removed", Toast.LENGTH_SHORT).show();
+        }
+    }
+    
+    private void clearAllModels() {
+        for (AnchorNode anchorNode : placedFurnitureNodes) {
+            arFragment.getArSceneView().getScene().removeChild(anchorNode);
+            anchorNode.setAnchor(null);
+        }
+        placedFurnitureNodes.clear();
+        currentFurnitureNode = null;
+        hideManipulationButtons();
+    }
 
     @Override
     protected void onResume() {

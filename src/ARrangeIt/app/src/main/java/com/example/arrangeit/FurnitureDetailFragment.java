@@ -47,6 +47,20 @@ public class FurnitureDetailFragment extends Fragment {
         itemTexture = view.findViewById(R.id.itemTexture);
 
         Button placeInArButton = view.findViewById(R.id.place_in_ar_button);
+        placeInArButton.setOnClickListener(v -> {
+            if (furnitureItem != null && furnitureItem.getModelUrl() != null) {
+                ARCorePage activity = (ARCorePage) getActivity();
+                if (activity != null) {
+                    activity.loadModelFromFirebase(furnitureItem.getModelUrl());
+        
+                    FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.remove(FurnitureDetailFragment.this);
+                    transaction.commit();
+                }
+            } else {
+                Toast.makeText(getContext(), "3D model not available for this item", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Bundle args = getArguments();
         if (args != null) {
@@ -69,16 +83,6 @@ public class FurnitureDetailFragment extends Fragment {
                     Toast.makeText(getContext(), "Failed to load image", Toast.LENGTH_SHORT).show();
                 });
 
-                placeInArButton.setOnClickListener(v -> {
-                    if (furnitureItem.getModelUrl() != null && !furnitureItem.getModelUrl().isEmpty()) {
-                        if (getActivity() instanceof ARCorePage) {
-                            ((ARCorePage) requireActivity()).setFurnitureModelUrl(furnitureItem.getModelUrl());
-                            requireActivity().getSupportFragmentManager().popBackStack();
-                        }
-                    } else {
-                        Toast.makeText(getContext(), "3D model not available", Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         }
 
