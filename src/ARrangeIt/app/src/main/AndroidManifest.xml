@@ -35,10 +35,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ARrangeIt"
+        android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
 
         <activity
-            android:name=".ARCorePage"
+            android:name=".ARCorePage" 
             android:exported="false"
             android:screenOrientation="fullSensor"
             android:configChanges="orientation|screenSize" />

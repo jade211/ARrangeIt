@@ -30,18 +30,29 @@
         android:visibility="gone"/>
 
     <Button
+        android:id="@+id/screenshot_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="screenshot"
+        android:textSize="16sp" />
+
+    <Button
         android:id="@+id/clear_button"
+        style="@style/RedoButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/bottom_nav_bar"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:text="Clear Measurement"
-        android:textSize="16sp"
+        android:background="@drawable/redo_button"
         android:paddingHorizontal="15dp"
         android:paddingVertical="8dp"
-        android:background="@drawable/redo_button"
-        style="@style/RedoButtonStyle"/>
+        android:text="Clear Measurement"
+        android:textSize="16sp" />
     <Button
         android:id="@+id/complete_measurement"
         android:layout_width="wrap_content"
@@ -57,9 +68,9 @@
         android:layout_height="wrap_content"
         android:text="Delete"
         android:visibility="gone"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"/>
+        android:layout_above="@id/bottom_nav_bar"
+        android:paddingVertical="8dp"/>
 
     <Button
         android:id="@+id/rotate_button"
