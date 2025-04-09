@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.util.Log;
 
@@ -16,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.arrangeit.helpers.CameraPermissionHelper;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Pose;
@@ -46,6 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+
 public class ARCorePage extends AppCompatActivity {
     private static final String TAG = "ARCorePage";
     private ArFragment arFragment;
@@ -60,14 +64,14 @@ public class ARCorePage extends AppCompatActivity {
     private Button clearButton;
     private ModelRenderable furnitureRenderable;
     private String currentModelUrl;
+    private ImageView deleteButton;
+    private ImageView rotateButton;
+    private ImageView moveButton;
 
     private TransformableNode currentFurnitureNode;
-    private Button deleteButton;
-    private Button rotateButton;
-    private Button moveButton;
     private boolean isRotateMode = false;
     private ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
-
+    private LinearLayout furnitureControlsPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,11 +103,18 @@ public class ARCorePage extends AppCompatActivity {
         Button navCatalogue = findViewById(R.id.nav_catalogue);
         Button navMeasure = findViewById(R.id.nav_measure);
         clearButton = findViewById(R.id.clear_button);
+
+        furnitureControlsPanel = findViewById(R.id.furniture_controls);
         deleteButton = findViewById(R.id.delete_button);
         rotateButton = findViewById(R.id.rotate_button);
         moveButton = findViewById(R.id.move_button);
 
+        deleteButton.setOnClickListener(v -> deleteCurrentModel());
+        rotateButton.setOnClickListener(v -> setRotateMode(true));
+        moveButton.setOnClickListener(v -> setRotateMode(false));
+
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
+
 
         navCatalogue.setOnClickListener(v -> {
             clearMeasurementState();
@@ -144,6 +155,7 @@ public class ARCorePage extends AppCompatActivity {
         });
 
         navMeasure.setOnClickListener(v -> {
+            hideManipulationButtons();
             if (fragmentContainer.getVisibility() == View.VISIBLE) {
                 getSupportFragmentManager().popBackStack();
                 fragmentContainer.setVisibility(View.GONE);
@@ -171,13 +183,6 @@ public class ARCorePage extends AppCompatActivity {
         });
         clearButton.setVisibility(View.GONE);
 
-        deleteButton.setOnClickListener(v -> deleteCurrentModel());
-        rotateButton.setOnClickListener(v -> setRotateMode(true));
-        moveButton.setOnClickListener(v -> setRotateMode(false));
-
-        deleteButton.setVisibility(View.GONE);
-        rotateButton.setVisibility(View.GONE);
-        moveButton.setVisibility(View.GONE);
 
     }
 
@@ -497,9 +502,8 @@ public class ARCorePage extends AppCompatActivity {
                 // Maintain the current mode when selecting
                 setRotateMode(isRotateMode);
             }
-            return ;
+            return;
         });
-
         showManipulationButtons();
     }
 
@@ -512,12 +516,14 @@ public class ARCorePage extends AppCompatActivity {
     }
 
     private void showManipulationButtons() {
+        furnitureControlsPanel.setVisibility(View.VISIBLE);
         deleteButton.setVisibility(View.VISIBLE);
         rotateButton.setVisibility(View.VISIBLE);
         moveButton.setVisibility(View.VISIBLE);
     }
 
     private void hideManipulationButtons() {
+        furnitureControlsPanel.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
         rotateButton.setVisibility(View.GONE);
         moveButton.setVisibility(View.GONE);
@@ -570,13 +576,13 @@ public class ARCorePage extends AppCompatActivity {
             // Then enable the appropriate controller
             if (rotateMode) {
                 currentFurnitureNode.getRotationController().setEnabled(true);
-                rotateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
-                moveButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+                findViewById(R.id.rotate_button_container).setBackgroundResource(R.drawable.icon_button_bg_selected);
+                findViewById(R.id.move_button_container).setBackgroundResource(R.drawable.icon_button_bg_selector);
                 Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
             } else {
                 currentFurnitureNode.getTranslationController().setEnabled(true);
-                moveButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
-                rotateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+                findViewById(R.id.move_button_container).setBackgroundResource(R.drawable.icon_button_bg_selected);
+                findViewById(R.id.rotate_button_container).setBackgroundResource(R.drawable.icon_button_bg_selector);
                 Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
             }
 
@@ -596,6 +602,7 @@ public class ARCorePage extends AppCompatActivity {
 
             currentFurnitureNode = null;
             hideManipulationButtons();
+
             Toast.makeText(this, "Model removed", Toast.LENGTH_SHORT).show();
         }
     }
@@ -608,6 +615,7 @@ public class ARCorePage extends AppCompatActivity {
         placedFurnitureNodes.clear();
         currentFurnitureNode = null;
         hideManipulationButtons();
+
     }
 
     @Override
