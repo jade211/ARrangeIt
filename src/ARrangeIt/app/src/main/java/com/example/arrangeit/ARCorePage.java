@@ -2,6 +2,7 @@ package com.example.arrangeit;
 
 import android.content.Intent;
 import android.graphics.PointF;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.assets.RenderableSource;
+import com.google.ar.sceneform.collision.Ray;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -41,6 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ARCorePage extends AppCompatActivity {
@@ -55,8 +58,6 @@ public class ARCorePage extends AppCompatActivity {
     private boolean isMeasuring = false;
     private MarkerLineView markerLineView;
     private Button clearButton;
-    private Button navMeasure;
-
     private ModelRenderable furnitureRenderable;
     private String currentModelUrl;
 
@@ -66,7 +67,7 @@ public class ARCorePage extends AppCompatActivity {
     private Button moveButton;
     private boolean isRotateMode = false;
     private ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
-    
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +76,15 @@ public class ARCorePage extends AppCompatActivity {
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
 
+
         ModelRenderable.builder()
-            .setSource(this, Uri.parse("models/measurement_marker.glb"))
-            .build()
-            .thenAccept(renderable -> measurementMarkerRenderable = renderable)
-            .exceptionally(throwable -> {
-                Toast.makeText(this, "Failed to load measurement marker", Toast.LENGTH_SHORT).show();
-                return null;
-            });
+                .setSource(this, Uri.parse("models/measurement_marker.glb"))
+                .build()
+                .thenAccept(renderable -> measurementMarkerRenderable = renderable)
+                .exceptionally(throwable -> {
+                    Toast.makeText(this, "Failed to load measurement marker", Toast.LENGTH_SHORT).show();
+                    return null;
+                });
 
         setupUI();
         setupTapListener();
@@ -128,16 +130,16 @@ public class ARCorePage extends AppCompatActivity {
         Button completeMeasurement = findViewById(R.id.complete_measurement);
         completeMeasurement.setOnClickListener(v -> {
             if (isFirstPointSet) {
-                Toast.makeText(this, 
-                    "Please set second point or press Clear to cancel", 
-                    Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,
+                        "Please set second point or press Clear to cancel",
+                        Toast.LENGTH_SHORT).show();
             } else {
                 isMeasuring = false;
                 clearMeasurement();
                 completeMeasurement.setVisibility(View.GONE);
-                Toast.makeText(this, 
-                    "Measurement completed", 
-                    Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,
+                        "Measurement completed",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -179,37 +181,92 @@ public class ARCorePage extends AppCompatActivity {
 
     }
 
+    // Old version --> Both just use plane detection
+//    private void setupTapListener() {
+//        arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
+//            if (isMeasuring) {
+//                handleMeasurementTap(hitResult);
+//            } else if (selectedFurnitureRenderable != null) {
+//                placeFurniture(hitResult);
+//            }
+//        });
+//    }
+
+
+
+
     private void setupTapListener() {
+        arFragment.setOnTapArPlaneListener(null);
+        arFragment.getArSceneView().getScene().setOnTouchListener((hitTestResult, motionEvent) -> {
+            if (!isMeasuring || motionEvent.getAction() != android.view.MotionEvent.ACTION_DOWN) {
+                return false;
+            }
+
+            try {
+                com.google.ar.core.Frame frame = arFragment.getArSceneView().getArFrame();
+                if (frame == null) return false;
+
+                // FIRST TRY: Plane measurement
+                List<HitResult> hitResults = frame.hitTest(motionEvent);
+                for (HitResult hit : hitResults) {
+                    if (hit.getTrackable() instanceof com.google.ar.core.Plane) {
+                        handleMeasurementTap(hit, motionEvent.getX(), motionEvent.getY());
+                        return true;
+                    }
+                }
+
+                // FALLBACK: Raycast measurement
+                Camera camera = arFragment.getArSceneView().getScene().getCamera();
+                Ray ray = camera.screenPointToRay(motionEvent.getX(), motionEvent.getY());
+                float distanceFromCamera = 1.5f;
+                Vector3 worldPosition = ray.getPoint(distanceFromCamera);
+
+                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(
+                        new Pose(new float[]{worldPosition.x, worldPosition.y, worldPosition.z},
+                                new float[]{0, 0, 0, 1}));
+
+                createMeasurementPoint(anchor, motionEvent.getX(), motionEvent.getY());
+                return true;
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error in measurement tap handling", e);
+                return false;
+            }
+        });
+
+        // unchanged plane detection for furniture
         arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
-            if (isMeasuring) {
-                handleMeasurementTap(hitResult);
-            } else if (selectedFurnitureRenderable != null) {
+            if (!isMeasuring && selectedFurnitureRenderable != null) {
                 placeFurniture(hitResult);
             }
         });
     }
 
-    private void handleMeasurementTap(HitResult hitResult) {
-        AnchorNode anchorNode = new AnchorNode();
-        anchorNode.setAnchor(hitResult.createAnchor());
+
+
+    private void handleMeasurementTap(HitResult hitResult, float screenX, float screenY) {
+        Anchor anchor = hitResult.createAnchor();
+        createMeasurementPoint(anchor, screenX, screenY);
+    }
+
+    private void createMeasurementPoint(Anchor anchor, float screenX, float screenY) {
+        AnchorNode anchorNode = new AnchorNode(anchor);
         anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-        float[] screenCoords = convertToScreenCoordinates(hitResult.getHitPose());
-
         if (!isFirstPointSet) {
-            clearAnchors(); // Clear any existing anchors
+            clearAnchors();
             firstAnchorNode = anchorNode;
             isFirstPointSet = true;
-            markerLineView.setFirstPoint(new PointF(screenCoords[0], screenCoords[1]));
+            markerLineView.setFirstPoint(new PointF(screenX, screenY));
             addMarkerToNode(anchorNode);
             Toast.makeText(this, "First point set. Tap to set the second point", Toast.LENGTH_SHORT).show();
         } else {
             secondAnchorNode = anchorNode;
-            markerLineView.setSecondPoint(new PointF(screenCoords[0], screenCoords[1]));
+            markerLineView.setSecondPoint(new PointF(screenX, screenY));
             addMarkerToNode(anchorNode);
             calculateDistance();
             isFirstPointSet = false;
-            isMeasuring = false;
+            Toast.makeText(this, "Measurement complete", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -226,82 +283,33 @@ public class ARCorePage extends AppCompatActivity {
 
     private void addMarkerToNode(AnchorNode anchorNode) {
         if (measurementMarkerRenderable == null) return;
-        
+
         TransformableNode markerNode = new TransformableNode(arFragment.getTransformationSystem());
         markerNode.setParent(anchorNode);
         markerNode.setRenderable(measurementMarkerRenderable);
         markerNode.setLocalScale(new Vector3(0.1f, 0.1f, 0.1f));
-        
+
         // Make sure the marker is visible
         markerNode.setRenderable(measurementMarkerRenderable);
         markerNode.setEnabled(true);
     }
 
-    private float[] convertToScreenCoordinates(Pose pose) {
-        Camera camera = arFragment.getArSceneView().getScene().getCamera();
-        ArSceneView sceneView = arFragment.getArSceneView();
-        
-        float[] modelView = new float[16];
-        float[] projection = new float[16];
-        System.arraycopy(camera.getViewMatrix().data, 0, modelView, 0, 16);
-        System.arraycopy(camera.getProjectionMatrix().data, 0, projection, 0, 16);
-        
-        // Transform world coordinates to screen space
-        float[] worldCoords = {pose.tx(), pose.ty(), pose.tz(), 1.0f};
-        float[] clipCoords = new float[4];
-        
-        // Apply view matrix
-        android.opengl.Matrix.multiplyMV(clipCoords, 0, modelView, 0, worldCoords, 0);
-        
-        // Apply projection matrix
-        android.opengl.Matrix.multiplyMV(clipCoords, 0, projection, 0, clipCoords, 0);
-        
-        // Perspective division
-        if (clipCoords[3] != 0) {
-            clipCoords[0] /= clipCoords[3];
-            clipCoords[1] /= clipCoords[3];
-        }
-        
-        // Convert to screen coordinates
-        return new float[] {
-            (clipCoords[0] + 1.0f) * 0.5f * sceneView.getWidth(),
-            (1.0f - (clipCoords[1] + 1.0f) * 0.5f) * sceneView.getHeight()
-        };
-    }
-
-    private void toggleMeasurementMode() {
-        isMeasuring = !isMeasuring;
-        Button completeMeasurement = findViewById(R.id.complete_measurement);
-        
-        if (isMeasuring) {
-            clearMeasurement();
-            completeMeasurement.setVisibility(View.VISIBLE);
-            Toast.makeText(this, 
-                "Measurement mode: Tap to set first point", 
-                Toast.LENGTH_SHORT).show();
-        } else {
-            completeMeasurement.setVisibility(View.GONE);
-            Toast.makeText(this, 
-                "Measurement mode deactivated", 
-                Toast.LENGTH_SHORT).show();
-        }
-    }
 
     private void calculateDistance() {
-        if (firstAnchorNode != null && secondAnchorNode != null && 
-            firstAnchorNode.getAnchor() != null && secondAnchorNode.getAnchor() != null) {
-            
+        if (firstAnchorNode != null && secondAnchorNode != null &&
+                firstAnchorNode.getAnchor() != null && secondAnchorNode.getAnchor() != null) {
+
             if (firstAnchorNode.getAnchor().getTrackingState() != com.google.ar.core.TrackingState.TRACKING ||
-                secondAnchorNode.getAnchor().getTrackingState() != com.google.ar.core.TrackingState.TRACKING) {
+                    secondAnchorNode.getAnchor().getTrackingState() != com.google.ar.core.TrackingState.TRACKING) {
                 runOnUiThread(() -> Toast.makeText(this,
-                    "Lost tracking of measurement points. Please retry.",
-                    Toast.LENGTH_SHORT).show());
+                        "Lost tracking of measurement points. Please retry.",
+                        Toast.LENGTH_SHORT).show());
                 return;
             }
 
             Vector3 firstPosition = firstAnchorNode.getWorldPosition();
             Vector3 secondPosition = secondAnchorNode.getWorldPosition();
-            
+
             float dx = firstPosition.x - secondPosition.x;
             float dy = firstPosition.y - secondPosition.y;
             float dz = firstPosition.z - secondPosition.z;
@@ -316,7 +324,7 @@ public class ARCorePage extends AppCompatActivity {
             });
         }
     }
-    
+
     private void clearMeasurementState() {
         runOnUiThread(() -> {
             markerLineView.clearPoints();
@@ -347,54 +355,54 @@ public class ARCorePage extends AppCompatActivity {
             Toast.makeText(this, "Model ready to place", Toast.LENGTH_SHORT).show();
             return;
         }
-    
+
         currentModelUrl = modelUrl;
         selectedFurnitureRenderable = null;
-        
+
         Toast.makeText(this, "Loading 3D model...", Toast.LENGTH_SHORT).show();
-    
+
         try {
             File modelFile = File.createTempFile("model", "glb", getCacheDir());
-            
+
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference modelRef = storage.getReference(modelUrl);
-            
+
             modelRef.getFile(modelFile)
-                .addOnSuccessListener(taskSnapshot -> {
-                    buildModel(modelFile);
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to download model: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Model download failed", e);
-                });
+                    .addOnSuccessListener(taskSnapshot -> {
+                        buildModel(modelFile);
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to download model: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Model download failed", e);
+                    });
         } catch (IOException e) {
             Toast.makeText(this, "Failed to create temp file", Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Temp file creation failed", e);
         }
     }
-    
+
     private void buildModel(File file) {
         RenderableSource renderableSource = RenderableSource
-            .builder()
-            .setSource(this, Uri.parse(file.getPath()), RenderableSource.SourceType.GLB)
-            .setRecenterMode(RenderableSource.RecenterMode.ROOT)
-            .build();
-    
+                .builder()
+                .setSource(this, Uri.parse(file.getPath()), RenderableSource.SourceType.GLB)
+                .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                .build();
+
         ModelRenderable
-            .builder()
-            .setSource(this, renderableSource)
-            .setRegistryId(file.getPath())
-            .build()
-            .thenAccept(modelRenderable -> {
-                furnitureRenderable = modelRenderable;
-                selectedFurnitureRenderable = modelRenderable;
-                Toast.makeText(this, "Model loaded - tap to place", Toast.LENGTH_SHORT).show();
-            })
-            .exceptionally(throwable -> {
-                Toast.makeText(this, "Failed to build model", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Model build failed", throwable);
-                return null;
-            });
+                .builder()
+                .setSource(this, renderableSource)
+                .setRegistryId(file.getPath())
+                .build()
+                .thenAccept(modelRenderable -> {
+                    furnitureRenderable = modelRenderable;
+                    selectedFurnitureRenderable = modelRenderable;
+                    Toast.makeText(this, "Model loaded - tap to place", Toast.LENGTH_SHORT).show();
+                })
+                .exceptionally(throwable -> {
+                    Toast.makeText(this, "Failed to build model", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Model build failed", throwable);
+                    return null;
+                });
     }
 
     // private void placeFurniture(HitResult hitResult) {
@@ -402,35 +410,35 @@ public class ARCorePage extends AppCompatActivity {
     //         Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
     //         return;
     //     }
-    
+
     //     // Deselect previous model if any
     //     if (currentFurnitureNode != null) {
     //         deselectCurrentModel();
     //     }
-    
+
     //     Anchor anchor = hitResult.createAnchor();
     //     AnchorNode anchorNode = new AnchorNode(anchor);
     //     anchorNode.setParent(arFragment.getArSceneView().getScene());
     //     placedFurnitureNodes.add(anchorNode);
-    
+
     //     currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
     //     currentFurnitureNode.setParent(anchorNode);
     //     currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
     //     currentFurnitureNode.select(); // This shows the selection visualizer
 
     //     currentFurnitureNode.setCollisionShape(null); // Disables collision
-        
+
     //     // Set default scale
     //     currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
-        
+
     //     // Enable controllers
     //     currentFurnitureNode.getTranslationController().setEnabled(true);
     //     currentFurnitureNode.getRotationController().setEnabled(false); // Start with move mode
     //     currentFurnitureNode.getScaleController().setEnabled(false);
-    
+
     //     // Show manipulation buttons
     //     showManipulationButtons();
-        
+
     //     // Set tap listener for selecting models
     //     currentFurnitureNode.setOnTapListener((hitTestResult, motionEvent) -> {
     //         Node tappedNode = hitTestResult.getNode();
@@ -443,13 +451,15 @@ public class ARCorePage extends AppCompatActivity {
     //         return ;
     //     });
     // }
-    
+
     // private void deselectCurrentModel() {
     //     if (currentFurnitureNode != null) {
     //         currentFurnitureNode.setEnabled(false); // This effectively deselects
     //         currentFurnitureNode.setEnabled(true); // Re-enable for interaction
     //     }
     // }
+
+
 
     private void placeFurniture(HitResult hitResult) {
         if (selectedFurnitureRenderable == null) {
@@ -470,13 +480,13 @@ public class ARCorePage extends AppCompatActivity {
         currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
         currentFurnitureNode.setParent(anchorNode);
         currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
-        
+
         // Set default scale
         currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
-        
+
         // Start in move mode by default
         setRotateMode(false);
-        
+
         // Set tap listener for selecting models
         currentFurnitureNode.setOnTapListener((hitTestResult, motionEvent) -> {
             Node tappedNode = hitTestResult.getNode();
@@ -489,7 +499,7 @@ public class ARCorePage extends AppCompatActivity {
             }
             return ;
         });
-        
+
         showManipulationButtons();
     }
 
@@ -500,25 +510,25 @@ public class ARCorePage extends AppCompatActivity {
             hideManipulationButtons();
         }
     }
-    
+
     private void showManipulationButtons() {
         deleteButton.setVisibility(View.VISIBLE);
         rotateButton.setVisibility(View.VISIBLE);
         moveButton.setVisibility(View.VISIBLE);
     }
-    
+
     private void hideManipulationButtons() {
         deleteButton.setVisibility(View.GONE);
         rotateButton.setVisibility(View.GONE);
         moveButton.setVisibility(View.GONE);
     }
-    
+
     // private void setRotateMode(boolean rotateMode) {
     //     isRotateMode = rotateMode;
     //     if (currentFurnitureNode != null) {
     //         currentFurnitureNode.getTranslationController().setEnabled(!rotateMode);
     //         currentFurnitureNode.getRotationController().setEnabled(rotateMode);
-            
+
     //         if (rotateMode) {
     //             Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
     //         } else {
@@ -534,7 +544,7 @@ public class ARCorePage extends AppCompatActivity {
     //         currentFurnitureNode.getTranslationController().setEnabled(false);
     //         currentFurnitureNode.getRotationController().setEnabled(false);
     //         currentFurnitureNode.getScaleController().setEnabled(false);
-    
+
     //         // Then enable the appropriate ones
     //         if (rotateMode) {
     //             currentFurnitureNode.getRotationController().setEnabled(true);
@@ -556,7 +566,7 @@ public class ARCorePage extends AppCompatActivity {
             // First reset the node to clear any ongoing transformations
             currentFurnitureNode.getTranslationController().setEnabled(false);
             currentFurnitureNode.getRotationController().setEnabled(false);
-            
+
             // Then enable the appropriate controller
             if (rotateMode) {
                 currentFurnitureNode.getRotationController().setEnabled(true);
@@ -569,12 +579,12 @@ public class ARCorePage extends AppCompatActivity {
                 rotateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
                 Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
             }
-            
+
             // Force a reselect to update the visual indicators
             currentFurnitureNode.select();
         }
     }
-    
+
     private void deleteCurrentModel() {
         if (currentFurnitureNode != null) {
             AnchorNode parentAnchor = (AnchorNode) currentFurnitureNode.getParent();
@@ -583,13 +593,13 @@ public class ARCorePage extends AppCompatActivity {
                 placedFurnitureNodes.remove(parentAnchor);
                 parentAnchor.setAnchor(null);
             }
-            
+
             currentFurnitureNode = null;
             hideManipulationButtons();
             Toast.makeText(this, "Model removed", Toast.LENGTH_SHORT).show();
         }
     }
-    
+
     private void clearAllModels() {
         for (AnchorNode anchorNode : placedFurnitureNodes) {
             arFragment.getArSceneView().getScene().removeChild(anchorNode);
