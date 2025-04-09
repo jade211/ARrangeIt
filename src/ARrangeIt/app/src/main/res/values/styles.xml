@@ -14,4 +14,68 @@
     <item name="backgroundTint">@null</item>
   </style>
 
+
+  <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <item name="colorPrimary">@color/blue</item>
+    <item name="colorAccent">@color/blue</item>
+
+    <item name="android:windowBackground">@drawable/dialogue_rounded_background</item>
+
+    <item name="android:windowTitleStyle">@style/DialogTitleWithIcon</item>
+
+    <item name="buttonBarPositiveButtonStyle">@style/DialogTextButton.Positive</item>
+    <item name="buttonBarNegativeButtonStyle">@style/DialogTextButton.Negative</item>
+    <item name="buttonBarButtonStyle">@style/DialogButton.Base</item>
+
+    <item name="android:windowMinWidthMajor">65%</item>
+    <item name="android:windowMinWidthMinor">65%</item>
+    <item name="android:windowIsFloating">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="buttonBarStyle">@style/DialogButtonBar.Tight</item>
+  </style>
+
+  <style name="DialogButtonBar.Tight" parent="Widget.AppCompat.ButtonBar.AlertDialog">
+    <item name="android:layout_marginTop">4dp</item>
+    <item name="android:layout_marginBottom">8dp</item>
+    <item name="android:paddingLeft">8dp</item>
+    <item name="android:paddingRight">8dp</item>
+    <item name="android:gravity">center_horizontal</item>
+  </style>
+
+  <style name="DialogButton.Base" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+    <item name="android:textColor">@color/blue</item>
+    <item name="android:background">@android:color/transparent</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:padding">6dp</item>
+    <item name="android:minWidth">60dp</item>
+  </style>
+
+  <style name="DialogTitleWithIcon" parent="@android:style/TextAppearance.Medium">
+    <item name="android:textSize">17sp</item>
+    <item name="android:textColor">@color/white</item>
+    <item name="android:background">@drawable/blue_round_top</item>
+    <item name="android:padding">10dp</item>
+    <item name="android:drawablePadding">6dp</item>
+    <item name="android:drawableLeft">@drawable/ic_clear_models</item>
+    <item name="android:gravity">center_vertical</item>
+    <item name="android:minHeight">40dp</item>
+  </style>
+
+  <style name="DialogTextButton.Positive" parent="DialogButton.Base">
+    <item name="android:layout_gravity">end</item>
+    <item name="android:layout_marginStart">24dp</item>
+  </style>
+
+  <style name="DialogTextButton.Negative" parent="DialogButton.Base">
+    <item name="android:layout_gravity">start</item>
+    <item name="android:layout_marginEnd">24dp</item>
+  </style>
 </resources>
+
+
+
+
+
+
+
+

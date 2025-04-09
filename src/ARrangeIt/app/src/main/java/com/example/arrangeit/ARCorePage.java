@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -126,7 +127,7 @@ public class ARCorePage extends AppCompatActivity {
         modelNameText = findViewById(R.id.model_name_text);
 
         clearAllButton = findViewById(R.id.clear_all_models_button);
-        clearAllButton.setOnClickListener(v -> clearAllModels());
+        clearAllButton.setOnClickListener(v -> showClearAllConfirmationDialog());
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
 
@@ -198,7 +199,15 @@ public class ARCorePage extends AppCompatActivity {
         });
         clearButton.setVisibility(View.GONE);
 
+    }
 
+    private void showClearAllConfirmationDialog() {
+        new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setTitle("Clear All Models")
+                .setMessage("Are you sure you want to remove all placed models?")
+                .setPositiveButton("Clear All", (dialog, which) -> clearAllModels())
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     // Old version --> Both just use plane detection
