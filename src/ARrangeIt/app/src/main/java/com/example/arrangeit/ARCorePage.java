@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
 
@@ -67,11 +68,16 @@ public class ARCorePage extends AppCompatActivity {
     private ImageView deleteButton;
     private ImageView rotateButton;
     private ImageView moveButton;
-
     private TransformableNode currentFurnitureNode;
     private boolean isRotateMode = false;
     private ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
     private LinearLayout furnitureControlsPanel;
+    private TextView modelCounter;
+    private int placedModelsCount = 0;
+    private ImageButton clearAllButton;
+    private LinearLayout modelNameContainer;
+    private TextView modelNameText;
+    private String currentModelName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +118,15 @@ public class ARCorePage extends AppCompatActivity {
         deleteButton.setOnClickListener(v -> deleteCurrentModel());
         rotateButton.setOnClickListener(v -> setRotateMode(true));
         moveButton.setOnClickListener(v -> setRotateMode(false));
+
+        modelCounter = findViewById(R.id.model_counter);
+        updateModelCounter();
+
+        modelNameContainer = findViewById(R.id.model_name_container);
+        modelNameText = findViewById(R.id.model_name_text);
+
+        clearAllButton = findViewById(R.id.clear_all_models_button);
+        clearAllButton.setOnClickListener(v -> clearAllModels());
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
 
@@ -197,7 +212,18 @@ public class ARCorePage extends AppCompatActivity {
 //        });
 //    }
 
-
+    private void updateModelCounter() {
+        runOnUiThread(() -> {
+            if (placedModelsCount > 0) {
+                modelCounter.setText("Models: " + placedModelsCount);
+                modelCounter.setVisibility(View.VISIBLE);
+                findViewById(R.id.clear_all_models_button).setVisibility(View.VISIBLE);
+            } else {
+                modelCounter.setVisibility(View.GONE);
+                findViewById(R.id.clear_all_models_button).setVisibility(View.GONE);
+            }
+        });
+    }
 
 
     private void setupTapListener() {
@@ -482,6 +508,9 @@ public class ARCorePage extends AppCompatActivity {
         anchorNode.setParent(arFragment.getArSceneView().getScene());
         placedFurnitureNodes.add(anchorNode);
 
+        placedModelsCount++;
+        updateModelCounter();
+
         currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
         currentFurnitureNode.setParent(anchorNode);
         currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
@@ -489,6 +518,7 @@ public class ARCorePage extends AppCompatActivity {
         // Set default scale
         currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
 
+        currentFurnitureNode.setName(currentModelName);
         // Start in move mode by default
         setRotateMode(false);
 
@@ -499,12 +529,33 @@ public class ARCorePage extends AppCompatActivity {
                 deselectCurrentModel();
                 currentFurnitureNode = (TransformableNode) tappedNode;
                 showManipulationButtons();
-                // Maintain the current mode when selecting
+                showModelName((String) currentFurnitureNode.getName());
                 setRotateMode(isRotateMode);
             }
             return;
         });
         showManipulationButtons();
+        showModelName(currentModelName);
+    }
+
+    private void showModelName(String name) {
+        runOnUiThread(() -> {
+            if (name != null && !name.isEmpty()) {
+                modelNameText.setText(name);
+                modelNameContainer.setVisibility(View.VISIBLE);
+            } else {
+                modelNameContainer.setVisibility(View.GONE);
+            }
+        });
+    }
+    public void setCurrentModelName(String name) {
+        this.currentModelName = name;
+    }
+
+    private void hideModelName() {
+        runOnUiThread(() -> {
+            modelNameContainer.setVisibility(View.GONE);
+        });
     }
 
     private void deselectCurrentModel() {
@@ -512,6 +563,7 @@ public class ARCorePage extends AppCompatActivity {
             currentFurnitureNode.setEnabled(false);
             currentFurnitureNode.setEnabled(true); // Re-enable for interaction
             hideManipulationButtons();
+            hideModelName();
         }
     }
 
@@ -598,10 +650,14 @@ public class ARCorePage extends AppCompatActivity {
                 arFragment.getArSceneView().getScene().removeChild(parentAnchor);
                 placedFurnitureNodes.remove(parentAnchor);
                 parentAnchor.setAnchor(null);
+
+                placedModelsCount--;
+                updateModelCounter();
             }
 
             currentFurnitureNode = null;
             hideManipulationButtons();
+            hideModelName();
 
             Toast.makeText(this, "Model removed", Toast.LENGTH_SHORT).show();
         }
@@ -615,6 +671,9 @@ public class ARCorePage extends AppCompatActivity {
         placedFurnitureNodes.clear();
         currentFurnitureNode = null;
         hideManipulationButtons();
+        hideModelName();
+        placedModelsCount = 0;
+        updateModelCounter();
 
     }
 

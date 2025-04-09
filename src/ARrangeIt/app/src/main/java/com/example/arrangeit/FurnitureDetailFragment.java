@@ -51,6 +51,7 @@ public class FurnitureDetailFragment extends Fragment {
             if (furnitureItem != null && furnitureItem.getModelUrl() != null) {
                 ARCorePage activity = (ARCorePage) getActivity();
                 if (activity != null) {
+                    activity.setCurrentModelName(furnitureItem.getName());
                     activity.loadModelFromFirebase(furnitureItem.getModelUrl());
         
                     FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
