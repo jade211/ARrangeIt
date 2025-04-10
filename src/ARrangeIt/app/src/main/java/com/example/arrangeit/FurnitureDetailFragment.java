@@ -20,17 +20,17 @@ import com.google.firebase.storage.StorageReference;
 
 public class FurnitureDetailFragment extends Fragment {
 
-    private ImageView itemImage;
-    private TextView itemName;
-    private TextView itemDescription;
-    private TextView itemPrice;
-    private TextView itemHeight;
-    private TextView itemWidth;
-    private TextView itemDepth;
-    private TextView itemColours;
-    private TextView itemTexture;
+    ImageView itemImage;
+    TextView itemName;
+    TextView itemDescription;
+    TextView itemPrice;
+    TextView itemHeight;
+    TextView itemWidth;
+    TextView itemDepth;
+    TextView itemColours;
+    TextView itemTexture;
 
-    private FurnitureItem furnitureItem;
+    FurnitureItem furnitureItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,7 +77,7 @@ public class FurnitureDetailFragment extends Fragment {
                 itemColours.setText(furnitureItem.getColours());
                 itemTexture.setText(furnitureItem.getTexture());
 
-                StorageReference imageRef = FirebaseStorage.getInstance().getReference(furnitureItem.getImageUrl());
+                StorageReference imageRef = getFirebaseStorage().getReference(furnitureItem.getImageUrl());
                 imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     Glide.with(requireContext()).load(uri).into(itemImage);
                 }).addOnFailureListener(exception -> {
@@ -103,5 +103,9 @@ public class FurnitureDetailFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    protected FirebaseStorage getFirebaseStorage() {
+        return FirebaseStorage.getInstance();
     }
 }
