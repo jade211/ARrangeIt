@@ -4,6 +4,7 @@ agp = "8.7.0"
 androidxCore = "1.6.1"
 androidxCoreVersion = "1.5.0"
 androidxJunit = "1.1.5"
+androidxRunner = "1.5.2"
 coil = "2.x.x"
 core = "1.47.0"
 coreTesting = "2.2.0"
@@ -21,6 +22,7 @@ activity = "1.9.3"
 constraintlayout = "2.2.0"
 postgrestKt = "1.4.0"
 rules = "1.6.1"
+rulesVersion = "1.5.0"
 runner = "1.0.2"
 runnerVersion = "1.6.2"
 sceneview = "2.2.1"
@@ -55,7 +57,9 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 material3 = { module = "androidx.material3:material3" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "postgrestKt" }
 rules = { module = "androidx.test:rules", version.ref = "rules" }
+rules-v150 = { module = "androidx.test:rules", version.ref = "rulesVersion" }
 runner = { module = "com.android.support.test:runner", version.ref = "runner" }
+runner-v152 = { module = "androidx.test:runner", version.ref = "androidxRunner" }
 sceneview = { module = "io.github.sceneview:sceneview", version.ref = "sceneview" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "storageKt" }
 test-core = { module = "androidx.test:core", version.ref = "androidxCore" }
