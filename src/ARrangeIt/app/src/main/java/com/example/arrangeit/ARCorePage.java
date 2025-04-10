@@ -1,177 +1,137 @@
 package com.example.arrangeit;
 
-import com.example.arrangeit.helpers.MarkerLineView;
-import com.example.arrangeit.helpers.CoordinateHelper;
-import com.google.ar.core.Pose;
-import com.google.ar.core.exceptions.CameraNotAvailableException;
-import com.google.ar.core.exceptions.NotYetAvailableException;
-import com.google.ar.core.exceptions.UnavailableApkTooOldException;
-import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
-import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
-import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
-import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import com.google.ar.core.Anchor;
-import com.google.ar.core.ArCoreApk;
-import com.google.ar.core.ArCoreApk.Availability;
-import com.google.ar.core.Camera;
-import com.google.ar.core.Config;
-import com.google.ar.core.Config.InstantPlacementMode;
-import com.google.ar.core.DepthPoint;
-import com.google.ar.core.Frame;
-import com.google.ar.core.HitResult;
-import com.google.ar.core.InstantPlacementPoint;
-import com.google.ar.core.LightEstimate;
-import com.google.ar.core.Plane;
-import com.google.ar.core.Point;
-import com.google.ar.core.Point.OrientationMode;
-import com.google.ar.core.PointCloud;
-import com.google.ar.core.Session;
-import com.google.ar.core.Trackable;
-import com.google.ar.core.TrackingFailureReason;
-import com.google.ar.core.TrackingState;
-
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.PointF;
 import android.media.Image;
-import android.opengl.GLES30;
-import android.opengl.GLSurfaceView;
-import android.opengl.Matrix;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.arrangeit.helpers.CameraPermissionHelper;
-import com.example.arrangeit.helpers.DepthSettings;
-import com.example.arrangeit.helpers.DisplayRotationHelper;
-import com.example.arrangeit.helpers.FullScreenHelper;
-import com.example.arrangeit.helpers.InstantPlacementSettings;
-import com.example.arrangeit.helpers.SnackbarHelper;
-import com.example.arrangeit.helpers.TapHelper;
-import com.example.arrangeit.helpers.TrackingStateHelper;
-import com.example.arrangeit.samplerender.Framebuffer;
-import com.example.arrangeit.samplerender.GLError;
-import com.example.arrangeit.samplerender.Mesh;
-import com.example.arrangeit.samplerender.SampleRender;
-import com.example.arrangeit.samplerender.Shader;
-import com.example.arrangeit.samplerender.Texture;
-import com.example.arrangeit.samplerender.VertexBuffer;
-import com.example.arrangeit.samplerender.arcore.BackgroundRenderer;
-import com.example.arrangeit.samplerender.arcore.PlaneRenderer;
-import com.example.arrangeit.samplerender.arcore.SpecularCubemapFilter;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.ar.core.Anchor;
+import com.google.ar.core.HitResult;
+import com.google.ar.core.Pose;
+import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.ArSceneView;
+import com.google.ar.sceneform.Camera;
+import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.assets.RenderableSource;
+import com.google.ar.sceneform.collision.Ray;
+import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.ux.ArFragment;
+import com.google.ar.sceneform.ux.TransformableNode;
+import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.math.Matrix;
 import com.google.firebase.auth.FirebaseAuth;
+import com.example.arrangeit.helpers.MarkerLineView;
+import com.example.arrangeit.helpers.CoordinateHelper;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
-public class ARCorePage extends AppCompatActivity implements SampleRender.Renderer {
-    private static final String TAG = ARCorePage.class.getSimpleName();
-    private static final String SEARCHING_PLANE_MESSAGE = "Searching for surfaces...";
-    private static final String WAITING_FOR_TAP_MESSAGE = "Tap on a surface to place an object.";
-    private static final float[] sphericalHarmonicFactors = {
-            0.282095f,
-            -0.325735f,
-            0.325735f,
-            -0.325735f,
-            0.273137f,
-            -0.273137f,
-            0.078848f,
-            -0.273137f,
-            0.136569f,
-    };
+public class ARCorePage extends AppCompatActivity {
+    private static final String TAG = "ARCorePage";
+    private ArFragment arFragment;
+    private ModelRenderable measurementMarkerRenderable;
+    private ModelRenderable selectedFurnitureRenderable;
 
-    private static final float Z_NEAR = 0.1f;
-    private static final float Z_FAR = 100f;
-
-    private static final int CUBEMAP_RESOLUTION = 16;
-    private static final int CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES = 32;
-
-    private GLSurfaceView surfaceView;
-
-    private boolean installRequested;
-
-    private Session session;
-    private final SnackbarHelper messageSnackbarHelper = new SnackbarHelper();
-    private DisplayRotationHelper displayRotationHelper;
-    private final TrackingStateHelper trackingStateHelper = new TrackingStateHelper(this);
-    private TapHelper tapHelper;
-    private SampleRender render;
-
-    private PlaneRenderer planeRenderer;
-    private BackgroundRenderer backgroundRenderer;
-    private Framebuffer virtualSceneFramebuffer;
-    private boolean hasSetTextureNames = false;
-
-    private final DepthSettings depthSettings = new DepthSettings();
-    private boolean[] depthSettingsMenuDialogCheckboxes = new boolean[2];
-
-    private final InstantPlacementSettings instantPlacementSettings = new InstantPlacementSettings();
-    private boolean[] instantPlacementSettingsMenuDialogCheckboxes = new boolean[1];
-    private static final float APPROXIMATE_DISTANCE_METERS = 2.0f;
-
-    private VertexBuffer pointCloudVertexBuffer;
-    private Mesh pointCloudMesh;
-    private Shader pointCloudShader;
-
-    private long lastPointCloudTimestamp = 0;
-
-    private Mesh virtualObjectMesh;
-    private Shader virtualObjectShader;
-    private Texture virtualObjectAlbedoTexture;
-    private Texture virtualObjectAlbedoInstantPlacementTexture;
-
-    private final List<WrappedAnchor> wrappedAnchors = new ArrayList<>();
-
-    private Texture dfgTexture;
-    private SpecularCubemapFilter cubemapFilter;
-
-    // Temporary matrix allocated here to reduce number of allocations for each frame.
-    private final float[] modelMatrix = new float[16];
-    private final float[] viewMatrix = new float[16];
-    private final float[] projectionMatrix = new float[16];
-    private final float[] modelViewMatrix = new float[16]; // view x model
-    private final float[] modelViewProjectionMatrix = new float[16]; // projection x view x model
-    private final float[] sphericalHarmonicsCoefficients = new float[9 * 3];
-    private final float[] viewInverseMatrix = new float[16];
-    private final float[] worldLightDirection = {0.0f, 0.0f, 0.0f, 0.0f};
-    private final float[] viewLightDirection = new float[4]; // view x world light direction
-    private boolean isCatalogueVisible = false;
-    private Anchor firstMeasurementAnchor;
-    private Anchor secondMeasurementAnchor;
+    private AnchorNode firstAnchorNode;
+    private AnchorNode secondAnchorNode;
     private boolean isFirstPointSet = false;
     private boolean isMeasuring = false;
     private MarkerLineView markerLineView;
     private Button clearButton;
+    private ModelRenderable furnitureRenderable;
+    private String currentModelUrl;
+    private ImageView deleteButton;
+    private ImageView rotateButton;
+    private ImageView moveButton;
+    private TransformableNode currentFurnitureNode;
+    private boolean isRotateMode = false;
+    private ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
+    private LinearLayout furnitureControlsPanel;
+    private TextView modelCounter;
+    private int placedModelsCount = 0;
+    private ImageButton clearAllButton;
+    private LinearLayout modelNameContainer;
+    private TextView modelNameText;
+    private String currentModelName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_ar);
-        surfaceView = findViewById(R.id.surfaceview);
-        ImageButton settingsButton = findViewById(R.id.settings_button);
-        // Button navArCore = findViewById(R.id.nav_ar_core);
+
+        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
+
+
+        ModelRenderable.builder()
+                .setSource(this, Uri.parse("models/measurement_marker.glb"))
+                .build()
+                .thenAccept(renderable -> measurementMarkerRenderable = renderable)
+                .exceptionally(throwable -> {
+                    Toast.makeText(this, "Failed to load measurement marker", Toast.LENGTH_SHORT).show();
+                    return null;
+                });
+
+        setupUI();
+        setupTapListener();
+    }
+
+    private void setupUI() {
+        FrameLayout overlay = findViewById(R.id.overlay);
+        markerLineView = new MarkerLineView(this);
+        overlay.addView(markerLineView);
 
         Button navLogOut = findViewById(R.id.nav_log_out);
-        Button navCatalogue= findViewById(R.id.nav_catalogue);
+        Button navCatalogue = findViewById(R.id.nav_catalogue);
+        Button navMeasure = findViewById(R.id.nav_measure);
+        clearButton = findViewById(R.id.clear_button);
+
+        furnitureControlsPanel = findViewById(R.id.furniture_controls);
+        deleteButton = findViewById(R.id.delete_button);
+        rotateButton = findViewById(R.id.rotate_button);
+        moveButton = findViewById(R.id.move_button);
+
+        deleteButton.setOnClickListener(v -> deleteCurrentModel());
+        rotateButton.setOnClickListener(v -> setRotateMode(true));
+        moveButton.setOnClickListener(v -> setRotateMode(false));
+
+        modelCounter = findViewById(R.id.model_counter);
+        updateModelCounter();
+
+        modelNameContainer = findViewById(R.id.model_name_container);
+        modelNameText = findViewById(R.id.model_name_text);
+
+        clearAllButton = findViewById(R.id.clear_all_models_button);
+        clearAllButton.setOnClickListener(v -> showClearAllConfirmationDialog());
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
+
+
         navCatalogue.setOnClickListener(v -> {
             clearMeasurementState();
             if (fragmentContainer.getVisibility() == View.GONE) {
@@ -181,28 +141,37 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
                         .commit();
                 fragmentContainer.setVisibility(View.VISIBLE);
             } else {
-                getSupportFragmentManager().beginTransaction()
-                        .remove(getSupportFragmentManager().findFragmentById(R.id.fragment_container))
-                        .commit();
+                getSupportFragmentManager().popBackStack();
                 fragmentContainer.setVisibility(View.GONE);
             }
         });
 
+        navLogOut.setOnClickListener(v -> {
+            clearMeasurementState();
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
 
-        navLogOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearMeasurementState();
-                FirebaseAuth.getInstance().signOut();
-                Toast.makeText(ARCorePage.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(ARCorePage.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+        Button completeMeasurement = findViewById(R.id.complete_measurement);
+        completeMeasurement.setOnClickListener(v -> {
+            if (isFirstPointSet) {
+                Toast.makeText(this,
+                        "Please set second point or press Clear to cancel",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                isMeasuring = false;
+                clearMeasurement();
+                completeMeasurement.setVisibility(View.GONE);
+                Toast.makeText(this,
+                        "Measurement completed",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
-        Button navMeasure = findViewById(R.id.nav_measure);
         navMeasure.setOnClickListener(v -> {
+            hideManipulationButtons();
             if (fragmentContainer.getVisibility() == View.VISIBLE) {
                 getSupportFragmentManager().popBackStack();
                 fragmentContainer.setVisibility(View.GONE);
@@ -211,669 +180,517 @@ public class ARCorePage extends AppCompatActivity implements SampleRender.Render
             isMeasuring = !isMeasuring;
             if (isMeasuring) {
                 markerLineView.clearPoints();
-                firstMeasurementAnchor = null;
-                secondMeasurementAnchor = null;
-                isFirstPointSet = false;
                 clearButton.setVisibility(View.GONE);
                 Toast.makeText(this, "Tap to set the first point", Toast.LENGTH_SHORT).show();
             } else {
                 markerLineView.clearPoints();
-                firstMeasurementAnchor = null;
-                secondMeasurementAnchor = null;
-                isFirstPointSet = false;
                 clearButton.setVisibility(View.GONE);
                 Toast.makeText(this, "Measurement mode deactivated", Toast.LENGTH_SHORT).show();
             }
         });
 
-        FrameLayout overlay = findViewById(R.id.overlay);
-        markerLineView = new MarkerLineView(this);
-        overlay.addView(markerLineView);
-
-
-
-        displayRotationHelper = new DisplayRotationHelper(/* context= */ this);
-        tapHelper = new TapHelper(/* context= */ this);
-        surfaceView.setOnTouchListener(tapHelper);
-        render = new SampleRender(surfaceView, this, getAssets());
-
-        installRequested = false;
-        depthSettings.onCreate(this);
-        instantPlacementSettings.onCreate(this);
-//        ImageButton settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopupMenu popup = new PopupMenu(ARCorePage.this, v);
-                        popup.setOnMenuItemClickListener(ARCorePage.this::settingsMenuClick);
-                        popup.inflate(R.menu.settings_menu);
-                        popup.show();
-                    }
-                });
-        clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(v -> {
             markerLineView.clearPoints();
-            firstMeasurementAnchor = null;
-            secondMeasurementAnchor = null;
+            clearAnchors();
             isFirstPointSet = false;
             isMeasuring = true;
             clearButton.setVisibility(View.GONE);
             Toast.makeText(this, "Measurement cleared. Tap to set first point", Toast.LENGTH_SHORT).show();
         });
         clearButton.setVisibility(View.GONE);
+
     }
 
-    /** Menu button to launch feature specific settings. */
-    protected boolean settingsMenuClick(MenuItem item) {
-        if (item.getItemId() == R.id.depth_settings) {
-            launchDepthSettingsMenuDialog();
-            return true;
-        } else if (item.getItemId() == R.id.instant_placement_settings) {
-            launchInstantPlacementSettingsMenuDialog();
-            return true;
-        }
-        return false;
+    private void showClearAllConfirmationDialog() {
+        new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                .setTitle("Clear All Models")
+                .setMessage("Are you sure you want to remove all placed models?")
+                .setPositiveButton("Clear All", (dialog, which) -> clearAllModels())
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
-    @Override
-    protected void onDestroy() {
-        if (session != null) {
-            session.close();
-            session = null;
-        }
-
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (session == null) {
-            Exception exception = null;
-            String message = null;
-            try {
-                Availability availability = ArCoreApk.getInstance().checkAvailability(this);
-                if (availability != Availability.SUPPORTED_INSTALLED) {
-                    switch (ArCoreApk.getInstance().requestInstall(this, !installRequested)) {
-                        case INSTALL_REQUESTED:
-                            installRequested = true;
-                            return;
-                        case INSTALLED:
-                            break;
-                    }
-                }
-                if (!CameraPermissionHelper.hasCameraPermission(this)) {
-                    CameraPermissionHelper.requestCameraPermission(this);
-                    return;
-                }
-                session = new Session(/* context= */ this);
-            } catch (UnavailableArcoreNotInstalledException
-                     | UnavailableUserDeclinedInstallationException e) {
-                message = "Please install ARCore";
-                exception = e;
-            } catch (UnavailableApkTooOldException e) {
-                message = "Please update ARCore";
-                exception = e;
-            } catch (UnavailableSdkTooOldException e) {
-                message = "Please update this app";
-                exception = e;
-            } catch (UnavailableDeviceNotCompatibleException e) {
-                message = "This device does not support AR";
-                exception = e;
-            } catch (Exception e) {
-                message = "Failed to create AR session";
-                exception = e;
-            }
-
-            if (message != null) {
-                messageSnackbarHelper.showError(this, message);
-                Log.e(TAG, "Exception creating session", exception);
-                return;
-            }
-        }
-
-        try {
-            configureSession();
-            session.resume();
-        } catch (CameraNotAvailableException e) {
-            messageSnackbarHelper.showError(this, "Camera not available. Try restarting the app.");
-            session = null;
-            return;
-        }
-
-        surfaceView.onResume();
-        displayRotationHelper.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (session != null) {
-            displayRotationHelper.onPause();
-            surfaceView.onPause();
-            session.pause();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
-        super.onRequestPermissionsResult(requestCode, permissions, results);
-        if (!CameraPermissionHelper.hasCameraPermission(this)) {
-            Toast.makeText(this, "Camera permission is needed to run this application", Toast.LENGTH_LONG)
-                    .show();
-            if (!CameraPermissionHelper.shouldShowRequestPermissionRationale(this)) {
-                CameraPermissionHelper.launchPermissionSettings(this);
-            }
-            finish();
-        }
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        FullScreenHelper.setFullScreenOnWindowFocusChanged(this, hasFocus);
-    }
-
-    @Override
-    public void onSurfaceCreated(SampleRender render) {
-        try {
-            planeRenderer = new PlaneRenderer(render);
-            backgroundRenderer = new BackgroundRenderer(render);
-            virtualSceneFramebuffer = new Framebuffer(render, /* width= */ 1, /* height= */ 1);
-
-            cubemapFilter =
-                    new SpecularCubemapFilter(
-                            render, CUBEMAP_RESOLUTION, CUBEMAP_NUMBER_OF_IMPORTANCE_SAMPLES);
-            dfgTexture =
-                    new Texture(
-                            render,
-                            Texture.Target.TEXTURE_2D,
-                            Texture.WrapMode.CLAMP_TO_EDGE,
-                            /* useMipmaps= */ false);
-            final int dfgResolution = 64;
-            final int dfgChannels = 2;
-            final int halfFloatSize = 2;
-
-            ByteBuffer buffer =
-                    ByteBuffer.allocateDirect(dfgResolution * dfgResolution * dfgChannels * halfFloatSize);
-            try (InputStream is = getAssets().open("models/dfg.raw")) {
-                is.read(buffer.array());
-            }
-            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, dfgTexture.getTextureId());
-            GLError.maybeThrowGLException("Failed to bind DFG texture", "glBindTexture");
-            GLES30.glTexImage2D(
-                    GLES30.GL_TEXTURE_2D,
-                    /* level= */ 0,
-                    GLES30.GL_RG16F,
-                    /* width= */ dfgResolution,
-                    /* height= */ dfgResolution,
-                    /* border= */ 0,
-                    GLES30.GL_RG,
-                    GLES30.GL_HALF_FLOAT,
-                    buffer);
-            GLError.maybeThrowGLException("Failed to populate DFG texture", "glTexImage2D");
-
-            pointCloudShader =
-                    Shader.createFromAssets(
-                                    render,
-                                    "shaders/point_cloud.vert",
-                                    "shaders/point_cloud.frag",
-                                    /* defines= */ null)
-                            .setVec4(
-                                    "u_Color", new float[] {31.0f / 255.0f, 188.0f / 255.0f, 210.0f / 255.0f, 1.0f})
-                            .setFloat("u_PointSize", 5.0f);
-            pointCloudVertexBuffer =
-                    new VertexBuffer(render, /* numberOfEntriesPerVertex= */ 4, /* entries= */ null);
-            final VertexBuffer[] pointCloudVertexBuffers = {pointCloudVertexBuffer};
-            pointCloudMesh =
-                    new Mesh(
-                            render, Mesh.PrimitiveMode.POINTS, /* indexBuffer= */ null, pointCloudVertexBuffers);
-            virtualObjectAlbedoTexture =
-                    Texture.createFromAsset(
-                            render,
-                            "models/pawn_albedo.png",
-                            Texture.WrapMode.CLAMP_TO_EDGE,
-                            Texture.ColorFormat.SRGB);
-            virtualObjectAlbedoInstantPlacementTexture =
-                    Texture.createFromAsset(
-                            render,
-                            "models/pawn_albedo_instant_placement.png",
-                            Texture.WrapMode.CLAMP_TO_EDGE,
-                            Texture.ColorFormat.SRGB);
-            Texture virtualObjectPbrTexture =
-                    Texture.createFromAsset(
-                            render,
-                            "models/pawn_roughness_metallic_ao.png",
-                            Texture.WrapMode.CLAMP_TO_EDGE,
-                            Texture.ColorFormat.LINEAR);
-
-            virtualObjectMesh = Mesh.createFromAsset(render, "models/pawn.obj");
-            virtualObjectShader =
-                    Shader.createFromAssets(
-                                    render,
-                                    "shaders/environmental_hdr.vert",
-                                    "shaders/environmental_hdr.frag",
-                                    /* defines= */ new HashMap<String, String>() {
-                                        {
-                                            put(
-                                                    "NUMBER_OF_MIPMAP_LEVELS",
-                                                    Integer.toString(cubemapFilter.getNumberOfMipmapLevels()));
-                                        }
-                                    })
-                            .setTexture("u_AlbedoTexture", virtualObjectAlbedoTexture)
-                            .setTexture("u_RoughnessMetallicAmbientOcclusionTexture", virtualObjectPbrTexture)
-                            .setTexture("u_Cubemap", cubemapFilter.getFilteredCubemapTexture())
-                            .setTexture("u_DfgTexture", dfgTexture);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to read a required asset file", e);
-            messageSnackbarHelper.showError(this, "Failed to read a required asset file: " + e);
-        }
-    }
-
-    @Override
-    public void onSurfaceChanged(SampleRender render, int width, int height) {
-        displayRotationHelper.onSurfaceChanged(width, height);
-        virtualSceneFramebuffer.resize(width, height);
-    }
-
-    @Override
-    public void onDrawFrame(SampleRender render) {
-        if (session == null) {
-            return;
-        }
-
-        if (!hasSetTextureNames) {
-            session.setCameraTextureNames(
-                    new int[] {backgroundRenderer.getCameraColorTexture().getTextureId()});
-            hasSetTextureNames = true;
-        }
-
-        displayRotationHelper.updateSessionIfNeeded(session);
-        Frame frame;
-        try {
-            frame = session.update();
-        } catch (CameraNotAvailableException e) {
-            Log.e(TAG, "Camera not available during onDrawFrame", e);
-            messageSnackbarHelper.showError(this, "Camera not available. Try restarting the app.");
-            return;
-        }
-        Camera camera = frame.getCamera();
-        camera.getViewMatrix(viewMatrix, 0);
-        camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
-        try {
-            backgroundRenderer.setUseDepthVisualization(
-                    render, depthSettings.depthColorVisualizationEnabled());
-            backgroundRenderer.setUseOcclusion(render, depthSettings.useDepthForOcclusion());
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to read a required asset file", e);
-            messageSnackbarHelper.showError(this, "Failed to read a required asset file: " + e);
-            return;
-        }
-        backgroundRenderer.updateDisplayGeometry(frame);
-
-        if (camera.getTrackingState() == TrackingState.TRACKING
-                && (depthSettings.useDepthForOcclusion()
-                || depthSettings.depthColorVisualizationEnabled())) {
-            try (Image depthImage = frame.acquireDepthImage16Bits()) {
-                backgroundRenderer.updateCameraDepthTexture(depthImage);
-            } catch (NotYetAvailableException e) {
-            }
-        }
-
-        handleTap(frame, camera);
-        trackingStateHelper.updateKeepScreenOnFlag(camera.getTrackingState());
-        String message = null;
-        if (camera.getTrackingState() == TrackingState.PAUSED) {
-            if (camera.getTrackingFailureReason() == TrackingFailureReason.NONE) {
-                message = SEARCHING_PLANE_MESSAGE;
-            } else {
-                message = TrackingStateHelper.getTrackingFailureReasonString(camera);
-            }
-        } else if (hasTrackingPlane()) {
-            if (wrappedAnchors.isEmpty()) {
-                message = WAITING_FOR_TAP_MESSAGE;
-            }
-        } else {
-            message = SEARCHING_PLANE_MESSAGE;
-        }
-        if (message == null) {
-            messageSnackbarHelper.hide(this);
-        } else {
-            messageSnackbarHelper.showMessage(this, message);
-        }
-        if (frame.getTimestamp() != 0) {
-            backgroundRenderer.drawBackground(render);
-        }
-        if (camera.getTrackingState() == TrackingState.PAUSED) {
-            return;
-        }
-        camera.getProjectionMatrix(projectionMatrix, 0, Z_NEAR, Z_FAR);
-        camera.getViewMatrix(viewMatrix, 0);
-        try (PointCloud pointCloud = frame.acquirePointCloud()) {
-            if (pointCloud.getTimestamp() > lastPointCloudTimestamp) {
-                pointCloudVertexBuffer.set(pointCloud.getPoints());
-                lastPointCloudTimestamp = pointCloud.getTimestamp();
-            }
-            Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-            pointCloudShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
-            render.draw(pointCloudMesh, pointCloudShader);
-        }
-        planeRenderer.drawPlanes(
-                render,
-                session.getAllTrackables(Plane.class),
-                camera.getDisplayOrientedPose(),
-                projectionMatrix);
-
-        updateLightEstimation(frame.getLightEstimate(), viewMatrix);
-        render.clear(virtualSceneFramebuffer, 0f, 0f, 0f, 0f);
-        for (WrappedAnchor wrappedAnchor : wrappedAnchors) {
-            Anchor anchor = wrappedAnchor.getAnchor();
-            Trackable trackable = wrappedAnchor.getTrackable();
-            if (anchor.getTrackingState() != TrackingState.TRACKING) {
-                continue;
-            }
-
-            anchor.getPose().toMatrix(modelMatrix, 0);
-            Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
-            Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0);
-            virtualObjectShader.setMat4("u_ModelView", modelViewMatrix);
-            virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix);
-
-            if (trackable instanceof InstantPlacementPoint
-                    && ((InstantPlacementPoint) trackable).getTrackingMethod()
-                    == InstantPlacementPoint.TrackingMethod.SCREENSPACE_WITH_APPROXIMATE_DISTANCE) {
-                virtualObjectShader.setTexture(
-                        "u_AlbedoTexture", virtualObjectAlbedoInstantPlacementTexture);
-            } else {
-                virtualObjectShader.setTexture("u_AlbedoTexture", virtualObjectAlbedoTexture);
-            }
-
-            render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer);
-        }
-
-        // Compose the virtual scene with the background.
-        backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR);
-    }
-
-    private void handleTap(Frame frame, Camera camera) {
-        MotionEvent tap = tapHelper.poll();
-        if (tap != null && camera.getTrackingState() == TrackingState.TRACKING) {
-            List<HitResult> hitResultList;
-            if (instantPlacementSettings.isInstantPlacementEnabled()) {
-                hitResultList =
-                        frame.hitTestInstantPlacement(tap.getX(), tap.getY(), APPROXIMATE_DISTANCE_METERS);
-            } else {
-                hitResultList = frame.hitTest(tap);
-            }
-            for (HitResult hit : hitResultList) {
-                Trackable trackable = hit.getTrackable();
-                if ((trackable instanceof Plane
-                        && ((Plane) trackable).isPoseInPolygon(hit.getHitPose())
-                        && (PlaneRenderer.calculateDistanceToPlane(hit.getHitPose(), camera.getPose()) > 0))
-                        || (trackable instanceof Point
-                        && ((Point) trackable).getOrientationMode()
-                        == OrientationMode.ESTIMATED_SURFACE_NORMAL)
-                        || (trackable instanceof InstantPlacementPoint)
-                        || (trackable instanceof DepthPoint)) {
-                    if (isMeasuring) {
-                        Pose hitPose = hit.getHitPose();
-                        float[] worldCoords = new float[]{hitPose.tx(), hitPose.ty(), hitPose.tz(), 1.0f};
-                        float[] screenCoords = CoordinateHelper.worldToScreenCoordinates(
-                                worldCoords,
-                                viewMatrix,
-                                projectionMatrix,
-                                surfaceView.getWidth(),
-                                surfaceView.getHeight()
-                        );
-
-                        if (!isFirstPointSet) {
-                            firstMeasurementAnchor = hit.createAnchor();
-                            isFirstPointSet = true;
-                            markerLineView.setFirstPoint(new PointF(screenCoords[0], screenCoords[1]));
-                            runOnUiThread(() -> Toast.makeText(this, "First point set. Tap to set the second point", Toast.LENGTH_SHORT).show());
-                        } else {
-                            secondMeasurementAnchor = hit.createAnchor();
-                            markerLineView.setSecondPoint(new PointF(screenCoords[0], screenCoords[1]));
-                            calculateDistance();
-                            isFirstPointSet = false;
-                            isMeasuring = false;
-                        }
-                    } else {
-                        if (wrappedAnchors.size() >= 20) {
-                            wrappedAnchors.get(0).getAnchor().detach();
-                            wrappedAnchors.remove(0);
-                        }
-                        wrappedAnchors.add(new WrappedAnchor(hit.createAnchor(), trackable));
-                        this.runOnUiThread(this::showOcclusionDialogIfNeeded);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-//    private void calculateDistance() {
-//        if (firstMeasurementAnchor != null && secondMeasurementAnchor != null) {
-//            Pose firstPose = firstMeasurementAnchor.getPose();
-//            Pose secondPose = secondMeasurementAnchor.getPose();
-//
-//            float dx = firstPose.tx() - secondPose.tx();
-//            float dy = firstPose.ty() - secondPose.ty();
-//            float dz = firstPose.tz() - secondMeasurementAnchor.getPose().tz();
-//
-//            float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-//            float distanceInCm = distanceInMeters * 100;
-//            String distanceText = String.format("%.1f cm", distanceInCm);
-//            markerLineView.setDistanceText(distanceText);
-//            runOnUiThread(() -> clearButton.setVisibility(View.VISIBLE));
-//        }
+    // Old version --> Both just use plane detection
+//    private void setupTapListener() {
+//        arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
+//            if (isMeasuring) {
+//                handleMeasurementTap(hitResult);
+//            } else if (selectedFurnitureRenderable != null) {
+//                placeFurniture(hitResult);
+//            }
+//        });
 //    }
 
+    private void updateModelCounter() {
+        runOnUiThread(() -> {
+            if (placedModelsCount > 0) {
+                modelCounter.setText("Models: " + placedModelsCount);
+                modelCounter.setVisibility(View.VISIBLE);
+                findViewById(R.id.clear_all_models_button).setVisibility(View.VISIBLE);
+            } else {
+                modelCounter.setVisibility(View.GONE);
+                findViewById(R.id.clear_all_models_button).setVisibility(View.GONE);
+            }
+        });
+    }
+
+
+    private void setupTapListener() {
+        arFragment.setOnTapArPlaneListener(null);
+        arFragment.getArSceneView().getScene().setOnTouchListener((hitTestResult, motionEvent) -> {
+            if (!isMeasuring || motionEvent.getAction() != android.view.MotionEvent.ACTION_DOWN) {
+                return false;
+            }
+
+            try {
+                com.google.ar.core.Frame frame = arFragment.getArSceneView().getArFrame();
+                if (frame == null) return false;
+
+                // FIRST TRY: Plane measurement
+                List<HitResult> hitResults = frame.hitTest(motionEvent);
+                for (HitResult hit : hitResults) {
+                    if (hit.getTrackable() instanceof com.google.ar.core.Plane) {
+                        handleMeasurementTap(hit, motionEvent.getX(), motionEvent.getY());
+                        return true;
+                    }
+                }
+
+                // FALLBACK: Raycast measurement
+                Camera camera = arFragment.getArSceneView().getScene().getCamera();
+                Ray ray = camera.screenPointToRay(motionEvent.getX(), motionEvent.getY());
+                float distanceFromCamera = 1.5f;
+                Vector3 worldPosition = ray.getPoint(distanceFromCamera);
+
+                Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(
+                        new Pose(new float[]{worldPosition.x, worldPosition.y, worldPosition.z},
+                                new float[]{0, 0, 0, 1}));
+
+                createMeasurementPoint(anchor, motionEvent.getX(), motionEvent.getY());
+                return true;
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error in measurement tap handling", e);
+                return false;
+            }
+        });
+
+        // unchanged plane detection for furniture
+        arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
+            if (!isMeasuring && selectedFurnitureRenderable != null) {
+                placeFurniture(hitResult);
+            }
+        });
+    }
+
+
+
+    private void handleMeasurementTap(HitResult hitResult, float screenX, float screenY) {
+        Anchor anchor = hitResult.createAnchor();
+        createMeasurementPoint(anchor, screenX, screenY);
+    }
+
+    private void createMeasurementPoint(Anchor anchor, float screenX, float screenY) {
+        AnchorNode anchorNode = new AnchorNode(anchor);
+        anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+        if (!isFirstPointSet) {
+            clearAnchors();
+            firstAnchorNode = anchorNode;
+            isFirstPointSet = true;
+            markerLineView.setFirstPoint(new PointF(screenX, screenY));
+            addMarkerToNode(anchorNode);
+            Toast.makeText(this, "First point set. Tap to set the second point", Toast.LENGTH_SHORT).show();
+        } else {
+            secondAnchorNode = anchorNode;
+            markerLineView.setSecondPoint(new PointF(screenX, screenY));
+            addMarkerToNode(anchorNode);
+            calculateDistance();
+            isFirstPointSet = false;
+            Toast.makeText(this, "Measurement complete", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void clearAnchors() {
+        if (firstAnchorNode != null) {
+            arFragment.getArSceneView().getScene().removeChild(firstAnchorNode);
+            firstAnchorNode = null;
+        }
+        if (secondAnchorNode != null) {
+            arFragment.getArSceneView().getScene().removeChild(secondAnchorNode);
+            secondAnchorNode = null;
+        }
+    }
+
+    private void addMarkerToNode(AnchorNode anchorNode) {
+        if (measurementMarkerRenderable == null) return;
+
+        TransformableNode markerNode = new TransformableNode(arFragment.getTransformationSystem());
+        markerNode.setParent(anchorNode);
+        markerNode.setRenderable(measurementMarkerRenderable);
+        markerNode.setLocalScale(new Vector3(0.1f, 0.1f, 0.1f));
+
+        // Make sure the marker is visible
+        markerNode.setRenderable(measurementMarkerRenderable);
+        markerNode.setEnabled(true);
+    }
+
+
     private void calculateDistance() {
-        if (firstMeasurementAnchor != null && secondMeasurementAnchor != null) {
-            if (firstMeasurementAnchor.getTrackingState() != TrackingState.TRACKING ||
-                    secondMeasurementAnchor.getTrackingState() != TrackingState.TRACKING) {
+        if (firstAnchorNode != null && secondAnchorNode != null &&
+                firstAnchorNode.getAnchor() != null && secondAnchorNode.getAnchor() != null) {
+
+            if (firstAnchorNode.getAnchor().getTrackingState() != com.google.ar.core.TrackingState.TRACKING ||
+                    secondAnchorNode.getAnchor().getTrackingState() != com.google.ar.core.TrackingState.TRACKING) {
                 runOnUiThread(() -> Toast.makeText(this,
                         "Lost tracking of measurement points. Please retry.",
                         Toast.LENGTH_SHORT).show());
                 return;
             }
 
-            Pose firstPose = firstMeasurementAnchor.getPose();
-            Pose secondPose = secondMeasurementAnchor.getPose();
+            Vector3 firstPosition = firstAnchorNode.getWorldPosition();
+            Vector3 secondPosition = secondAnchorNode.getWorldPosition();
 
-            float dx = firstPose.tx() - secondPose.tx();
-            float dy = firstPose.ty() - secondPose.ty();
-            float dz = firstPose.tz() - secondPose.tz();
+            float dx = firstPosition.x - secondPosition.x;
+            float dy = firstPosition.y - secondPosition.y;
+            float dz = firstPosition.z - secondPosition.z;
             float distanceInMeters = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
             float distanceInCm = distanceInMeters * 100;
             distanceInCm = Math.round(distanceInCm * 10) / 10.0f;
 
             String distanceText = String.format("%.1f cm", distanceInCm);
-            markerLineView.setDistanceText(distanceText);
-            runOnUiThread(() -> clearButton.setVisibility(View.VISIBLE));
+            runOnUiThread(() -> {
+                markerLineView.setDistanceText(distanceText);
+                clearButton.setVisibility(View.VISIBLE);
+            });
         }
-    }
-
-
-
-
-    private void showOcclusionDialogIfNeeded() {
-        boolean isDepthSupported = session.isDepthModeSupported(Config.DepthMode.AUTOMATIC);
-        if (!depthSettings.shouldShowDepthEnableDialog() || !isDepthSupported) {
-            return;
-        }
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.options_title_with_depth)
-                .setMessage(R.string.depth_use_explanation)
-                .setPositiveButton(
-                        R.string.button_text_enable_depth,
-                        (DialogInterface dialog, int which) -> {
-                            depthSettings.setUseDepthForOcclusion(true);
-                        })
-                .setNegativeButton(
-                        R.string.button_text_disable_depth,
-                        (DialogInterface dialog, int which) -> {
-                            depthSettings.setUseDepthForOcclusion(false);
-                        })
-                .show();
-    }
-
-    private void launchInstantPlacementSettingsMenuDialog() {
-        resetSettingsMenuDialogCheckboxes();
-        Resources resources = getResources();
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.options_title_instant_placement)
-                .setMultiChoiceItems(
-                        resources.getStringArray(R.array.instant_placement_options_array),
-                        instantPlacementSettingsMenuDialogCheckboxes,
-                        (DialogInterface dialog, int which, boolean isChecked) ->
-                                instantPlacementSettingsMenuDialogCheckboxes[which] = isChecked)
-                .setPositiveButton(
-                        R.string.done,
-                        (DialogInterface dialogInterface, int which) -> applySettingsMenuDialogCheckboxes())
-                .setNegativeButton(
-                        android.R.string.cancel,
-                        (DialogInterface dialog, int which) -> resetSettingsMenuDialogCheckboxes())
-                .show();
-    }
-    private void launchDepthSettingsMenuDialog() {
-        resetSettingsMenuDialogCheckboxes();
-        Resources resources = getResources();
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.options_title_with_depth)
-                    .setMultiChoiceItems(
-                            resources.getStringArray(R.array.depth_options_array),
-                            depthSettingsMenuDialogCheckboxes,
-                            (DialogInterface dialog, int which, boolean isChecked) ->
-                                    depthSettingsMenuDialogCheckboxes[which] = isChecked)
-                    .setPositiveButton(
-                            R.string.done,
-                            (DialogInterface dialogInterface, int which) -> applySettingsMenuDialogCheckboxes())
-                    .setNegativeButton(
-                            android.R.string.cancel,
-                            (DialogInterface dialog, int which) -> resetSettingsMenuDialogCheckboxes())
-                    .show();
-        } else {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.options_title_without_depth)
-                    .setPositiveButton(
-                            R.string.done,
-                            (DialogInterface dialogInterface, int which) -> applySettingsMenuDialogCheckboxes())
-                    .show();
-        }
-    }
-
-    private void applySettingsMenuDialogCheckboxes() {
-        depthSettings.setUseDepthForOcclusion(depthSettingsMenuDialogCheckboxes[0]);
-        depthSettings.setDepthColorVisualizationEnabled(depthSettingsMenuDialogCheckboxes[1]);
-        instantPlacementSettings.setInstantPlacementEnabled(
-                instantPlacementSettingsMenuDialogCheckboxes[0]);
-        configureSession();
-    }
-
-    private void resetSettingsMenuDialogCheckboxes() {
-        depthSettingsMenuDialogCheckboxes[0] = depthSettings.useDepthForOcclusion();
-        depthSettingsMenuDialogCheckboxes[1] = depthSettings.depthColorVisualizationEnabled();
-        instantPlacementSettingsMenuDialogCheckboxes[0] =
-                instantPlacementSettings.isInstantPlacementEnabled();
-    }
-
-    private boolean hasTrackingPlane() {
-        for (Plane plane : session.getAllTrackables(Plane.class)) {
-            if (plane.getTrackingState() == TrackingState.TRACKING) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void updateLightEstimation(LightEstimate lightEstimate, float[] viewMatrix) {
-        if (lightEstimate.getState() != LightEstimate.State.VALID) {
-            virtualObjectShader.setBool("u_LightEstimateIsValid", false);
-            return;
-        }
-        virtualObjectShader.setBool("u_LightEstimateIsValid", true);
-
-        Matrix.invertM(viewInverseMatrix, 0, viewMatrix, 0);
-        virtualObjectShader.setMat4("u_ViewInverse", viewInverseMatrix);
-
-        updateMainLight(
-                lightEstimate.getEnvironmentalHdrMainLightDirection(),
-                lightEstimate.getEnvironmentalHdrMainLightIntensity(),
-                viewMatrix);
-        updateSphericalHarmonicsCoefficients(
-                lightEstimate.getEnvironmentalHdrAmbientSphericalHarmonics());
-        cubemapFilter.update(lightEstimate.acquireEnvironmentalHdrCubeMap());
-    }
-
-    private void updateMainLight(float[] direction, float[] intensity, float[] viewMatrix) {
-        worldLightDirection[0] = direction[0];
-        worldLightDirection[1] = direction[1];
-        worldLightDirection[2] = direction[2];
-        Matrix.multiplyMV(viewLightDirection, 0, viewMatrix, 0, worldLightDirection, 0);
-        virtualObjectShader.setVec4("u_ViewLightDirection", viewLightDirection);
-        virtualObjectShader.setVec3("u_LightIntensity", intensity);
-    }
-
-    private void updateSphericalHarmonicsCoefficients(float[] coefficients) {
-        if (coefficients.length != 9 * 3) {
-            throw new IllegalArgumentException(
-                    "The given coefficients array must be of length 27 (3 components per 9 coefficients");
-        }
-
-        for (int i = 0; i < 9 * 3; ++i) {
-            sphericalHarmonicsCoefficients[i] = coefficients[i] * sphericalHarmonicFactors[i / 3];
-        }
-        virtualObjectShader.setVec3Array(
-                "u_SphericalHarmonicsCoefficients", sphericalHarmonicsCoefficients);
-    }
-
-    private void configureSession() {
-        Config config = session.getConfig();
-        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
-        } else {
-            config.setDepthMode(Config.DepthMode.DISABLED);
-        }
-        if (instantPlacementSettings.isInstantPlacementEnabled()) {
-            config.setInstantPlacementMode(InstantPlacementMode.LOCAL_Y_UP);
-        } else {
-            config.setInstantPlacementMode(InstantPlacementMode.DISABLED);
-        }
-        session.configure(config);
     }
 
     private void clearMeasurementState() {
         runOnUiThread(() -> {
             markerLineView.clearPoints();
-            firstMeasurementAnchor = null;
-            secondMeasurementAnchor = null;
+            clearAnchors();
             isFirstPointSet = false;
             isMeasuring = false;
             clearButton.setVisibility(View.GONE);
         });
     }
-}
 
-class WrappedAnchor {
-    private Anchor anchor;
-    private Trackable trackable;
-
-    public WrappedAnchor(Anchor anchor, Trackable trackable) {
-        this.anchor = anchor;
-        this.trackable = trackable;
+    private void clearMeasurement() {
+        if (firstAnchorNode != null) {
+            arFragment.getArSceneView().getScene().removeChild(firstAnchorNode);
+            firstAnchorNode = null;
+        }
+        if (secondAnchorNode != null) {
+            arFragment.getArSceneView().getScene().removeChild(secondAnchorNode);
+            secondAnchorNode = null;
+        }
+        markerLineView.clearPoints();
+        isFirstPointSet = false;
+        clearButton.setVisibility(View.GONE);
     }
 
-    public Anchor getAnchor() {
-        return anchor;
+    public void loadModelFromFirebase(String modelUrl) {
+        if (modelUrl.equals(currentModelUrl) && furnitureRenderable != null) {
+            selectedFurnitureRenderable = furnitureRenderable;
+            Toast.makeText(this, "Model ready to place", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        currentModelUrl = modelUrl;
+        selectedFurnitureRenderable = null;
+
+        Toast.makeText(this, "Loading 3D model...", Toast.LENGTH_SHORT).show();
+
+        try {
+            File modelFile = File.createTempFile("model", "glb", getCacheDir());
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference modelRef = storage.getReference(modelUrl);
+
+            modelRef.getFile(modelFile)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        buildModel(modelFile);
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to download model: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Model download failed", e);
+                    });
+        } catch (IOException e) {
+            Toast.makeText(this, "Failed to create temp file", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Temp file creation failed", e);
+        }
     }
 
-    public Trackable getTrackable() {
-        return trackable;
+    private void buildModel(File file) {
+        RenderableSource renderableSource = RenderableSource
+                .builder()
+                .setSource(this, Uri.parse(file.getPath()), RenderableSource.SourceType.GLB)
+                .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                .build();
+
+        ModelRenderable
+                .builder()
+                .setSource(this, renderableSource)
+                .setRegistryId(file.getPath())
+                .build()
+                .thenAccept(modelRenderable -> {
+                    furnitureRenderable = modelRenderable;
+                    selectedFurnitureRenderable = modelRenderable;
+                    Toast.makeText(this, "Model loaded - tap to place", Toast.LENGTH_SHORT).show();
+                })
+                .exceptionally(throwable -> {
+                    Toast.makeText(this, "Failed to build model", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Model build failed", throwable);
+                    return null;
+                });
+    }
+
+    // private void placeFurniture(HitResult hitResult) {
+    //     if (selectedFurnitureRenderable == null) {
+    //         Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
+    //         return;
+    //     }
+
+    //     // Deselect previous model if any
+    //     if (currentFurnitureNode != null) {
+    //         deselectCurrentModel();
+    //     }
+
+    //     Anchor anchor = hitResult.createAnchor();
+    //     AnchorNode anchorNode = new AnchorNode(anchor);
+    //     anchorNode.setParent(arFragment.getArSceneView().getScene());
+    //     placedFurnitureNodes.add(anchorNode);
+
+    //     currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
+    //     currentFurnitureNode.setParent(anchorNode);
+    //     currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
+    //     currentFurnitureNode.select(); // This shows the selection visualizer
+
+    //     currentFurnitureNode.setCollisionShape(null); // Disables collision
+
+    //     // Set default scale
+    //     currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
+
+    //     // Enable controllers
+    //     currentFurnitureNode.getTranslationController().setEnabled(true);
+    //     currentFurnitureNode.getRotationController().setEnabled(false); // Start with move mode
+    //     currentFurnitureNode.getScaleController().setEnabled(false);
+
+    //     // Show manipulation buttons
+    //     showManipulationButtons();
+
+    //     // Set tap listener for selecting models
+    //     currentFurnitureNode.setOnTapListener((hitTestResult, motionEvent) -> {
+    //         Node tappedNode = hitTestResult.getNode();
+    //         if (tappedNode instanceof TransformableNode) {
+    //             deselectCurrentModel();
+    //             currentFurnitureNode = (TransformableNode) tappedNode;
+    //             currentFurnitureNode.select();
+    //             showManipulationButtons();
+    //         }
+    //         return ;
+    //     });
+    // }
+
+    // private void deselectCurrentModel() {
+    //     if (currentFurnitureNode != null) {
+    //         currentFurnitureNode.setEnabled(false); // This effectively deselects
+    //         currentFurnitureNode.setEnabled(true); // Re-enable for interaction
+    //     }
+    // }
+
+
+
+    private void placeFurniture(HitResult hitResult) {
+        if (selectedFurnitureRenderable == null) {
+            Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Deselect previous model if any
+        if (currentFurnitureNode != null) {
+            deselectCurrentModel();
+        }
+
+        Anchor anchor = hitResult.createAnchor();
+        AnchorNode anchorNode = new AnchorNode(anchor);
+        anchorNode.setParent(arFragment.getArSceneView().getScene());
+        placedFurnitureNodes.add(anchorNode);
+
+        placedModelsCount++;
+        updateModelCounter();
+
+        currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
+        currentFurnitureNode.setParent(anchorNode);
+        currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
+
+        // Set default scale
+        currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
+
+        currentFurnitureNode.setName(currentModelName);
+        // Start in move mode by default
+        setRotateMode(false);
+
+        // Set tap listener for selecting models
+        currentFurnitureNode.setOnTapListener((hitTestResult, motionEvent) -> {
+            Node tappedNode = hitTestResult.getNode();
+            if (tappedNode instanceof TransformableNode) {
+                deselectCurrentModel();
+                currentFurnitureNode = (TransformableNode) tappedNode;
+                showManipulationButtons();
+                showModelName((String) currentFurnitureNode.getName());
+                setRotateMode(isRotateMode);
+            }
+            return;
+        });
+        showManipulationButtons();
+        showModelName(currentModelName);
+    }
+
+    private void showModelName(String name) {
+        runOnUiThread(() -> {
+            if (name != null && !name.isEmpty()) {
+                modelNameText.setText(name);
+                modelNameContainer.setVisibility(View.VISIBLE);
+            } else {
+                modelNameContainer.setVisibility(View.GONE);
+            }
+        });
+    }
+    public void setCurrentModelName(String name) {
+        this.currentModelName = name;
+    }
+
+    private void hideModelName() {
+        runOnUiThread(() -> {
+            modelNameContainer.setVisibility(View.GONE);
+        });
+    }
+
+    private void deselectCurrentModel() {
+        if (currentFurnitureNode != null) {
+            currentFurnitureNode.setEnabled(false);
+            currentFurnitureNode.setEnabled(true); // Re-enable for interaction
+            hideManipulationButtons();
+            hideModelName();
+        }
+    }
+
+    private void showManipulationButtons() {
+        furnitureControlsPanel.setVisibility(View.VISIBLE);
+        deleteButton.setVisibility(View.VISIBLE);
+        rotateButton.setVisibility(View.VISIBLE);
+        moveButton.setVisibility(View.VISIBLE);
+    }
+
+    private void hideManipulationButtons() {
+        furnitureControlsPanel.setVisibility(View.GONE);
+        deleteButton.setVisibility(View.GONE);
+        rotateButton.setVisibility(View.GONE);
+        moveButton.setVisibility(View.GONE);
+    }
+
+    // private void setRotateMode(boolean rotateMode) {
+    //     isRotateMode = rotateMode;
+    //     if (currentFurnitureNode != null) {
+    //         currentFurnitureNode.getTranslationController().setEnabled(!rotateMode);
+    //         currentFurnitureNode.getRotationController().setEnabled(rotateMode);
+
+    //         if (rotateMode) {
+    //             Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
+    //         } else {
+    //             Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
+    //         }
+    //     }
+    // }
+
+    // private void setRotateMode(boolean rotateMode) {
+    //     isRotateMode = rotateMode;
+    //     if (currentFurnitureNode != null) {
+    //         // First disable all controllers
+    //         currentFurnitureNode.getTranslationController().setEnabled(false);
+    //         currentFurnitureNode.getRotationController().setEnabled(false);
+    //         currentFurnitureNode.getScaleController().setEnabled(false);
+
+    //         // Then enable the appropriate ones
+    //         if (rotateMode) {
+    //             currentFurnitureNode.getRotationController().setEnabled(true);
+    //             rotateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
+    //             moveButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+    //             Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
+    //         } else {
+    //             currentFurnitureNode.getTranslationController().setEnabled(true);
+    //             moveButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent));
+    //             rotateButton.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+    //             Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
+    //         }
+    //     }
+    // }
+
+    private void setRotateMode(boolean rotateMode) {
+        isRotateMode = rotateMode;
+        if (currentFurnitureNode != null) {
+            // First reset the node to clear any ongoing transformations
+            currentFurnitureNode.getTranslationController().setEnabled(false);
+            currentFurnitureNode.getRotationController().setEnabled(false);
+
+            // Then enable the appropriate controller
+            if (rotateMode) {
+                currentFurnitureNode.getRotationController().setEnabled(true);
+                findViewById(R.id.rotate_button_container).setBackgroundResource(R.drawable.icon_button_bg_selected);
+                findViewById(R.id.move_button_container).setBackgroundResource(R.drawable.icon_button_bg_selector);
+                Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
+            } else {
+                currentFurnitureNode.getTranslationController().setEnabled(true);
+                findViewById(R.id.move_button_container).setBackgroundResource(R.drawable.icon_button_bg_selected);
+                findViewById(R.id.rotate_button_container).setBackgroundResource(R.drawable.icon_button_bg_selector);
+                Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
+            }
+
+            // Force a reselect to update the visual indicators
+            currentFurnitureNode.select();
+        }
+    }
+
+    private void deleteCurrentModel() {
+        if (currentFurnitureNode != null) {
+            AnchorNode parentAnchor = (AnchorNode) currentFurnitureNode.getParent();
+            if (parentAnchor != null) {
+                arFragment.getArSceneView().getScene().removeChild(parentAnchor);
+                placedFurnitureNodes.remove(parentAnchor);
+                parentAnchor.setAnchor(null);
+
+                placedModelsCount--;
+                updateModelCounter();
+            }
+
+            currentFurnitureNode = null;
+            hideManipulationButtons();
+            hideModelName();
+
+            Toast.makeText(this, "Model removed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void clearAllModels() {
+        for (AnchorNode anchorNode : placedFurnitureNodes) {
+            arFragment.getArSceneView().getScene().removeChild(anchorNode);
+            anchorNode.setAnchor(null);
+        }
+        placedFurnitureNodes.clear();
+        currentFurnitureNode = null;
+        hideManipulationButtons();
+        hideModelName();
+        placedModelsCount = 0;
+        updateModelCounter();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!CameraPermissionHelper.hasCameraPermission(this)) {
+            CameraPermissionHelper.requestCameraPermission(this);
+        }
     }
 }
