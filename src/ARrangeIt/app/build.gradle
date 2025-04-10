@@ -70,10 +70,13 @@ dependencies {
     testImplementation libs.ext.junit
     androidTestImplementation libs.ext.junit
     testImplementation libs.core.testing
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation libs.junit.v115
-    androidTestImplementation libs.espresso.core.v351
-    androidTestImplementation libs.test.runner
-    androidTestImplementation libs.rules
+//    androidTestImplementation libs.espresso.core.v351
+//    androidTestImplementation libs.test.runner
+//    androidTestImplementation libs.rules
     androidTestImplementation libs.test.core
     implementation libs.core
     testImplementation 'org.mockito:mockito-core:5.4.0'
