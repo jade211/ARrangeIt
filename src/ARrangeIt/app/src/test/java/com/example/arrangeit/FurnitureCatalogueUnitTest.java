@@ -35,7 +35,7 @@ public class FurnitureCatalogueUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         fragment = new FurnitureCatalogueFragment();
         fragment.furnitureItems = new ArrayList<>();
         fragment.filteredFurnitureItems = new ArrayList<>();

@@ -86,7 +86,7 @@ public class FurnitureDetailUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         fragment = spy(new FurnitureDetailFragment());
         testFurnitureItem = new FurnitureItem(
                 "Test Chair",
