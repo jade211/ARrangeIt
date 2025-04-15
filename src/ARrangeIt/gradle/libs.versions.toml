@@ -29,6 +29,8 @@ sceneview = "2.2.1"
 firebaseAuth = "23.1.0"
 recyclerview = "1.4.0"
 storageKt = "1.4.0"
+fragmentTesting = "1.8.6"
+uiautomator = "2.3.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose" }
@@ -69,6 +71,8 @@ ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
+uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
