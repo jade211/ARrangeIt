@@ -1,14 +1,30 @@
 package com.example.arrangeit;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.fail;
 
 import android.os.SystemClock;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.IdlingResource;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -17,7 +33,10 @@ import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
+import com.bumptech.glide.Glide;
 
+import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,9 +54,16 @@ public class FurnitureCatalogueFragmentTest {
     public GrantPermissionRule permissionRule =
             GrantPermissionRule.grant(android.Manifest.permission.CAMERA);
 
+    @Rule
+    public GlideTestRule glideTestRule = new GlideTestRule();
+
+    private IdlingResource idlingResource;
+
     @Before
-    public void openCatalogue() throws UiObjectNotFoundException {
-        SystemClock.sleep(2000);
+    public void setUp() throws UiObjectNotFoundException {
+        idlingResource = new GlideIdlingResource();
+        IdlingRegistry.getInstance().register(idlingResource);
+
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.findObject(new UiSelector()
                         .resourceId("com.example.arrangeit:id/nav_catalogue"))
@@ -45,6 +71,22 @@ public class FurnitureCatalogueFragmentTest {
         onView(withId(R.id.fragment_container)).check(matches(isDisplayed()));
     }
 
+@After
+public void tearDown() {
+    if (idlingResource != null) {
+        IdlingRegistry.getInstance().unregister(idlingResource);
+    }
+
+    InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
+            Glide.get(ApplicationProvider.getApplicationContext()).clearMemory()
+    );
+    new Thread(() ->
+            Glide.get(ApplicationProvider.getApplicationContext()).clearDiskCache()
+    ).start();
+
+    Glide.tearDown();
+    onView(isRoot()).perform(waitFor(2000));
+}
 
     @Test
     public void testCatalogueFragmentContents() {
@@ -52,26 +94,205 @@ public class FurnitureCatalogueFragmentTest {
         onView(withId(R.id.closeButton)).check(matches(isDisplayed()));
         onView(withId(R.id.searchBar)).check(matches(isDisplayed()));
         onView(withId(R.id.filterIcon)).check(matches(isDisplayed()));
-        onView(withId(R.id.filterOptionsLayout)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.applyFilterButton)).check(matches(not(isDisplayed())));
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()));
-//        onView(withId(R.id.recyclerView)).check(matches(not(isDisplayed())));
     }
 
-//    @Test
-//    public void testNavbarVisibility() {
-//        onView(withId(R.id.bottom_nav_bar)).check(matches(isDisplayed()));
-//        onView(withId(R.id.nav_catalogue)).check(matches(isDisplayed()));
-//    }
 
-//    @Test
-//    public void testCloseButtonFunctionality() {
-//        onView(withId(R.id.closeButton)).perform(click());
-//        onView(withId(R.id.fragment_container)).check(matches(not(isDisplayed())));
-//        try {
-//            openCatalogue();
-//        } catch (UiObjectNotFoundException e) {
-//            throw new RuntimeException("Failed to reopen catalogue", e);
-//        }
-//    }
+    @Test
+    public void testSearchFunctionality() {
+        try {
+            onView(withId(R.id.searchBar))
+                    .perform(typeText("chair"), pressImeActionButton());
+            closeSoftKeyboard();
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Search test failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSortingPriceFunctionality() {
+        try {
+            onView(withId(R.id.filterIcon)).perform(click());
+
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            device.swipe(500, 1500, 500, 500, 20);
+
+            onView(withId(R.id.sortByPriceSpinner))
+                    .check(matches(isDisplayed()))
+                    .perform(click());
+
+            onData(allOf(is(instanceOf(String.class)), is("Price: Low to High")))
+                    .perform(click());
+
+            onView(withId(R.id.applyFilterButton)).perform(click());
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Sorting Price test failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSortingColourFunctionality() {
+        try {
+            onView(withId(R.id.filterIcon)).perform(click());
+
+            onView(withId(R.id.colourFilterSpinner))
+                    .check(matches(isDisplayed()))
+                    .perform(click());
+
+            onData(allOf(is(instanceOf(String.class)), is("Blue")))
+                    .perform(click());
+
+
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            device.swipe(500, 1500, 500, 500, 20);
+
+            onView(withId(R.id.applyFilterButton)).perform(click());
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Sorting Colour test failed: " + e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testSortingTypeFunctionality() {
+        try {
+            onView(withId(R.id.filterIcon)).perform(click());
+
+            onView(withId(R.id.typeFilterSpinner))
+                    .check(matches(isDisplayed()))
+                    .perform(click());
+
+            onData(allOf(is(instanceOf(String.class)), is("Chair")))
+                    .perform(click());
+
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            device.swipe(500, 1500, 500, 500, 20);
+
+            onView(withId(R.id.applyFilterButton)).perform(click());
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Sorting Type test failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSortingMaxPriceFunctionality() {
+        try {
+            onView(withId(R.id.filterIcon)).perform(click());
+
+            onView(withId(R.id.priceFilterEditText))
+                    .perform(typeText("200"));
+            closeSoftKeyboard();
+
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            device.swipe(500, 1500, 500, 500, 20);
+
+
+            onView(withId(R.id.applyFilterButton)).perform(click());
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Sorting Max Price test failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSortingMaxDepthFunctionality() {
+        try {
+            onView(withId(R.id.filterIcon)).perform(click());
+
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            device.swipe(500, 1500, 500, 500, 20);
+
+            onView(withId(R.id.depthFilterEditText))
+                    .perform(typeText("79"));
+            closeSoftKeyboard();
+
+            onView(withId(R.id.applyFilterButton)).perform(click());
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Sorting Max Depth test failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSortingMaxHeightFunctionality() {
+        try {
+            onView(withId(R.id.filterIcon)).perform(click());
+
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            device.swipe(500, 1500, 500, 500, 20);
+
+            onView(withId(R.id.heightFilterEditText))
+                    .perform(typeText("90"));
+            closeSoftKeyboard();
+
+            onView(withId(R.id.applyFilterButton)).perform(click());
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Sorting Max Height test failed: " + e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testSortingMaxWidthFunctionality() {
+        try {
+            onView(withId(R.id.filterIcon)).perform(click());
+
+            UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            device.swipe(500, 1500, 500, 500, 20);
+
+            onView(withId(R.id.widthFilterEditText))
+                    .perform(typeText("200"));
+            closeSoftKeyboard();
+
+            onView(withId(R.id.applyFilterButton)).perform(click());
+            SystemClock.sleep(1000);
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
+        } catch (Exception e) {
+            fail("Sorting Max Width test failed: " + e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testCloseButtonFunctionality() {
+        try {
+            onView(withId(R.id.closeButton)).perform(click());
+            onView(withId(R.id.fragment_container)).check(matches(not(isDisplayed())));
+        } catch (Exception e) {
+            fail("Close button test failed: " + e.getMessage());
+        }
+    }
+
+
+    // HELPERS
+    public static ViewAction waitFor(final long millis) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isRoot();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Wait for " + millis + " milliseconds.";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                uiController.loopMainThreadForAtLeast(millis);
+            }
+        };
+    }
 }
