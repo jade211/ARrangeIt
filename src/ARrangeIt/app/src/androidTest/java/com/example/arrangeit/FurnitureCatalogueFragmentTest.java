@@ -71,22 +71,22 @@ public class FurnitureCatalogueFragmentTest {
         onView(withId(R.id.fragment_container)).check(matches(isDisplayed()));
     }
 
-@After
-public void tearDown() {
-    if (idlingResource != null) {
-        IdlingRegistry.getInstance().unregister(idlingResource);
+    @After
+    public void tearDown() {
+        if (idlingResource != null) {
+            IdlingRegistry.getInstance().unregister(idlingResource);
+        }
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
+                Glide.get(ApplicationProvider.getApplicationContext()).clearMemory()
+        );
+        new Thread(() ->
+                Glide.get(ApplicationProvider.getApplicationContext()).clearDiskCache()
+        ).start();
+
+        Glide.tearDown();
+        onView(isRoot()).perform(waitFor(2000));
     }
-
-    InstrumentationRegistry.getInstrumentation().runOnMainSync(() ->
-            Glide.get(ApplicationProvider.getApplicationContext()).clearMemory()
-    );
-    new Thread(() ->
-            Glide.get(ApplicationProvider.getApplicationContext()).clearDiskCache()
-    ).start();
-
-    Glide.tearDown();
-    onView(isRoot()).perform(waitFor(2000));
-}
 
     @Test
     public void testCatalogueFragmentContents() {

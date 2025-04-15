@@ -1,4 +1,3 @@
-// In file: androidTest/java/com/example/arrangeit/GlideTestRule.java
 package com.example.arrangeit;
 
 import android.content.Context;
@@ -18,7 +17,6 @@ public class GlideTestRule implements TestRule {
             public void evaluate() throws Throwable {
                 Context context = ApplicationProvider.getApplicationContext();
                 try {
-                    // Initialize Glide with test configuration
                     Glide.init(context, new GlideBuilder()
                             .setDefaultRequestOptions(
                                     new RequestOptions()
@@ -27,7 +25,6 @@ public class GlideTestRule implements TestRule {
                             ));
                     base.evaluate();
                 } finally {
-                    // Clean up Glide
                     Glide.tearDown();
                 }
             }

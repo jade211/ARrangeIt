@@ -1,9 +1,7 @@
-// androidTest/java/com/example/arrangeit/GlideIdlingResource.java
 package com.example.arrangeit;
 
 import androidx.test.espresso.IdlingResource;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.ResourceCallback;
 import java.lang.reflect.Field;
 import java.util.Set;
 import androidx.test.core.app.ApplicationProvider;
@@ -21,7 +19,6 @@ public class GlideIdlingResource implements IdlingResource {
     @Override
     public boolean isIdleNow() {
         try {
-            // Use reflection to check Glide's active requests
             Class<?> glideClass = Class.forName("com.bumptech.glide.Glide");
             Field engineField = glideClass.getDeclaredField("engine");
             engineField.setAccessible(true);
@@ -34,7 +31,6 @@ public class GlideIdlingResource implements IdlingResource {
 
             isIdle = jobs.isEmpty();
         } catch (Exception e) {
-            // Fallback to idle if reflection fails
             isIdle = true;
         }
 

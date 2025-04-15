@@ -80,7 +80,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.4.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
-    testImplementation 'org.robolectric:robolectric:4.14'
     testImplementation libs.core.v1140
     implementation libs.fragment
 
