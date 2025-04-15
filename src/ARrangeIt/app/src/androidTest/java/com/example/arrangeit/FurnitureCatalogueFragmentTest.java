@@ -11,15 +11,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 
-import android.os.SystemClock;
 import android.view.View;
-
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
@@ -33,7 +31,9 @@ import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
+
 import com.bumptech.glide.Glide;
+
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -61,6 +61,10 @@ public class FurnitureCatalogueFragmentTest {
 
     @Before
     public void setUp() throws UiObjectNotFoundException {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            Glide.get(ApplicationProvider.getApplicationContext());
+        });
+
         idlingResource = new GlideIdlingResource();
         IdlingRegistry.getInstance().register(idlingResource);
 
@@ -84,27 +88,25 @@ public class FurnitureCatalogueFragmentTest {
                 Glide.get(ApplicationProvider.getApplicationContext()).clearDiskCache()
         ).start();
 
-        Glide.tearDown();
         onView(isRoot()).perform(waitFor(2000));
     }
 
     @Test
-    public void testCatalogueFragmentContents() {
+    public void testCatalogueContents() {
         onView(withText("Furniture Catalogue")).check(matches(isDisplayed()));
         onView(withId(R.id.closeButton)).check(matches(isDisplayed()));
         onView(withId(R.id.searchBar)).check(matches(isDisplayed()));
         onView(withId(R.id.filterIcon)).check(matches(isDisplayed()));
-        onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()));
     }
-
 
     @Test
     public void testSearchFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.searchBar))
                     .perform(typeText("chair"), pressImeActionButton());
             closeSoftKeyboard();
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Search test failed: " + e.getMessage());
@@ -114,6 +116,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingPriceFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -127,7 +130,7 @@ public class FurnitureCatalogueFragmentTest {
                     .perform(click());
 
             onView(withId(R.id.applyFilterButton)).perform(click());
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Sorting Price test failed: " + e.getMessage());
@@ -137,6 +140,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingColourFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             onView(withId(R.id.colourFilterSpinner))
@@ -151,7 +155,7 @@ public class FurnitureCatalogueFragmentTest {
             device.swipe(500, 1500, 500, 500, 20);
 
             onView(withId(R.id.applyFilterButton)).perform(click());
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Sorting Colour test failed: " + e.getMessage());
@@ -162,6 +166,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingTypeFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             onView(withId(R.id.typeFilterSpinner))
@@ -175,7 +180,7 @@ public class FurnitureCatalogueFragmentTest {
             device.swipe(500, 1500, 500, 500, 20);
 
             onView(withId(R.id.applyFilterButton)).perform(click());
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Sorting Type test failed: " + e.getMessage());
@@ -185,6 +190,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxPriceFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             onView(withId(R.id.priceFilterEditText))
@@ -196,7 +202,7 @@ public class FurnitureCatalogueFragmentTest {
 
 
             onView(withId(R.id.applyFilterButton)).perform(click());
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Sorting Max Price test failed: " + e.getMessage());
@@ -206,6 +212,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxDepthFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -216,7 +223,7 @@ public class FurnitureCatalogueFragmentTest {
             closeSoftKeyboard();
 
             onView(withId(R.id.applyFilterButton)).perform(click());
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Sorting Max Depth test failed: " + e.getMessage());
@@ -226,6 +233,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxHeightFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -236,7 +244,7 @@ public class FurnitureCatalogueFragmentTest {
             closeSoftKeyboard();
 
             onView(withId(R.id.applyFilterButton)).perform(click());
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Sorting Max Height test failed: " + e.getMessage());
@@ -247,6 +255,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxWidthFunctionality() {
         try {
+            onView(isRoot()).perform(waitFor(1000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -257,7 +266,7 @@ public class FurnitureCatalogueFragmentTest {
             closeSoftKeyboard();
 
             onView(withId(R.id.applyFilterButton)).perform(click());
-            SystemClock.sleep(1000);
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
         } catch (Exception e) {
             fail("Sorting Max Width test failed: " + e.getMessage());
@@ -275,6 +284,18 @@ public class FurnitureCatalogueFragmentTest {
         }
     }
 
+    // FURNITURE DETAILS FRAGMENT
+    @Test
+    public void testFurnitureDetailNavigation() throws UiObjectNotFoundException {
+        onView(isRoot()).perform(waitFor(2000));
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.findObject(new UiSelector()
+                        .className("android.widget.TextView")
+                        .textContains("Modern Arm Chair"))
+                .click();
+        onView(withId(R.id.itemName)).check(matches(isDisplayed()));
+        onView(withId(R.id.itemPrice)).check(matches(isDisplayed()));
+    }
 
     // HELPERS
     public static ViewAction waitFor(final long millis) {

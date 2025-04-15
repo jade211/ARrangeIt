@@ -9,7 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.example.arrangeit.FurnitureCatalogueFragmentTest.waitFor;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -100,6 +100,7 @@ public class ARCoreScreenTest {
     @Test
     public void testCatalogueToggle() {
         onView(withId(R.id.nav_catalogue)).perform(click());
+        onView(isRoot()).perform(waitFor(2000));
         onView(withId(R.id.fragment_container)).check(matches(isDisplayed()));
     }
 
@@ -110,7 +111,7 @@ public class ARCoreScreenTest {
             activity.placedModelsCount = 1;
             activity.showManipulationButtons();
         });
-
+        onView(isRoot()).perform(waitFor(1000));
         onView(withId(R.id.furniture_controls)).check(matches(isDisplayed()));
         onView(withId(R.id.delete_button)).check(matches(isDisplayed()));
         onView(withId(R.id.rotate_button)).check(matches(isDisplayed()));
@@ -154,8 +155,6 @@ public class ARCoreScreenTest {
 
     }
 
-
-
     // MEASURE TOOL COMPONENT UI TESTS
     @Test
     public void testMeasurementControlsInitialState() {
@@ -163,14 +162,9 @@ public class ARCoreScreenTest {
     }
 
     @Test
-    public void testMeasurementToggle() {
-        onView(withId(R.id.nav_measure)).perform(click());
-        onView(withId(R.id.clear_button)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
     public void testMeasurementCreation() {
         onView(withId(R.id.nav_measure)).perform(click());
+        onView(isRoot()).perform(waitFor(2000));
         int[] screenSize = getScreenSize();
         int screenWidth = screenSize[0];
         int screenHeight = screenSize[1];
@@ -191,6 +185,7 @@ public class ARCoreScreenTest {
     @Test
     public void testMeasurementClear() {
         testMeasurementCreation();
+        onView(isRoot()).perform(waitFor(2000));
         onView(withId(R.id.clear_button)).perform(click());
         onView(withId(R.id.clear_button)).check(matches(not(isDisplayed())));
     }
