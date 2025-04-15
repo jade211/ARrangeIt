@@ -139,61 +139,38 @@ public class RegisterScreenTest {
 
     @Test
     public void testPasswordTooShort() {
-        onView(withId(R.id.password)).perform(clearText(), typeText("short"));
-        closeSoftKeyboard();
-        onView(withId(R.id.password_input_layout))
-                .check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
+        testPasswordValidation("short", expectedPasswordError);
     }
 
     @Test
     public void testPasswordMissingUppercase() {
-        onView(withId(R.id.password)).perform(clearText(), typeText("alllowercase1!"));
-        closeSoftKeyboard();
-        onView(withId(R.id.password_input_layout))
-                .check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
+        testPasswordValidation("alllowercase1!", expectedPasswordError);
     }
 
     @Test
     public void testPasswordMissingLowercase() {
-        onView(withId(R.id.password)).perform(clearText(), typeText("ALLUPPERCASE1!"));
-        closeSoftKeyboard();
-        onView(withId(R.id.password_input_layout))
-                .check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
+        testPasswordValidation("ALLUPPERCASE1!", expectedPasswordError);
     }
 
     @Test
     public void testPasswordMissingDigit() {
-        onView(withId(R.id.password)).perform(clearText(), typeText("NoDigitsHere!"));
-        closeSoftKeyboard();
-        onView(withId(R.id.password_input_layout))
-                .check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
+        testPasswordValidation("NoDigitsHere!", expectedPasswordError);
     }
 
     @Test
     public void testPasswordMissingSpecialChar() {
-        onView(withId(R.id.password)).perform(clearText(), typeText("MissingSpecial1"));
-        closeSoftKeyboard();
-        onView(withId(R.id.password_input_layout))
-                .check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
+        testPasswordValidation("MissingSpecial1", expectedPasswordError);
     }
 
     @Test
     public void testPasswordOnlyDigits() {
-        onView(withId(R.id.password)).perform(clearText(), typeText("12345678"));
-        closeSoftKeyboard();
-        onView(withId(R.id.password_input_layout))
-                .check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
+        testPasswordValidation("12345678", expectedPasswordError);
     }
 
     @Test
     public void testPasswordOnlySpecialChars() {
-        onView(withId(R.id.password)).perform(clearText(), typeText("!@#$%^&*"));
-        closeSoftKeyboard();
-        onView(withId(R.id.password_input_layout))
-                .check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
+        testPasswordValidation("!@#$%^&*", expectedPasswordError);
     }
-
-
 
 
     @Test
@@ -292,5 +269,12 @@ public class RegisterScreenTest {
                 return expectedErrorText.equals(error == null ? "" : error.toString());
             }
         };
+    }
+
+    private void testPasswordValidation(String password, String expectedPasswordError) {
+        onView(withId(R.id.password)).perform(clearText(), typeText(password));
+        closeSoftKeyboard();
+
+        onView(withId(R.id.password_input_layout)).check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
     }
 }
