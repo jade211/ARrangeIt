@@ -15,6 +15,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -25,6 +27,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.jetbrains.annotations.Contract;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,15 +39,33 @@ public class LoginScreenTest {
     public ActivityScenarioRule<MainActivity> activityRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
+    @Test
+    public void testLoginScreenLogoVisible() {
+        onView(withId(R.id.logo)).check(matches(isDisplayed()));
+    }
+    @Test
+    public void testLoginScreenEmailVisible() {
+        onView(withId(R.id.email)).check(matches(isDisplayed()));
+    }
 
     @Test
-    public void testLoginScreenElementsVisible() {
-        onView(withId(R.id.email)).check(matches(isDisplayed()));
+    public void testLoginScreenPasswordVisible() {
         onView(withId(R.id.password)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testLoginScreenSignInVisible() {
         onView(withId(R.id.sign_in)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testLoginScreenSignUpVisible() {
         onView(withId(R.id.sign_up)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testLoginScreenForgotPasswordVisible() {
         onView(withId(R.id.forgot_password)).check(matches(isDisplayed()));
-        onView(withId(R.id.logo)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -158,6 +179,8 @@ public class LoginScreenTest {
 
 
     // HELPERS
+    @NonNull
+    @Contract(" -> new")
     public static Matcher<Root> isDialog() {
         return new TypeSafeMatcher<>() {
             @Override
@@ -192,6 +215,8 @@ public class LoginScreenTest {
 //    }
 
 
+    @NonNull
+    @Contract(value = "_ -> new", pure = true)
     public static Matcher<View> hasTextInputLayoutErrorText(final String expectedErrorText) {
         return new BoundedMatcher<>(TextInputLayout.class) {
             @Override

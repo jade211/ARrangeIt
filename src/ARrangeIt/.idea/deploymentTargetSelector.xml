@@ -5,19 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testForgotPasswordWithValidEmail()">
+      <SelectionState runConfigName="testPasswordOnlyDigits()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="LoginScreenTest">
+      <SelectionState runConfigName="testPasswordTooShort()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="test2IncorrectLoginCredentials()">
+      <SelectionState runConfigName="testPasswordMissingUppercase()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="test2IncorrectLoginShowsToast()">
+      <SelectionState runConfigName="RegisterScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testIncorrectLoginShowsToast()">
+      <SelectionState runConfigName="testSuccessfulRegistrationNavigation()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
