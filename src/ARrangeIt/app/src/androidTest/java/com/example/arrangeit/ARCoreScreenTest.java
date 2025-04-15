@@ -32,11 +32,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.bumptech.glide.Glide;
-import com.example.arrangeit.helpers.MarkerLineView;
-
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -152,10 +148,112 @@ public class ARCoreScreenTest {
     }
 
     @Test
-    public void testLogoutButton() {
+    public void testSignoutButton() {
         onView(withId(R.id.nav_log_out)).perform(click());
         onView(withText("Welcome back")).check(matches(isDisplayed()));
 
     }
 
+
+
+    // MEASURE TOOL COMPONENT UI TESTS
+    @Test
+    public void testMeasurementControlsInitialState() {
+        onView(withId(R.id.clear_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    public void testMeasurementToggle() {
+        onView(withId(R.id.nav_measure)).perform(click());
+        onView(withId(R.id.clear_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    public void testMeasurementCreation() {
+        onView(withId(R.id.nav_measure)).perform(click());
+        int[] screenSize = getScreenSize();
+        int screenWidth = screenSize[0];
+        int screenHeight = screenSize[1];
+        int safeAreaBottom = screenHeight - 200; // ** navbar area ignored
+
+        int x1 = new Random().nextInt(screenWidth - 200) + 100;
+        int y1 = new Random().nextInt(safeAreaBottom - 200) + 100;
+        int x2 = new Random().nextInt(screenWidth - 200) + 100;
+        int y2 = new Random().nextInt(safeAreaBottom - 200) + 100;
+
+
+        onView(isRoot()).perform(clickXY(x1, y1));
+        SystemClock.sleep(3000);
+        onView(isRoot()).perform(clickXY(x2, y2));
+        onView(withId(R.id.clear_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testMeasurementClear() {
+        testMeasurementCreation();
+        onView(withId(R.id.clear_button)).perform(click());
+        onView(withId(R.id.clear_button)).check(matches(not(isDisplayed())));
+    }
+
+    // HELPER METHODS
+    private int[] getScreenSize() {
+        int[] size = new int[2];
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            DisplayMetrics metrics = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager)
+                    InstrumentationRegistry.getInstrumentation().getContext()
+                            .getSystemService(Context.WINDOW_SERVICE);
+            windowManager.getDefaultDisplay().getMetrics(metrics);
+            size[0] = metrics.widthPixels;
+            size[1] = metrics.heightPixels;
+        });
+        return size;
+    }
+
+    public static ViewAction clickXY(final int x, final int y) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isRoot();
+            }
+
+
+            @Override
+            public String getDescription() {
+                return "Perform click at coordinates (" + x + ", " + y + ")";
+            }
+
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                int[] location = new int[2];
+                view.getLocationOnScreen(location);
+
+
+                float screenX = location[0] + x;
+                float screenY = location[1] + y;
+
+
+                MotionEvent down = MotionEvent.obtain(
+                        SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(),
+                        MotionEvent.ACTION_DOWN,
+                        screenX,
+                        screenY,
+                        0
+                );
+                MotionEvent up = MotionEvent.obtain(
+                        SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(),
+                        MotionEvent.ACTION_UP,
+                        screenX,
+                        screenY,
+                        0
+                );
+                view.dispatchTouchEvent(down);
+                view.dispatchTouchEvent(up);
+                uiController.loopMainThreadForAtLeast(200);
+            }
+        };
+    }
 }

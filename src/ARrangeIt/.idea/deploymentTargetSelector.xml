@@ -11,13 +11,13 @@
       <SelectionState runConfigName="ARCoreScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testModelCounterVisibility()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="testFurnitureControlsVisibility()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testLogoutButton()">
+      <SelectionState runConfigName="testMeasurementCreation()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testMeasurementClear()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
