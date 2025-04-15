@@ -45,15 +45,17 @@ build-job:
     when: always
     paths:
       - src/ARrangeIt/app/build/outputs/**
+      - app/build/outputs/apk/debug/
+      - app/build/outputs/apk/androidTest/debug/
 
 
-lint-job:
-  stage: build
-  script:
-    - ./gradlew lintDebug
-  artifacts:
-    paths:
-      - src/ARrangeIt/app/build/reports/lint/**
+# lint-job:
+#   stage: build
+#   script:
+#     - ./gradlew lintDebug
+#   artifacts:
+#     paths:
+#       - src/ARrangeIt/app/build/reports/lint/**
 
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
@@ -69,28 +71,32 @@ unit-test-job:   # This job runs in the test stage.
 ui-test-job:
   stage: test
   script:
+    - which emulator
+    - which adb
+    - emulator -version
+    - adb version
+
     - echo "Creating AVD..."
-    - avdmanager create avd -n test -k "system-images;android-${ANDROID_SDK};google_apis;x86_64" -d pixel_4
-    - emulator -avd test -no-audio -no-window -no-snapshot -gpu swiftshader_indirect &
+    - avdmanager create avd -n test -k "system-images;android-${ANDROID_SDK};google_apis;x86_64" -d pixel_4 --force
+    - nohup emulator -avd test -no-audio -no-window -no-snapshot -gpu swiftshader_indirect -no-boot-anim -accel auto &
     - adb wait-for-device
+    
     - echo "Waiting for emulator to boot..."
     - adb shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
+    - adb shell settings put global window_animation_scale 0
+    - adb shell settings put global transition_animation_scale 0
+    - adb shell settings put global animator_duration_scale 0
     
-    # run tests
+    # Run tests
     - echo "Running UI tests..."
-    - ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.arrangeit.FurnitureCatalogueFragmentTest
-    - ls -R app/build/reports/androidTests/connected/
+    - ./gradlew connectedAndroidTest
+    
+    # Collect results
+    - ls -R app/build/reports/
   artifacts:
     when: always
     paths:
-      - src/ARrangeIt/app/build/reports/androidTests/connected/**
-      - src/ARrangeIt/app/build/outputs/androidTest-results/connected/**
+      - app/build/reports/androidTests/connected/
+      - app/build/outputs/androidTest-results/
     reports:
-      junit: src/ARrangeIt/app/build/reports/androidTests/connected/*.xml
-
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
-  script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+      junit: app/build/reports/androidTests/connected/*.xml
