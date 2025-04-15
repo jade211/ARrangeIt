@@ -4,6 +4,7 @@ include:
 variables:
   ANDROID_SDK: "34"
   ANDROID_BUILD_TOOLS: "34.0.0"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 
 before_script:
@@ -24,6 +25,8 @@ before_script:
   - sdkmanager "platforms;android-${ANDROID_SDK}"
   - sdkmanager "platform-tools"
   - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+  - sdkmanager "emulator"
+  - sdkmanager "system-images;android-${ANDROID_SDK};google_apis;x86_64"
   - cd ..
   - cd ..
   - chmod +x ./gradlew  # Ensure Gradle wrapper is executable
@@ -61,6 +64,29 @@ unit-test-job:   # This job runs in the test stage.
     when: always
     paths:
       - src/ARrangeIt/app/build/test-results/testDebugUnitTest/**
+
+
+ui-test-job:
+  stage: test
+  script:
+    - echo "Creating AVD..."
+    - avdmanager create avd -n test -k "system-images;android-${ANDROID_SDK};google_apis;x86_64" -d pixel_4
+    - emulator -avd test -no-audio -no-window -no-snapshot -gpu swiftshader_indirect &
+    - adb wait-for-device
+    - echo "Waiting for emulator to boot..."
+    - adb shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
+    
+    # run tests
+    - echo "Running UI tests..."
+    - ./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.example.arrangeit.FurnitureCatalogueFragmentTest
+    - ls -R app/build/reports/androidTests/connected/
+  artifacts:
+    when: always
+    paths:
+      - src/ARrangeIt/app/build/reports/androidTests/connected/**
+      - src/ARrangeIt/app/build/outputs/androidTest-results/connected/**
+    reports:
+      junit: src/ARrangeIt/app/build/reports/androidTests/connected/*.xml
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
