@@ -66,6 +66,7 @@ dependencies {
     implementation 'de.javagl:obj:0.4.0'
     implementation libs.recyclerview
     implementation libs.uiautomator
+    implementation libs.espresso.intents
 
     testImplementation libs.junit
     testImplementation libs.ext.junit
@@ -89,6 +90,8 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     testImplementation 'com.github.bumptech.glide:okhttp3-integration:4.12.0@aar'
     androidTestImplementation 'com.github.bumptech.glide:okhttp3-integration:4.12.0@aar'
+    androidTestImplementation "com.google.truth:truth:1.1.3"
+    androidTestImplementation "com.google.android.gms:play-services-tasks:18.1.0"
 
     implementation 'com.google.ar.sceneform:core:1.17.1'
     implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.17.1'

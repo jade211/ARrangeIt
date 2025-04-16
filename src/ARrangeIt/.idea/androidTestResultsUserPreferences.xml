@@ -68,6 +68,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-1593946169">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-1393379090">
           <value>
             <AndroidTestResultsTableState>
@@ -121,6 +134,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-1198130954">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-961891689">
           <value>
             <AndroidTestResultsTableState>
@@ -148,6 +174,19 @@
           </value>
         </entry>
         <entry key="-858462466">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="-835127817">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
@@ -317,6 +356,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="87021226">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="110671479">
           <value>
             <AndroidTestResultsTableState>
@@ -396,6 +448,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="585657740">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="697234369">
           <value>
             <AndroidTestResultsTableState>
@@ -423,6 +488,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="890087275">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="913537430">
           <value>
             <AndroidTestResultsTableState>
@@ -437,6 +515,19 @@
           </value>
         </entry>
         <entry key="1031953680">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1054385486">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
@@ -488,6 +579,19 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="1252903737">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="1279349668">
           <value>
             <AndroidTestResultsTableState>
@@ -521,6 +625,19 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_9_API_35" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1398248520">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Google Pixel 6a" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>

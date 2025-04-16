@@ -33,6 +33,7 @@ shadowsAr = "4.8.1"
 storageKt = "1.4.0"
 fragmentTesting = "1.8.6"
 uiautomator = "2.3.0"
+espressoIntents = "3.6.1"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose" }
@@ -77,6 +78,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
 uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
