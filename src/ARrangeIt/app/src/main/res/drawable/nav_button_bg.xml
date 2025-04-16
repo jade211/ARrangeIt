@@ -1,0 +1,6 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="24dp" />
+    <solid android:color="#6200EE" /> <!-- Your primary color -->
+    <stroke android:width="1dp" android:color="#3700B3" /> <!-- Darker shade -->
+</shape>

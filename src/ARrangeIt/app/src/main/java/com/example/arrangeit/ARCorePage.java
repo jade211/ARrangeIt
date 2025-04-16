@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.arrangeit.helpers.CameraPermissionHelper;
 import com.example.arrangeit.helpers.SavedLayout;
+import com.example.arrangeit.helpers.LayoutsAdapter;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -96,11 +97,16 @@ public class ARCorePage extends AppCompatActivity {
     private LinearLayout modelNameContainer;
     private TextView modelNameText;
     private String currentModelName = "";
+    private FrameLayout fragmentContainer;
+    private Button navSavedLayouts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ar);
+
+        fragmentContainer = findViewById(R.id.fragment_container);
+        navSavedLayouts = findViewById(R.id.nav_saved_layouts);
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
 
@@ -162,20 +168,42 @@ public class ARCorePage extends AppCompatActivity {
             showSaveLayoutDialog();
         });
 
+        Button navSavedLayouts = findViewById(R.id.nav_saved_layouts);
+        navSavedLayouts.setOnClickListener(v -> {
+            startActivity(new Intent(this, SavedLayoutsActivity.class));
+        });
+
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
 
 
+        // navCatalogue.setOnClickListener(v -> {
+        //     clearMeasurementState();
+        //     if (fragmentContainer.getVisibility() == View.GONE) {
+        //         getSupportFragmentManager().beginTransaction()
+        //                 .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
+        //                 .addToBackStack(null)
+        //                 .commit();
+        //         fragmentContainer.setVisibility(View.VISIBLE);
+        //     } else {
+        //         getSupportFragmentManager().popBackStack();
+        //         fragmentContainer.setVisibility(View.GONE);
+        //     }
+        // });
+
         navCatalogue.setOnClickListener(v -> {
             clearMeasurementState();
+
             if (fragmentContainer.getVisibility() == View.GONE) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
                         .addToBackStack(null)
                         .commit();
                 fragmentContainer.setVisibility(View.VISIBLE);
+                navSavedLayouts.setVisibility(View.GONE);
             } else {
                 getSupportFragmentManager().popBackStack();
                 fragmentContainer.setVisibility(View.GONE);
+                navSavedLayouts.setVisibility(View.VISIBLE);
             }
         });
 

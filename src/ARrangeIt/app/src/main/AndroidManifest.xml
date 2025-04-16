@@ -47,6 +47,9 @@
             android:name=".RegisterPage"
             android:exported="false" />
         <activity
+            android:name=".SavedLayoutsActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true">
