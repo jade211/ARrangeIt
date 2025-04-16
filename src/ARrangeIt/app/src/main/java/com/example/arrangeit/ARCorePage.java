@@ -88,7 +88,7 @@ public class ARCorePage extends AppCompatActivity {
     private TextView modelNameText;
     private String currentModelName = "";
     private FrameLayout fragmentContainer;
-    private Button navSavedLayouts;
+    private Button navScreenshots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +96,6 @@ public class ARCorePage extends AppCompatActivity {
         setContentView(R.layout.activity_ar);
 
         fragmentContainer = findViewById(R.id.fragment_container);
-        navSavedLayouts = findViewById(R.id.nav_saved_layouts);
 
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
 
@@ -112,6 +111,7 @@ public class ARCorePage extends AppCompatActivity {
 
         setupUI();
         setupTapListener();
+        setupScreenshotsButton();
     }
 
     private void setupUI() {
@@ -153,6 +153,8 @@ public class ARCorePage extends AppCompatActivity {
             showSaveLayoutDialog();
         });
 
+        navScreenshots = findViewById(R.id.nav_screenshots);
+
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
 
 
@@ -179,11 +181,11 @@ public class ARCorePage extends AppCompatActivity {
                         .addToBackStack(null)
                         .commit();
                 fragmentContainer.setVisibility(View.VISIBLE);
-                navSavedLayouts.setVisibility(View.GONE);
+                navScreenshots.setVisibility(View.GONE);
             } else {
                 getSupportFragmentManager().popBackStack();
                 fragmentContainer.setVisibility(View.GONE);
-                navSavedLayouts.setVisibility(View.VISIBLE);
+                navScreenshots.setVisibility(View.VISIBLE);
             }
         });
 
@@ -791,6 +793,23 @@ public class ARCorePage extends AppCompatActivity {
         builder.setNegativeButton("Cancel", null);
         
         builder.show();
+    }
+
+    private void setupScreenshotsButton() {
+        navScreenshots.setOnClickListener(v -> {
+            startActivity(new Intent(this, SavedScreenshotsActivity.class));
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fragmentContainer.getVisibility() == View.VISIBLE) {
+            getSupportFragmentManager().popBackStack();
+            fragmentContainer.setVisibility(View.GONE);
+            navScreenshots.setVisibility(View.VISIBLE); // Show screenshot button when back pressed
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

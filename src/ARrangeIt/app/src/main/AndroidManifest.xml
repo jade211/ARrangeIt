@@ -47,8 +47,7 @@
             android:name=".RegisterPage"
             android:exported="false" />
         <activity
-            android:name=".SavedLayoutsActivity"
-            android:exported="false" />
+            android:name=".SavedScreenshotsActivity" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
@@ -57,6 +56,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".FullScreenImageActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true">
+            <!-- Add these transitions -->
+            <meta-data
+                android:name="android.activity.transition.Slide"
+                android:value="bottom"/>
+            <meta-data
+                android:name="android.activity.transition.Fade"
+                android:value="fade"/>
         </activity>
 
         <meta-data
