@@ -2,7 +2,6 @@ package com.example.arrangeit;
 
 import android.content.Intent;
 import android.graphics.PointF;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -18,15 +17,12 @@ import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.example.arrangeit.helpers.CameraPermissionHelper;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Pose;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
@@ -37,22 +33,15 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.math.Matrix;
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.arrangeit.helpers.MarkerLineView;
-import com.example.arrangeit.helpers.CoordinateHelper;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 
 public class ARCorePage extends AppCompatActivity {
