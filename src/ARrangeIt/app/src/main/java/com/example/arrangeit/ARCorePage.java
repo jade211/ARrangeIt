@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.icu.text.SimpleDateFormat;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,17 +23,12 @@ import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.example.arrangeit.helpers.CameraPermissionHelper;
-import com.example.arrangeit.helpers.SavedLayout;
-import com.example.arrangeit.helpers.LayoutsAdapter;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Pose;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.assets.RenderableSource;
@@ -43,10 +37,8 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.math.Matrix;
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.arrangeit.helpers.MarkerLineView;
-import com.example.arrangeit.helpers.CoordinateHelper;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -57,8 +49,6 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -120,11 +110,6 @@ public class ARCorePage extends AppCompatActivity {
                     return null;
                 });
 
-        String layoutId = getIntent().getStringExtra("layoutId");
-        if (layoutId != null) {
-            loadSavedLayout(layoutId);
-        }
-
         setupUI();
         setupTapListener();
     }
@@ -166,11 +151,6 @@ public class ARCorePage extends AppCompatActivity {
             
             // Show dialog to name the layout
             showSaveLayoutDialog();
-        });
-
-        Button navSavedLayouts = findViewById(R.id.nav_saved_layouts);
-        navSavedLayouts.setOnClickListener(v -> {
-            startActivity(new Intent(this, SavedLayoutsActivity.class));
         });
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
@@ -811,81 +791,6 @@ public class ARCorePage extends AppCompatActivity {
         builder.setNegativeButton("Cancel", null);
         
         builder.show();
-    }
-
-    private void loadSavedLayout(String layoutId) {
-        FirebaseFirestore.getInstance()
-                .collection("savedLayouts")
-                .document(layoutId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        SavedLayout layout = documentSnapshot.toObject(SavedLayout.class);
-                        if (layout != null) {
-                            restoreLayout(layout);
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to load layout", Toast.LENGTH_SHORT).show();
-                });
-    }
-    
-    private void restoreLayout(SavedLayout layout) {
-        clearAllModels(); // Clear current scene first
-        
-        for (Map<String, Object> furnitureData : layout.getFurniture()) {
-            String modelUrl = (String) furnitureData.get("modelUrl");
-            String modelName = (String) furnitureData.get("modelName");
-            
-            // Load the model first
-            loadModelFromFirebase(modelUrl);
-            setCurrentModelName(modelName);
-            
-            // After model is loaded, place it at saved position
-            CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS).execute(() -> {
-                runOnUiThread(() -> {
-                    List<Double> position = (List<Double>) furnitureData.get("position");
-                    List<Double> rotation = (List<Double>) furnitureData.get("rotation");
-                    List<Double> scale = (List<Double>) furnitureData.get("scale");
-                    
-                    // Create anchor at saved position
-                    Pose pose = new Pose(
-                            new float[]{
-                                    position.get(0).floatValue(),
-                                    position.get(1).floatValue(),
-                                    position.get(2).floatValue()
-                            },
-                            new float[]{
-                                    rotation.get(0).floatValue(),
-                                    rotation.get(1).floatValue(),
-                                    rotation.get(2).floatValue(),
-                                    rotation.get(3).floatValue()
-                            }
-                    );
-                    
-                    Anchor anchor = arFragment.getArSceneView().getSession().createAnchor(pose);
-                    AnchorNode anchorNode = new AnchorNode(anchor);
-                    anchorNode.setParent(arFragment.getArSceneView().getScene());
-                    
-                    TransformableNode node = new TransformableNode(arFragment.getTransformationSystem());
-                    node.setParent(anchorNode);
-                    node.setRenderable(selectedFurnitureRenderable);
-                    node.setLocalScale(new Vector3(
-                            scale.get(0).floatValue(),
-                            scale.get(1).floatValue(),
-                            scale.get(2).floatValue()
-                    ));
-                    node.setName(modelName);
-                    
-                    placedFurnitureNodes.add(anchorNode);
-                    placedModelsCount++;
-                    updateModelCounter();
-                });
-            });
-        }
-        
-        Toast.makeText(this, "Layout loaded: " + layout.getLayoutName(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
