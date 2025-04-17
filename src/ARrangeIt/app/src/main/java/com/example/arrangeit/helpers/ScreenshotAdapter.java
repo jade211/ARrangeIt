@@ -8,8 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.example.arrangeit.R;
 
@@ -55,21 +53,27 @@ public class ScreenshotAdapter extends BaseAdapter {
         TextView nameTextView = gridItem.findViewById(R.id.layout_name);
         TextView dateTextView = gridItem.findViewById(R.id.layout_date);
         TextView modelCountTextView = gridItem.findViewById(R.id.layout_model_count);
+        TextView furnitureNamesTextView = gridItem.findViewById(R.id.furniture_names);
 
-        // Set text values
         nameTextView.setText(item.getName());
         dateTextView.setText(item.getDate());
-        modelCountTextView.setText(item.getModelCount() + " models");
+        modelCountTextView.setText(String.valueOf(item.getModelCount()));
+
+        if (item.getFurnitureNames() != null && !item.getFurnitureNames().isEmpty()) {
+            String namesText = String.join(", ", item.getFurnitureNames());
+            furnitureNamesTextView.setText(namesText);
+            furnitureNamesTextView.setVisibility(View.VISIBLE);
+        } else {
+            furnitureNamesTextView.setVisibility(View.GONE);
+        }
 
         // Load image from Firebase Storage URL
         if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-            // Option 1: Using Glide (recommended)
             Glide.with(context)
                     .load(item.getImageUrl())
                     .placeholder(R.drawable.ic_placeholder)
                     .error(R.drawable.ic_launcher)
                     .into(imageView);
-
         }
         return gridItem;
     }

@@ -655,88 +655,77 @@ public class ARCorePage extends AppCompatActivity {
 
     }
 
-    private void takeScreenshot() {
-        // Creating a bitmap from the AR scene view
+    private void takeScreenshot(String layoutName) {
         Bitmap bitmap = Bitmap.createBitmap(
                 arFragment.getArSceneView().getWidth(),
                 arFragment.getArSceneView().getHeight(),
                 Bitmap.Config.ARGB_8888);
-        
-        // Convert the scene to a bitmap
+
         PixelCopy.request(arFragment.getArSceneView(), bitmap, copyResult -> {
             if (copyResult == PixelCopy.SUCCESS) {
-                saveScreenshotToStorage(bitmap);
+                saveScreenshotToStorage(bitmap, layoutName);
             } else {
-                runOnUiThread(() -> 
-                    Toast.makeText(this, "Failed to capture screenshot", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Failed to capture screenshot", Toast.LENGTH_SHORT).show());
             }
         }, new Handler());
     }
-    
-    private void saveScreenshotToStorage(Bitmap bitmap) {
-        // Generate a unique filename with timestamp
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "AR_Layout_" + timeStamp + ".jpg";
-        
-        // Save to internal storage first
-        FileOutputStream outputStream;
+
+    private void saveScreenshotToStorage(Bitmap bitmap, String layoutName) {
+        // Sanitize the filename by removing special characters and adding extension
+        String fileName = layoutName.replaceAll("[^a-zA-Z0-9.-]", "_") + ".jpg";
+
         try {
-            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            FileOutputStream outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
             outputStream.close();
-            
-            // Now save to Firebase Storage
-            saveToFirebaseStorage(fileName);
+            saveToFirebaseStorage(fileName, layoutName);
         } catch (Exception e) {
             Log.e(TAG, "Error saving screenshot: " + e.getMessage());
-            runOnUiThread(() -> 
-                Toast.makeText(this, "Error saving screenshot", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Error saving screenshot", Toast.LENGTH_SHORT).show());
         }
     }
-    
-    private void saveToFirebaseStorage(String fileName) {
+
+    private void saveToFirebaseStorage(String fileName, String layoutName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
             return;
         }
-    
+
         try {
             File file = new File(getFilesDir(), fileName);
             Uri fileUri = Uri.fromFile(file);
-            
+
             StorageReference storageRef = FirebaseStorage.getInstance().getReference()
                     .child("screenshots")
                     .child(user.getUid())
                     .child(fileName);
-            
+
             UploadTask uploadTask = storageRef.putFile(fileUri);
-            
+
             uploadTask.addOnSuccessListener(taskSnapshot -> {
-                // Get the download URL
                 storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    // Save layout data to Firestore
-                    saveLayoutData(fileName, uri.toString());
+                    saveLayoutData(fileName, uri.toString(), layoutName);
                 });
             }).addOnFailureListener(e -> {
                 Log.e(TAG, "Upload failed: " + e.getMessage());
-                runOnUiThread(() -> 
-                    Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show());
+                Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show();
             });
         } catch (Exception e) {
             Log.e(TAG, "Error uploading: " + e.getMessage());
         }
     }
 
-    private void saveLayoutData(String fileName, String imageUrl) {
+    private void saveLayoutData(String fileName, String imageUrl, String layoutName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
-    
-        // Get all placed furniture positions
+
         List<Map<String, Object>> furnitureData = new ArrayList<>();
         for (AnchorNode anchorNode : placedFurnitureNodes) {
             if (anchorNode.getAnchor() == null) continue;
-            
+
             TransformableNode furnitureNode = null;
             for (Node node : anchorNode.getChildren()) {
                 if (node instanceof TransformableNode) {
@@ -744,50 +733,47 @@ public class ARCorePage extends AppCompatActivity {
                     break;
                 }
             }
-            
+
             if (furnitureNode != null) {
                 Map<String, Object> data = new HashMap<>();
-                data.put("modelUrl", currentModelUrl); // You'll need to track this per node
+                data.put("modelUrl", currentModelUrl);
                 data.put("position", Arrays.asList(
-                    furnitureNode.getWorldPosition().x,
-                    furnitureNode.getWorldPosition().y,
-                    furnitureNode.getWorldPosition().z
+                        furnitureNode.getWorldPosition().x,
+                        furnitureNode.getWorldPosition().y,
+                        furnitureNode.getWorldPosition().z
                 ));
                 data.put("rotation", Arrays.asList(
-                    furnitureNode.getWorldRotation().x,
-                    furnitureNode.getWorldRotation().y,
-                    furnitureNode.getWorldRotation().z,
-                    furnitureNode.getWorldRotation().w
+                        furnitureNode.getWorldRotation().x,
+                        furnitureNode.getWorldRotation().y,
+                        furnitureNode.getWorldRotation().z,
+                        furnitureNode.getWorldRotation().w
                 ));
                 data.put("scale", Arrays.asList(
-                    furnitureNode.getWorldScale().x,
-                    furnitureNode.getWorldScale().y,
-                    furnitureNode.getWorldScale().z
+                        furnitureNode.getWorldScale().x,
+                        furnitureNode.getWorldScale().y,
+                        furnitureNode.getWorldScale().z
                 ));
                 data.put("modelName", furnitureNode.getName());
-                
+
                 furnitureData.add(data);
             }
         }
-    
-        // Create a new layout document
+
         Map<String, Object> layoutData = new HashMap<>();
         layoutData.put("userId", user.getUid());
         layoutData.put("timestamp", FieldValue.serverTimestamp());
         layoutData.put("furniture", furnitureData);
         layoutData.put("screenshotUrl", imageUrl);
-        layoutData.put("layoutName", "My Layout " + new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(new Date()));
-    
+        layoutData.put("layoutName", layoutName); // Use the custom name here
+
         FirebaseFirestore.getInstance().collection("savedLayouts")
                 .add(layoutData)
                 .addOnSuccessListener(documentReference -> {
-                    runOnUiThread(() -> 
-                        Toast.makeText(this, "Layout saved successfully!", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, "Layout saved successfully!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error saving layout: " + e.getMessage());
-                    runOnUiThread(() -> 
-                        Toast.makeText(this, "Failed to save layout", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, "Failed to save layout", Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -803,8 +789,7 @@ public class ARCorePage extends AppCompatActivity {
         builder.setPositiveButton("Save", (dialog, which) -> {
             String layoutName = input.getText().toString().trim();
             if (!layoutName.isEmpty()) {
-                // Save with custom name
-                takeScreenshot();
+                takeScreenshot(layoutName);
             } else {
                 Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show();
             }

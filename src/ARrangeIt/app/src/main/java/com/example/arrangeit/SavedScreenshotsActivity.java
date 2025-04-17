@@ -106,6 +106,54 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         });
     }
 
+//    private void loadScreenshots() {
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if (user == null) {
+//            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+//            finish();
+//            return;
+//        }
+//
+//        FirebaseFirestore.getInstance().collection("savedLayouts")
+//                .whereEqualTo("userId", user.getUid())
+//                .orderBy("timestamp", Query.Direction.DESCENDING)
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    screenshotItems.clear();
+//
+//                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+//                        ScreenshotItem item = new ScreenshotItem();
+//                        item.setImageUrl(document.getString("screenshotUrl"));
+//                        item.setName(document.getString("layoutName"));
+//
+//                        Timestamp timestamp = document.getTimestamp("timestamp");
+//                        if (timestamp != null) {
+//                            Date date = timestamp.toDate();
+//                            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault());
+//                            item.setDate(sdf.format(date));
+//                        }
+//
+//                        List<Map<String, Object>> furniture =
+//                                (List<Map<String, Object>>) document.get("furniture");
+//                        item.setModelCount(furniture != null ? furniture.size() : 0);
+//
+//                        screenshotItems.add(item);
+//                    }
+//
+//                    adapter.notifyDataSetChanged();
+//
+//                    if (screenshotItems.isEmpty()) {
+//                        Toast.makeText(this, "No saved layouts found", Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    Toast.makeText(this, "Failed to load screenshots: " + e.getMessage(),
+//                            Toast.LENGTH_SHORT).show();
+//                    Log.e("LoadScreenshots", "Error loading screenshots", e);
+//                });
+//    }
+
+
     private void loadScreenshots() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -136,6 +184,18 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                         List<Map<String, Object>> furniture =
                                 (List<Map<String, Object>>) document.get("furniture");
                         item.setModelCount(furniture != null ? furniture.size() : 0);
+
+                        // Extract furniture names
+                        if (furniture != null) {
+                            List<String> furnitureNames = new ArrayList<>();
+                            for (Map<String, Object> furnitureItem : furniture) {
+                                String name = (String) furnitureItem.get("modelName");
+                                if (name != null && !name.isEmpty()) {
+                                    furnitureNames.add(name);
+                                }
+                            }
+                            item.setFurnitureNames(furnitureNames);
+                        }
 
                         screenshotItems.add(item);
                     }
