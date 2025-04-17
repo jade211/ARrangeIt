@@ -91,7 +91,6 @@ public class ARCorePage extends AppCompatActivity {
     private TextView modelNameText;
     private String currentModelName = "";
     private FrameLayout fragmentContainer;
-    private Button navScreenshots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +113,6 @@ public class ARCorePage extends AppCompatActivity {
 
         setupUI();
         setupTapListener();
-        setupScreenshotsButton();
     }
 
     private void setupUI() {
@@ -122,6 +120,7 @@ public class ARCorePage extends AppCompatActivity {
         markerLineView = new MarkerLineView(this);
         overlay.addView(markerLineView);
 
+        Button navScreenshots = findViewById(R.id.nav_screenshots);
         Button navLogOut = findViewById(R.id.nav_log_out);
         Button navCatalogue = findViewById(R.id.nav_catalogue);
         Button navMeasure = findViewById(R.id.nav_measure);
@@ -151,29 +150,15 @@ public class ARCorePage extends AppCompatActivity {
                 Toast.makeText(this, "No furniture placed to save", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
-            // Show dialog to name the layout
             showSaveLayoutDialog();
         });
 
-        navScreenshots = findViewById(R.id.nav_screenshots);
+        navScreenshots.setOnClickListener(v -> {
+            startActivity(new Intent(ARCorePage.this, SavedScreenshotsActivity.class));
+        });
+
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
-
-
-        // navCatalogue.setOnClickListener(v -> {
-        //     clearMeasurementState();
-        //     if (fragmentContainer.getVisibility() == View.GONE) {
-        //         getSupportFragmentManager().beginTransaction()
-        //                 .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
-        //                 .addToBackStack(null)
-        //                 .commit();
-        //         fragmentContainer.setVisibility(View.VISIBLE);
-        //     } else {
-        //         getSupportFragmentManager().popBackStack();
-        //         fragmentContainer.setVisibility(View.GONE);
-        //     }
-        // });
 
         navCatalogue.setOnClickListener(v -> {
             clearMeasurementState();
@@ -184,11 +169,9 @@ public class ARCorePage extends AppCompatActivity {
                         .addToBackStack(null)
                         .commit();
                 fragmentContainer.setVisibility(View.VISIBLE);
-                navScreenshots.setVisibility(View.GONE);
             } else {
                 getSupportFragmentManager().popBackStack();
                 fragmentContainer.setVisibility(View.GONE);
-                navScreenshots.setVisibility(View.VISIBLE);
             }
         });
 
@@ -255,17 +238,6 @@ public class ARCorePage extends AppCompatActivity {
                 .setNegativeButton("Cancel", null)
                 .show();
     }
-
-    // Old version --> Both just use plane detection
-//    private void setupTapListener() {
-//        arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
-//            if (isMeasuring) {
-//                handleMeasurementTap(hitResult);
-//            } else if (selectedFurnitureRenderable != null) {
-//                placeFurniture(hitResult);
-//            }
-//        });
-//    }
 
     void updateModelCounter() {
         runOnUiThread(() -> {
@@ -842,18 +814,11 @@ public class ARCorePage extends AppCompatActivity {
         builder.show();
     }
 
-    private void setupScreenshotsButton() {
-        navScreenshots.setOnClickListener(v -> {
-            startActivity(new Intent(this, SavedScreenshotsActivity.class));
-        });
-    }
-
     @Override
     public void onBackPressed() {
         if (fragmentContainer.getVisibility() == View.VISIBLE) {
             getSupportFragmentManager().popBackStack();
             fragmentContainer.setVisibility(View.GONE);
-            navScreenshots.setVisibility(View.VISIBLE); // Show screenshot button when back pressed
         } else {
             super.onBackPressed();
         }
