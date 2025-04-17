@@ -4,6 +4,7 @@ agp = "8.7.0"
 androidxCore = "1.6.1"
 androidxCoreVersion = "1.5.0"
 androidxJunit = "1.1.5"
+androidxRunner = "1.5.2"
 coil = "2.x.x"
 core = "1.47.0"
 coreTesting = "2.2.0"
@@ -20,13 +21,19 @@ material = "1.12.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
 postgrestKt = "1.4.0"
+robolectric = "4.14"
 rules = "1.6.1"
+rulesVersion = "1.5.0"
 runner = "1.0.2"
 runnerVersion = "1.6.2"
 sceneview = "2.2.1"
 firebaseAuth = "23.1.0"
 recyclerview = "1.4.0"
+shadowsAr = "4.8.1"
 storageKt = "1.4.0"
+fragmentTesting = "1.8.6"
+uiautomator = "2.3.0"
+espressoIntents = "3.6.1"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose" }
@@ -54,9 +61,13 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material3 = { module = "androidx.material3:material3" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "postgrestKt" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 rules = { module = "androidx.test:rules", version.ref = "rules" }
+rules-v150 = { module = "androidx.test:rules", version.ref = "rulesVersion" }
 runner = { module = "com.android.support.test:runner", version.ref = "runner" }
+runner-v152 = { module = "androidx.test:runner", version.ref = "androidxRunner" }
 sceneview = { module = "io.github.sceneview:sceneview", version.ref = "sceneview" }
+shadows-ar = { module = "org.robolectric:shadows-ar", version.ref = "shadowsAr" }
 storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "storageKt" }
 test-core = { module = "androidx.test:core", version.ref = "androidxCore" }
 test-runner = { module = "androidx.test:runner", version.ref = "runnerVersion" }
@@ -65,6 +76,9 @@ ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
+uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+espresso-intents = { group = "androidx.test.espresso", name = "espresso-intents", version.ref = "espressoIntents" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

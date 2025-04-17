@@ -30,9 +30,11 @@ import com.google.ar.core.HitResult;
 import com.google.ar.core.Pose;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Camera;
+import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.assets.RenderableSource;
 import com.google.ar.sceneform.collision.Ray;
+import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -47,7 +49,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,10 +80,10 @@ public class ARCorePage extends AppCompatActivity {
     private ImageView moveButton;
     private TransformableNode currentFurnitureNode;
     private boolean isRotateMode = false;
-    private ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
+    ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
     private LinearLayout furnitureControlsPanel;
     private TextView modelCounter;
-    private int placedModelsCount = 0;
+    int placedModelsCount = 0;
     private ImageButton clearAllButton;
     private LinearLayout modelNameContainer;
     private TextView modelNameText;
@@ -264,7 +265,7 @@ public class ARCorePage extends AppCompatActivity {
 //        });
 //    }
 
-    private void updateModelCounter() {
+    void updateModelCounter() {
         runOnUiThread(() -> {
             if (placedModelsCount > 0) {
                 modelCounter.setText("Models: " + placedModelsCount);
@@ -493,31 +494,70 @@ public class ARCorePage extends AppCompatActivity {
             Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
             return;
         }
-
+    
         // Deselect previous model if any
         if (currentFurnitureNode != null) {
             deselectCurrentModel();
         }
-
+    
         Anchor anchor = hitResult.createAnchor();
         AnchorNode anchorNode = new AnchorNode(anchor);
         anchorNode.setParent(arFragment.getArSceneView().getScene());
         placedFurnitureNodes.add(anchorNode);
-
+    
         placedModelsCount++;
         updateModelCounter();
-
-        currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem());
+    
+        // Variables to track rotation
+        final float[] lastTouchX = {0};
+        final boolean[] isRotating = {false};
+    
+        currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem()) {
+            @Override
+            public boolean onTouchEvent(HitTestResult hitTestResult, MotionEvent motionEvent) {
+                if (isRotateMode && motionEvent.getPointerCount() == 1) {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            lastTouchX[0] = motionEvent.getX();
+                            isRotating[0] = true;
+                            return true;
+                            
+                        case MotionEvent.ACTION_MOVE:
+                            if (isRotating[0]) {
+                                float currentX = motionEvent.getX();
+                                float deltaX = currentX - lastTouchX[0];
+                                lastTouchX[0] = currentX;
+                                
+                                // Apply rotation with damping
+                                float rotationDegrees = deltaX * 0.3f;
+                                Quaternion currentRotation = getLocalRotation();
+                                Quaternion additionalRotation = Quaternion.axisAngle(
+                                    new Vector3(0, 1, 0),
+                                    rotationDegrees
+                                );
+                                setLocalRotation(Quaternion.multiply(currentRotation, additionalRotation));
+                                return true;
+                            }
+                            break;
+                            
+                        case MotionEvent.ACTION_UP:
+                        case MotionEvent.ACTION_CANCEL:
+                            isRotating[0] = false;
+                            return true;
+                    }
+                }
+                return super.onTouchEvent(hitTestResult, motionEvent);
+            }
+        };
+    
         currentFurnitureNode.setParent(anchorNode);
         currentFurnitureNode.setRenderable(selectedFurnitureRenderable);
-
-        // Set default scale
         currentFurnitureNode.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
-
         currentFurnitureNode.setName(currentModelName);
+        
         // Start in move mode by default
         setRotateMode(false);
-
+    
         // Set tap listener for selecting models
         currentFurnitureNode.setOnTapListener((hitTestResult, motionEvent) -> {
             Node tappedNode = hitTestResult.getNode();
@@ -528,8 +568,9 @@ public class ARCorePage extends AppCompatActivity {
                 showModelName((String) currentFurnitureNode.getName());
                 setRotateMode(isRotateMode);
             }
-            return;
+            return ;
         });
+        
         showManipulationButtons();
         showModelName(currentModelName);
     }
@@ -563,7 +604,7 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
-    private void showManipulationButtons() {
+    void showManipulationButtons() {
         furnitureControlsPanel.setVisibility(View.VISIBLE);
         deleteButton.setVisibility(View.VISIBLE);
         rotateButton.setVisibility(View.VISIBLE);
@@ -580,24 +621,28 @@ public class ARCorePage extends AppCompatActivity {
     private void setRotateMode(boolean rotateMode) {
         isRotateMode = rotateMode;
         if (currentFurnitureNode != null) {
-            // First reset the node to clear any ongoing transformations
             currentFurnitureNode.getTranslationController().setEnabled(false);
             currentFurnitureNode.getRotationController().setEnabled(false);
+            currentFurnitureNode.getScaleController().setEnabled(false);
 
-            // Then enable the appropriate controller
             if (rotateMode) {
+                // For rotation mode
                 currentFurnitureNode.getRotationController().setEnabled(true);
+                
+                // Visual feedback
                 findViewById(R.id.rotate_button_container).setBackgroundResource(R.drawable.icon_button_bg_selected);
                 findViewById(R.id.move_button_container).setBackgroundResource(R.drawable.icon_button_bg_selector);
-                Toast.makeText(this, "Rotation mode - drag to rotate", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Rotation mode active - touch to rotate", Toast.LENGTH_SHORT).show();
             } else {
+                // For move mode
                 currentFurnitureNode.getTranslationController().setEnabled(true);
+                
+                // Visual feedback
                 findViewById(R.id.move_button_container).setBackgroundResource(R.drawable.icon_button_bg_selected);
                 findViewById(R.id.rotate_button_container).setBackgroundResource(R.drawable.icon_button_bg_selector);
-                Toast.makeText(this, "Move mode - drag to move", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Move mode active - touch to move", Toast.LENGTH_SHORT).show();
             }
 
-            // Force a reselect to update the visual indicators
             currentFurnitureNode.select();
         }
     }

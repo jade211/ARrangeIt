@@ -29,18 +29,18 @@ import java.util.Comparator;
 public class FurnitureCatalogueFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private FurnitureAdapter furnitureAdapter;
-    private List<FurnitureItem> furnitureItems;
-    private List<FurnitureItem> filteredFurnitureItems;
-    private Spinner colourFilterSpinner;
-    private Spinner typeFilterSpinner;
+    FurnitureAdapter furnitureAdapter;
+    List<FurnitureItem> furnitureItems;
+    List<FurnitureItem> filteredFurnitureItems;
+    Spinner colourFilterSpinner;
+    Spinner typeFilterSpinner;
     private EditText priceFilterEditText;
     private EditText heightFilterEditText;
     private EditText widthFilterEditText;
     private EditText depthFilterEditText;
-    private FirebaseFirestore db;
+    FirebaseFirestore db;
     private ImageButton filterIcon;
-    private EditText searchBar;
+    EditText searchBar;
     private Spinner sortByPriceSpinner;
 
 
