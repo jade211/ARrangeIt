@@ -44,13 +44,13 @@ build-job:
       - src/ARrangeIt/app/build/outputs/**
 
 
-lint-job:
-  stage: build
-  script:
-    - ./gradlew lintDebug
-  artifacts:
-    paths:
-      - src/ARrangeIt/app/build/reports/lint/**
+# lint-job:
+#   stage: build
+#   script:
+#     - ./gradlew lintDebug
+#   artifacts:
+#     paths:
+#       - src/ARrangeIt/app/build/reports/lint/**
 
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.

@@ -65,37 +65,36 @@ dependencies {
     implementation libs.constraintlayout
     implementation 'de.javagl:obj:0.4.0'
     implementation libs.recyclerview
+    implementation libs.uiautomator
+    implementation libs.espresso.intents
 
     testImplementation libs.junit
     testImplementation libs.ext.junit
     androidTestImplementation libs.ext.junit
     testImplementation libs.core.testing
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation libs.junit.v115
-    androidTestImplementation libs.espresso.core.v351
-    androidTestImplementation libs.test.runner
-    androidTestImplementation libs.rules
     androidTestImplementation libs.test.core
     implementation libs.core
     testImplementation 'org.mockito:mockito-core:5.4.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
-    testImplementation 'org.robolectric:robolectric:4.14'
     testImplementation libs.core.v1140
     implementation libs.fragment
+
 
     implementation 'io.ktor:ktor-client-okhttp:2.3.3'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-//    implementation 'com.google.android.filament:filament-android:1.37.0'
+    testImplementation 'com.github.bumptech.glide:okhttp3-integration:4.12.0@aar'
+    androidTestImplementation 'com.github.bumptech.glide:okhttp3-integration:4.12.0@aar'
+    androidTestImplementation "com.google.truth:truth:1.1.3"
+    androidTestImplementation "com.google.android.gms:play-services-tasks:18.1.0"
 
     implementation 'com.google.ar.sceneform:core:1.17.1'
     implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.17.1'
     implementation 'com.google.ar.sceneform:assets:1.17.1'
 
-
-
-//    implementation 'io.github.sceneview:sceneview:2.2.1'
-//    implementation 'io.github.sceneview:arsceneview:2.2.1'
-//    implementation libs.sceneview;
-//    implementation libs.arsceneview;
 }

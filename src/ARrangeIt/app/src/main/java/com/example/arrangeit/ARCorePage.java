@@ -63,10 +63,10 @@ public class ARCorePage extends AppCompatActivity {
     private ImageView moveButton;
     private TransformableNode currentFurnitureNode;
     private boolean isRotateMode = false;
-    private ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
+    ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
     private LinearLayout furnitureControlsPanel;
     private TextView modelCounter;
-    private int placedModelsCount = 0;
+    int placedModelsCount = 0;
     private ImageButton clearAllButton;
     private LinearLayout modelNameContainer;
     private TextView modelNameText;
@@ -213,7 +213,7 @@ public class ARCorePage extends AppCompatActivity {
 //        });
 //    }
 
-    private void updateModelCounter() {
+    void updateModelCounter() {
         runOnUiThread(() -> {
             if (placedModelsCount > 0) {
                 modelCounter.setText("Models: " + placedModelsCount);
@@ -552,7 +552,7 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
-    private void showManipulationButtons() {
+    void showManipulationButtons() {
         furnitureControlsPanel.setVisibility(View.VISIBLE);
         deleteButton.setVisibility(View.VISIBLE);
         rotateButton.setVisibility(View.VISIBLE);
