@@ -11,23 +11,19 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import android.os.SystemClock;
 import android.view.View;
 import android.view.WindowManager;
-
-import androidx.annotation.NonNull;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.google.android.material.textfield.TextInputLayout;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.jetbrains.annotations.Contract;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +34,10 @@ public class LoginScreenTest {
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule =
             new ActivityScenarioRule<>(MainActivity.class);
+
+    @Rule
+    public GrantPermissionRule permissionRule =
+            GrantPermissionRule.grant(android.Manifest.permission.CAMERA);
 
     @Test
     public void testLoginScreenLogoVisible() {
@@ -69,7 +69,7 @@ public class LoginScreenTest {
     }
 
     @Test
-    public void testLoginButtonClick() {
+    public void testUserLoginClick() {
         onView(withId(R.id.email))
                 .perform(typeText("test@example.com"));
         onView(withId(R.id.password))
@@ -82,8 +82,7 @@ public class LoginScreenTest {
     @Test
     public void testSignUpNavigation() {
         onView(withId(R.id.sign_up)).perform(click());
-        SystemClock.sleep(1000);
-        onView(withText("Create an Account")).check(matches(isDisplayed()));
+        onView(withText("Create an Account")).check (matches(isDisplayed()));
         onView(withText("Please enter your details to register")).check(matches(isDisplayed()));
     }
 
@@ -117,7 +116,7 @@ public class LoginScreenTest {
     }
 
     @Test
-    public void testForgotPasswordDialogAppears() {
+    public void testForgotPasswordAppears() {
         onView(withId(R.id.forgot_password)).perform(click());
         onView(withId(R.id.emailBox)).check(matches(isDisplayed()));
         onView(withId(R.id.buttonReset)).check(matches(isDisplayed()));
@@ -167,20 +166,17 @@ public class LoginScreenTest {
     @Test
     public void testForgotPasswordWithValidEmail() {
         onView(withId(R.id.forgot_password)).perform(click());
-        onView(withId(R.id.emailBox)).perform(typeText("test@example.com"));
+        onView(withId(R.id.emailBox)).perform(typeText("testing@example.com"));
         closeSoftKeyboard();
         onView(withId(R.id.buttonReset)).perform(click());
 
 
-        SystemClock.sleep(500);
+        SystemClock.sleep(1000);
         onView(withId(R.id.sign_in)).check(matches(isDisplayed()));
     }
 
 
-
     // HELPERS
-    @NonNull
-    @Contract(" -> new")
     public static Matcher<Root> isDialog() {
         return new TypeSafeMatcher<>() {
             @Override
@@ -197,26 +193,6 @@ public class LoginScreenTest {
         };
     }
 
-
-
-//    public static Matcher<Root> isToast() {
-//        return new TypeSafeMatcher<Root>() {
-//            @Override
-//            public boolean matchesSafely(Root root) {
-//                int type = root.getWindowLayoutParams().get().type;
-//                return type == WindowManager.LayoutParams.TYPE_TOAST;
-//            }
-//
-//            @Override
-//            public void describeTo(Description description) {
-//                description.appendText("is toast");
-//            }
-//        };
-//    }
-
-
-    @NonNull
-    @Contract(value = "_ -> new", pure = true)
     public static Matcher<View> hasTextInputLayoutErrorText(final String expectedErrorText) {
         return new BoundedMatcher<>(TextInputLayout.class) {
             @Override

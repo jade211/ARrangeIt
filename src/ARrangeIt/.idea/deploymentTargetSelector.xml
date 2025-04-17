@@ -5,19 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="SystemTests">
+      <SelectionState runConfigName="ARCoreScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testMultipleFilterCombination()">
+      <SelectionState runConfigName="FurnitureCatalogueFragmentTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testLoginSuccessUpdatesAuthState()">
+      <SelectionState runConfigName="FurniturePlacementTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="IntegrationTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ARCoreScreenTest">
+      <SelectionState runConfigName="SystemTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

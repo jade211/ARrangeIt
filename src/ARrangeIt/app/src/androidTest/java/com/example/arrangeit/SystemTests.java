@@ -31,6 +31,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasMinimumChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
 import android.content.Context;
@@ -70,7 +72,6 @@ public class SystemTests {
     }
     @After
     public void tearDown() {
-        // Add delay between tests
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -141,10 +142,23 @@ public class SystemTests {
 
         // place in AR clicked
         onView(withId(R.id.place_in_ar_button)).perform(click());
-        onView(isRoot()).perform(waitFor(2000));
-        onView(withId(R.id.arFragment)).check(matches(isDisplayed()));
+        onView(isRoot()).perform(waitFor(1000));
 
+
+        // verify furniture model is in environment
+        int[] screenSize = getScreenSize();
+        int centerX = screenSize[0]/2;
+        int centerY = screenSize[1]/2;
+        onView(isRoot()).perform(waitFor(2000));
+        onView(isRoot()).perform(clickXY(centerX, centerY));
+        onView(isRoot()).perform(waitFor(2000));
+        onView(withId(R.id.model_counter))
+                .check(matches(allOf(
+                        isDisplayed(),
+                        withText("Models: 1")
+                )));
     }
+
 
     // test measure tool end-to-end
     @Test
@@ -181,6 +195,7 @@ public class SystemTests {
         onView(withId(R.id.sign_in)).check(matches(isDisplayed()));
     }
 
+    // test catalogue filters
     @Test
     public void testMultipleFilterCombination() {
         loginTestUser();

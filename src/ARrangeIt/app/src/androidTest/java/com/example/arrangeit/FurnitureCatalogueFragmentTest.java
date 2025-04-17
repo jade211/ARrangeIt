@@ -31,10 +31,7 @@ import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
-
 import com.bumptech.glide.Glide;
-
-
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -284,7 +281,7 @@ public class FurnitureCatalogueFragmentTest {
         }
     }
 
-    // FURNITURE DETAILS FRAGMENT
+    // FURNITURE DETAILS FRAGMENT UI TEST
     @Test
     public void testFurnitureDetailNavigation() throws UiObjectNotFoundException {
         onView(isRoot()).perform(waitFor(2000));

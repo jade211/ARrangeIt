@@ -7,7 +7,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static com.example.arrangeit.FurnitureCatalogueFragmentTest.waitFor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -32,6 +31,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.rule.GrantPermissionRule;
 
 import com.bumptech.glide.Glide;
+
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -103,6 +103,10 @@ public class ARCoreScreenTest {
         onView(isRoot()).perform(waitFor(2000));
         onView(withId(R.id.fragment_container)).check(matches(isDisplayed()));
     }
+
+
+
+
 
 
     @Test
@@ -191,7 +195,7 @@ public class ARCoreScreenTest {
     }
 
     // HELPER METHODS
-    private int[] getScreenSize() {
+    public static int[] getScreenSize() {
         int[] size = new int[2];
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             DisplayMetrics metrics = new DisplayMetrics();
@@ -212,22 +216,17 @@ public class ARCoreScreenTest {
                 return isRoot();
             }
 
-
             @Override
             public String getDescription() {
-                return "Perform click at coordinates (" + x + ", " + y + ")";
+                return "Perform clicks at coordinates (" + x + ", " + y + ")";
             }
-
 
             @Override
             public void perform(UiController uiController, View view) {
                 int[] location = new int[2];
                 view.getLocationOnScreen(location);
-
-
                 float screenX = location[0] + x;
                 float screenY = location[1] + y;
-
 
                 MotionEvent down = MotionEvent.obtain(
                         SystemClock.uptimeMillis(),
@@ -252,3 +251,4 @@ public class ARCoreScreenTest {
         };
     }
 }
+
