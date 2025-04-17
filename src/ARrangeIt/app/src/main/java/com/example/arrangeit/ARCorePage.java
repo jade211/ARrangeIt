@@ -9,9 +9,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -142,7 +145,7 @@ public class ARCorePage extends AppCompatActivity {
         modelNameText = findViewById(R.id.model_name_text);
 
         clearAllButton = findViewById(R.id.clear_all_models_button);
-        clearAllButton.setOnClickListener(v -> showClearAllConfirmationDialog());
+        clearAllButton.setOnClickListener(v -> showClearAllConfirmationDialogue());
 
         ImageButton saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(v -> {
@@ -150,7 +153,7 @@ public class ARCorePage extends AppCompatActivity {
                 Toast.makeText(this, "No furniture placed to save", Toast.LENGTH_SHORT).show();
                 return;
             }
-            showSaveLayoutDialog();
+            showSaveLayoutDialogue();
         });
 
         navScreenshots.setOnClickListener(v -> {
@@ -230,13 +233,21 @@ public class ARCorePage extends AppCompatActivity {
 
     }
 
-    private void showClearAllConfirmationDialog() {
-        new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+    private void showClearAllConfirmationDialogue() {
+        AlertDialog dialogue = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setTitle("Clear All Models")
                 .setMessage("Are you sure you want to remove all placed models?")
-                .setPositiveButton("Clear All", (dialog, which) -> clearAllModels())
+                .setPositiveButton("Clear All", (d, which) -> clearAllModels())
                 .setNegativeButton("Cancel", null)
-                .show();
+                .create();
+
+        dialogue.show();
+
+        // Adjust width after showing
+        dialogue.getWindow().setLayout(
+                (int)(getResources().getDisplayMetrics().widthPixels * 0.9),
+                WindowManager.LayoutParams.WRAP_CONTENT
+        );
     }
 
     void updateModelCounter() {
@@ -777,26 +788,37 @@ public class ARCorePage extends AppCompatActivity {
                 });
     }
 
-    private void showSaveLayoutDialog() {
+
+    private void showSaveLayoutDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setTitle("Save Layout");
-        
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setHint("Enter layout name");
+        input.setMinWidth(getResources().getDisplayMetrics().widthPixels * 4 / 5);
+
         builder.setView(input);
-        
         builder.setPositiveButton("Save", (dialog, which) -> {
             String layoutName = input.getText().toString().trim();
             if (!layoutName.isEmpty()) {
+                Toast.makeText(this, "Saving layout...", Toast.LENGTH_SHORT).show();
                 takeScreenshot(layoutName);
             } else {
                 Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", null);
-        
-        builder.show();
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(
+                    (int)(getResources().getDisplayMetrics().widthPixels * 0.8),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+            );
+        }
     }
 
     @Override
