@@ -5,14 +5,17 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.example.arrangeit.FurnitureCatalogueFragmentTest.waitFor;
+import static com.example.arrangeit.Helpers.clickXY;
+import static com.example.arrangeit.Helpers.ensureTestUserLoggedIn;
+import static com.example.arrangeit.Helpers.getScreenSize;
+import static com.example.arrangeit.Helpers.waitFor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import android.content.Context;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -21,14 +24,18 @@ import android.view.WindowManager;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiObjectNotFoundException;
 
 import com.bumptech.glide.Glide;
 
@@ -103,10 +110,6 @@ public class ARCoreScreenTest {
         onView(isRoot()).perform(waitFor(2000));
         onView(withId(R.id.fragment_container)).check(matches(isDisplayed()));
     }
-
-
-
-
 
 
     @Test
@@ -194,61 +197,53 @@ public class ARCoreScreenTest {
         onView(withId(R.id.clear_button)).check(matches(not(isDisplayed())));
     }
 
-    // HELPER METHODS
-    public static int[] getScreenSize() {
-        int[] size = new int[2];
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            DisplayMetrics metrics = new DisplayMetrics();
-            WindowManager windowManager = (WindowManager)
-                    InstrumentationRegistry.getInstrumentation().getContext()
-                            .getSystemService(Context.WINDOW_SERVICE);
-            windowManager.getDefaultDisplay().getMetrics(metrics);
-            size[0] = metrics.widthPixels;
-            size[1] = metrics.heightPixels;
-        });
-        return size;
+
+    @Test
+    public void navigateToSavedLayouts() {
+        onView(withId(R.id.nav_screenshots)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.clear_button)).perform(click());
     }
 
-    public static ViewAction clickXY(final int x, final int y) {
-        return new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isRoot();
-            }
+    // SAVED LAYOUTS SCREENSHOT UI TESTS
+    @Test
+    public void testScreenshotButton() {
+        ensureTestUserLoggedIn();
+        Espresso.onView(ViewMatchers.withId(R.id.save_button))
+                .perform(ViewActions.click());
 
-            @Override
-            public String getDescription() {
-                return "Perform clicks at coordinates (" + x + ", " + y + ")";
-            }
+        Espresso.onView(withHint("Enter layout name"))
+                .perform(ViewActions.typeText("Test Layout"));
 
-            @Override
-            public void perform(UiController uiController, View view) {
-                int[] location = new int[2];
-                view.getLocationOnScreen(location);
-                float screenX = location[0] + x;
-                float screenY = location[1] + y;
+        Espresso.onView(ViewMatchers.withText("Save"))
+                .perform(ViewActions.click());
+    }
 
-                MotionEvent down = MotionEvent.obtain(
-                        SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_DOWN,
-                        screenX,
-                        screenY,
-                        0
-                );
-                MotionEvent up = MotionEvent.obtain(
-                        SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_UP,
-                        screenX,
-                        screenY,
-                        0
-                );
-                view.dispatchTouchEvent(down);
-                view.dispatchTouchEvent(up);
-                uiController.loopMainThreadForAtLeast(200);
-            }
-        };
+    @Test
+    public void testScreenshotButtonNoModelsPlaced() {
+        onView(withId(R.id.save_button)).check(matches(isDisplayed()));
+        Espresso.onView(ViewMatchers.withId(R.id.save_button))
+                .perform(ViewActions.click());
+        onView(withId(R.id.save_button)).check(matches(isDisplayed()));
+        // unchanged as no models have been placed
+
+    }
+
+    @Test
+    public void testScreenshotDialogue(){
+        Espresso.onView(withId(R.id.save_button))
+                .perform(click());
+
+        onView(withText("Save Layout"))
+                .check(matches(isDisplayed()));
+
+        onView(withHint("Enter layout name"))
+                .check(matches(isDisplayed()));
+
+        onView(withText("Save"))
+                .check(matches(isDisplayed()));
+        onView(withText("Cancel"))
+                .check(matches(isDisplayed()));
+
     }
 }
 

@@ -9,7 +9,9 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.example.arrangeit.FurnitureCatalogueFragmentTest.waitFor;
+import static com.example.arrangeit.Helpers.ensureTestUserLoggedIn;
+import static com.example.arrangeit.Helpers.waitFor;
+
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
@@ -62,7 +64,7 @@ public class IntegrationTests {
 
     @Test
     public void testApplicationContext() {
-        assert(InstrumentationRegistry.getInstrumentation()
+        assert (InstrumentationRegistry.getInstrumentation()
                 .getTargetContext()
                 .getPackageName()
                 .contains("com.example.arrangeit"));
@@ -99,7 +101,7 @@ public class IntegrationTests {
 
     @Test
     public void testARCorePageUIElements() {
-        loginTestUser();
+        ensureTestUserLoggedIn();
         ActivityScenario<ARCorePage> scenario = ActivityScenario.launch(ARCorePage.class);
         try {
             onView(withId(R.id.arFragment)).check(matches(isDisplayed()));
@@ -112,8 +114,8 @@ public class IntegrationTests {
     }
 
     @Test
-    public void testNavigationToCatalogue() throws InterruptedException {
-        loginTestUser();
+    public void testNavigationToCatalogue() {
+        ensureTestUserLoggedIn();
         ActivityScenario<ARCorePage> scenario = ActivityScenario.launch(ARCorePage.class);
         try {
             onView(withId(R.id.nav_catalogue)).perform(click());
@@ -128,7 +130,7 @@ public class IntegrationTests {
 
     @Test
     public void testNavigationToFurnitureDetail() throws InterruptedException {
-        loginTestUser();
+        ensureTestUserLoggedIn();
         ActivityScenario<ARCorePage> scenario = ActivityScenario.launch(ARCorePage.class);
         try {
             onView(withId(R.id.nav_catalogue)).perform(click());
@@ -153,12 +155,17 @@ public class IntegrationTests {
         }
     }
 
-    // HELPERS
-    private void loginTestUser() {
-        onView(withId(R.id.email)).perform(typeText(TEST_EMAIL), closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText(TEST_PASSWORD), closeSoftKeyboard());
-        onView(withId(R.id.sign_in)).perform(click());
-        onView(isRoot()).perform(waitFor(2000));
+    @Test
+    public void testNavigationToSavedLayouts(){
+        ensureTestUserLoggedIn();
+        ActivityScenario<ARCorePage> scenario = ActivityScenario.launch(ARCorePage.class);
+        try {
+            onView(withId(R.id.nav_screenshots)).perform(click());
+            onView(isRoot()).perform(waitFor(2000));
+            onView(withId(R.id.saved_layouts_title)).check(matches(isDisplayed()));
+        } finally {
+            scenario.close();
+        }
     }
 
 }

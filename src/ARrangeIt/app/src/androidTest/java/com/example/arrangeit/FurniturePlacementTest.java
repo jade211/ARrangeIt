@@ -7,13 +7,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.example.arrangeit.FurnitureCatalogueFragmentTest.waitFor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.allOf;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static com.example.arrangeit.ARCoreScreenTest.clickXY;
-import static com.example.arrangeit.ARCoreScreenTest.getScreenSize;
+
+import static com.example.arrangeit.Helpers.clickXY;
+import static com.example.arrangeit.Helpers.getScreenSize;
+import static com.example.arrangeit.Helpers.moveTo;
+import static com.example.arrangeit.Helpers.touchDown;
+import static com.example.arrangeit.Helpers.touchUp;
+import static com.example.arrangeit.Helpers.waitFor;
+
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
@@ -162,61 +165,4 @@ public class FurniturePlacementTest {
         onView(withId(R.id.furniture_controls)).check(matches(not(isDisplayed())));
     }
 
-
-    // HELPERS
-    private static ViewAction touchDown(final int x, final int y) {
-        return new ViewAction() {
-            @Override public Matcher<View> getConstraints() {
-                return isRoot();
-            }
-            @Override public String getDescription() {
-                return "Touch down at (" + x + "," + y + ")";
-            }
-            @Override public void perform(UiController uiController, View view) {
-                MotionEvent down = MotionEvent.obtain(
-                        SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_DOWN,
-                        x, y, 0
-                );
-                view.dispatchTouchEvent(down);
-            }
-        };
-    }
-
-    private static ViewAction moveTo(final int x, final int y) {
-        return new ViewAction() {
-            @Override public Matcher<View> getConstraints() {
-                return isRoot();
-            }
-            @Override public String getDescription() {
-                return "Move to (" + x + "," + y + ")";
-            }
-            @Override public void perform(UiController uiController, View view) {
-                MotionEvent move = MotionEvent.obtain(
-                        SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_MOVE,
-                        x, y, 0
-                );
-                view.dispatchTouchEvent(move);
-            }
-        };
-    }
-
-    private static ViewAction touchUp() {
-        return new ViewAction() {
-            @Override public Matcher<View> getConstraints() { return isRoot(); }
-            @Override public String getDescription() { return "Touch up"; }
-            @Override public void perform(UiController uiController, View view) {
-                MotionEvent up = MotionEvent.obtain(
-                        SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_UP,
-                        0, 0, 0
-                );
-                view.dispatchTouchEvent(up);
-            }
-        };
-    }
 }

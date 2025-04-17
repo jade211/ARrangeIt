@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.arrangeit.Helpers.hasTextInputLayoutErrorText;
+import static com.example.arrangeit.Helpers.testPasswordValidation;
 
 import android.os.SystemClock;
 import android.view.View;
@@ -235,46 +237,6 @@ public class RegisterScreenTest {
                 .check(matches(hasTextInputLayoutErrorText("This email is already in use. Please use a different email.")));
     }
 
-    //HELPERS
-    @NonNull
-    @Contract(" -> new")
-    public static Matcher<Root> isDialog() {
-        return new TypeSafeMatcher<>() {
-            @Override
-            protected boolean matchesSafely(Root root) {
-                int type = root.getWindowLayoutParams().get().type;
-                return type == WindowManager.LayoutParams.TYPE_APPLICATION ||
-                        type == WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
-            }
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("is dialog");
-            }
-        };
-    }
 
-    @NonNull
-    @Contract(value = "_ -> new", pure = true)
-    public static Matcher<View> hasTextInputLayoutErrorText(final String expectedErrorText) {
-        return new BoundedMatcher<>(TextInputLayout.class) {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("with error text: " + expectedErrorText);
-            }
-
-            @Override
-            protected boolean matchesSafely(TextInputLayout textInputLayout) {
-                CharSequence error = textInputLayout.getError();
-                return expectedErrorText.equals(error == null ? "" : error.toString());
-            }
-        };
-    }
-
-    private void testPasswordValidation(String password, String expectedPasswordError) {
-        onView(withId(R.id.password)).perform(clearText(), typeText(password));
-        closeSoftKeyboard();
-
-        onView(withId(R.id.password_input_layout)).check(matches(hasTextInputLayoutErrorText(expectedPasswordError)));
-    }
 }

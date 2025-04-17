@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.arrangeit.Helpers.hasTextInputLayoutErrorText;
+
 import android.os.SystemClock;
 import android.view.View;
 import android.view.WindowManager;
@@ -175,36 +177,4 @@ public class LoginScreenTest {
         onView(withId(R.id.sign_in)).check(matches(isDisplayed()));
     }
 
-
-    // HELPERS
-    public static Matcher<Root> isDialog() {
-        return new TypeSafeMatcher<>() {
-            @Override
-            protected boolean matchesSafely(Root root) {
-                int type = root.getWindowLayoutParams().get().type;
-                return type == WindowManager.LayoutParams.TYPE_APPLICATION ||
-                        type == WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("is dialog");
-            }
-        };
-    }
-
-    public static Matcher<View> hasTextInputLayoutErrorText(final String expectedErrorText) {
-        return new BoundedMatcher<>(TextInputLayout.class) {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("with error text: " + expectedErrorText);
-            }
-
-            @Override
-            protected boolean matchesSafely(TextInputLayout textInputLayout) {
-                CharSequence error = textInputLayout.getError();
-                return expectedErrorText.equals(error == null ? "" : error.toString());
-            }
-        };
-    }
 }
