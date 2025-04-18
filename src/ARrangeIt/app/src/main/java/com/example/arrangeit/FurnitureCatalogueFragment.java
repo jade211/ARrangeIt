@@ -176,13 +176,11 @@ public class FurnitureCatalogueFragment extends Fragment {
         colours.add("Blue");
         colours.add("Green");
         colours.add("Grey");
-        colours.add("Pink");
         colours.add("Brown");
         colours.add("Brass");
         colours.add("Copper");
         colours.add("Black");
         colours.add("Teal");
-        colours.add("Pink");
         colours.add("White");
         colours.add("Pearl Grey");
         colours.add("Beige");
@@ -206,7 +204,6 @@ public class FurnitureCatalogueFragment extends Fragment {
         types.add("Chest of Drawers");
         types.add("Wardrobe");
         types.add("Armchair");
-        types.add("Bar Chair");
         types.add("Bedside Table");
         types.add("Hanging Chair");
 
