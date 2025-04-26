@@ -9,9 +9,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.PixelCopy;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -91,7 +94,6 @@ public class ARCorePage extends AppCompatActivity {
     private TextView modelNameText;
     private String currentModelName = "";
     private FrameLayout fragmentContainer;
-    private Button navScreenshots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +116,6 @@ public class ARCorePage extends AppCompatActivity {
 
         setupUI();
         setupTapListener();
-        setupScreenshotsButton();
     }
 
     private void setupUI() {
@@ -122,6 +123,7 @@ public class ARCorePage extends AppCompatActivity {
         markerLineView = new MarkerLineView(this);
         overlay.addView(markerLineView);
 
+        Button navScreenshots = findViewById(R.id.nav_screenshots);
         Button navLogOut = findViewById(R.id.nav_log_out);
         Button navCatalogue = findViewById(R.id.nav_catalogue);
         Button navMeasure = findViewById(R.id.nav_measure);
@@ -143,7 +145,7 @@ public class ARCorePage extends AppCompatActivity {
         modelNameText = findViewById(R.id.model_name_text);
 
         clearAllButton = findViewById(R.id.clear_all_models_button);
-        clearAllButton.setOnClickListener(v -> showClearAllConfirmationDialog());
+        clearAllButton.setOnClickListener(v -> showClearAllConfirmationDialogue());
 
         ImageButton saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(v -> {
@@ -151,29 +153,15 @@ public class ARCorePage extends AppCompatActivity {
                 Toast.makeText(this, "No furniture placed to save", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
-            // Show dialog to name the layout
-            showSaveLayoutDialog();
+            showSaveLayoutDialogue();
         });
 
-        navScreenshots = findViewById(R.id.nav_screenshots);
+        navScreenshots.setOnClickListener(v -> {
+            startActivity(new Intent(ARCorePage.this, SavedScreenshotsActivity.class));
+        });
+
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
-
-
-        // navCatalogue.setOnClickListener(v -> {
-        //     clearMeasurementState();
-        //     if (fragmentContainer.getVisibility() == View.GONE) {
-        //         getSupportFragmentManager().beginTransaction()
-        //                 .replace(R.id.fragment_container, new FurnitureCatalogueFragment())
-        //                 .addToBackStack(null)
-        //                 .commit();
-        //         fragmentContainer.setVisibility(View.VISIBLE);
-        //     } else {
-        //         getSupportFragmentManager().popBackStack();
-        //         fragmentContainer.setVisibility(View.GONE);
-        //     }
-        // });
 
         navCatalogue.setOnClickListener(v -> {
             clearMeasurementState();
@@ -184,11 +172,9 @@ public class ARCorePage extends AppCompatActivity {
                         .addToBackStack(null)
                         .commit();
                 fragmentContainer.setVisibility(View.VISIBLE);
-                navScreenshots.setVisibility(View.GONE);
             } else {
                 getSupportFragmentManager().popBackStack();
                 fragmentContainer.setVisibility(View.GONE);
-                navScreenshots.setVisibility(View.VISIBLE);
             }
         });
 
@@ -247,25 +233,22 @@ public class ARCorePage extends AppCompatActivity {
 
     }
 
-    private void showClearAllConfirmationDialog() {
-        new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+    private void showClearAllConfirmationDialogue() {
+        AlertDialog dialogue = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setTitle("Clear All Models")
                 .setMessage("Are you sure you want to remove all placed models?")
-                .setPositiveButton("Clear All", (dialog, which) -> clearAllModels())
+                .setPositiveButton("Clear All", (d, which) -> clearAllModels())
                 .setNegativeButton("Cancel", null)
-                .show();
-    }
+                .create();
 
-    // Old version --> Both just use plane detection
-//    private void setupTapListener() {
-//        arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
-//            if (isMeasuring) {
-//                handleMeasurementTap(hitResult);
-//            } else if (selectedFurnitureRenderable != null) {
-//                placeFurniture(hitResult);
-//            }
-//        });
-//    }
+        dialogue.show();
+
+        // Adjust width after showing
+        dialogue.getWindow().setLayout(
+                (int)(getResources().getDisplayMetrics().widthPixels * 0.9),
+                WindowManager.LayoutParams.WRAP_CONTENT
+        );
+    }
 
     void updateModelCounter() {
         runOnUiThread(() -> {
@@ -683,88 +666,77 @@ public class ARCorePage extends AppCompatActivity {
 
     }
 
-    private void takeScreenshot() {
-        // Creating a bitmap from the AR scene view
+    private void takeScreenshot(String layoutName) {
         Bitmap bitmap = Bitmap.createBitmap(
                 arFragment.getArSceneView().getWidth(),
                 arFragment.getArSceneView().getHeight(),
                 Bitmap.Config.ARGB_8888);
-        
-        // Convert the scene to a bitmap
+
         PixelCopy.request(arFragment.getArSceneView(), bitmap, copyResult -> {
             if (copyResult == PixelCopy.SUCCESS) {
-                saveScreenshotToStorage(bitmap);
+                saveScreenshotToStorage(bitmap, layoutName);
             } else {
-                runOnUiThread(() -> 
-                    Toast.makeText(this, "Failed to capture screenshot", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Failed to capture screenshot", Toast.LENGTH_SHORT).show());
             }
         }, new Handler());
     }
-    
-    private void saveScreenshotToStorage(Bitmap bitmap) {
-        // Generate a unique filename with timestamp
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = "AR_Layout_" + timeStamp + ".jpg";
-        
-        // Save to internal storage first
-        FileOutputStream outputStream;
+
+    private void saveScreenshotToStorage(Bitmap bitmap, String layoutName) {
+        // Sanitize the filename by removing special characters and adding extension
+        String fileName = layoutName.replaceAll("[^a-zA-Z0-9.-]", "_") + ".jpg";
+
         try {
-            outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+            FileOutputStream outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
             outputStream.close();
-            
-            // Now save to Firebase Storage
-            saveToFirebaseStorage(fileName);
+            saveToFirebaseStorage(fileName, layoutName);
         } catch (Exception e) {
             Log.e(TAG, "Error saving screenshot: " + e.getMessage());
-            runOnUiThread(() -> 
-                Toast.makeText(this, "Error saving screenshot", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Error saving screenshot", Toast.LENGTH_SHORT).show());
         }
     }
-    
-    private void saveToFirebaseStorage(String fileName) {
+
+    private void saveToFirebaseStorage(String fileName, String layoutName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
             return;
         }
-    
+
         try {
             File file = new File(getFilesDir(), fileName);
             Uri fileUri = Uri.fromFile(file);
-            
+
             StorageReference storageRef = FirebaseStorage.getInstance().getReference()
                     .child("screenshots")
                     .child(user.getUid())
                     .child(fileName);
-            
+
             UploadTask uploadTask = storageRef.putFile(fileUri);
-            
+
             uploadTask.addOnSuccessListener(taskSnapshot -> {
-                // Get the download URL
                 storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    // Save layout data to Firestore
-                    saveLayoutData(fileName, uri.toString());
+                    saveLayoutData(fileName, uri.toString(), layoutName);
                 });
             }).addOnFailureListener(e -> {
                 Log.e(TAG, "Upload failed: " + e.getMessage());
-                runOnUiThread(() -> 
-                    Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show());
+                Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show();
             });
         } catch (Exception e) {
             Log.e(TAG, "Error uploading: " + e.getMessage());
         }
     }
 
-    private void saveLayoutData(String fileName, String imageUrl) {
+    private void saveLayoutData(String fileName, String imageUrl, String layoutName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
-    
-        // Get all placed furniture positions
+
         List<Map<String, Object>> furnitureData = new ArrayList<>();
         for (AnchorNode anchorNode : placedFurnitureNodes) {
             if (anchorNode.getAnchor() == null) continue;
-            
+
             TransformableNode furnitureNode = null;
             for (Node node : anchorNode.getChildren()) {
                 if (node instanceof TransformableNode) {
@@ -772,80 +744,81 @@ public class ARCorePage extends AppCompatActivity {
                     break;
                 }
             }
-            
+
             if (furnitureNode != null) {
                 Map<String, Object> data = new HashMap<>();
-                data.put("modelUrl", currentModelUrl); // You'll need to track this per node
+                data.put("modelUrl", currentModelUrl);
                 data.put("position", Arrays.asList(
-                    furnitureNode.getWorldPosition().x,
-                    furnitureNode.getWorldPosition().y,
-                    furnitureNode.getWorldPosition().z
+                        furnitureNode.getWorldPosition().x,
+                        furnitureNode.getWorldPosition().y,
+                        furnitureNode.getWorldPosition().z
                 ));
                 data.put("rotation", Arrays.asList(
-                    furnitureNode.getWorldRotation().x,
-                    furnitureNode.getWorldRotation().y,
-                    furnitureNode.getWorldRotation().z,
-                    furnitureNode.getWorldRotation().w
+                        furnitureNode.getWorldRotation().x,
+                        furnitureNode.getWorldRotation().y,
+                        furnitureNode.getWorldRotation().z,
+                        furnitureNode.getWorldRotation().w
                 ));
                 data.put("scale", Arrays.asList(
-                    furnitureNode.getWorldScale().x,
-                    furnitureNode.getWorldScale().y,
-                    furnitureNode.getWorldScale().z
+                        furnitureNode.getWorldScale().x,
+                        furnitureNode.getWorldScale().y,
+                        furnitureNode.getWorldScale().z
                 ));
                 data.put("modelName", furnitureNode.getName());
-                
+
                 furnitureData.add(data);
             }
         }
-    
-        // Create a new layout document
+
         Map<String, Object> layoutData = new HashMap<>();
         layoutData.put("userId", user.getUid());
         layoutData.put("timestamp", FieldValue.serverTimestamp());
         layoutData.put("furniture", furnitureData);
         layoutData.put("screenshotUrl", imageUrl);
-        layoutData.put("layoutName", "My Layout " + new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault()).format(new Date()));
-    
+        layoutData.put("layoutName", layoutName); // Use the custom name here
+
         FirebaseFirestore.getInstance().collection("savedLayouts")
                 .add(layoutData)
                 .addOnSuccessListener(documentReference -> {
-                    runOnUiThread(() -> 
-                        Toast.makeText(this, "Layout saved successfully!", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, "Layout saved successfully!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error saving layout: " + e.getMessage());
-                    runOnUiThread(() -> 
-                        Toast.makeText(this, "Failed to save layout", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, "Failed to save layout", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void showSaveLayoutDialog() {
+
+    private void showSaveLayoutDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setTitle("Save Layout");
-        
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setHint("Enter layout name");
+        input.setMinWidth(getResources().getDisplayMetrics().widthPixels * 4 / 5);
+
         builder.setView(input);
-        
         builder.setPositiveButton("Save", (dialog, which) -> {
             String layoutName = input.getText().toString().trim();
             if (!layoutName.isEmpty()) {
-                // Save with custom name
-                takeScreenshot();
+                Toast.makeText(this, "Saving layout...", Toast.LENGTH_SHORT).show();
+                takeScreenshot(layoutName);
             } else {
                 Toast.makeText(this, "Please enter a name", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", null);
-        
-        builder.show();
-    }
 
-    private void setupScreenshotsButton() {
-        navScreenshots.setOnClickListener(v -> {
-            startActivity(new Intent(this, SavedScreenshotsActivity.class));
-        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(
+                    (int)(getResources().getDisplayMetrics().widthPixels * 0.8),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+            );
+        }
     }
 
     @Override
@@ -853,7 +826,6 @@ public class ARCorePage extends AppCompatActivity {
         if (fragmentContainer.getVisibility() == View.VISIBLE) {
             getSupportFragmentManager().popBackStack();
             fragmentContainer.setVisibility(View.GONE);
-            navScreenshots.setVisibility(View.VISIBLE); // Show screenshot button when back pressed
         } else {
             super.onBackPressed();
         }

@@ -1,9 +1,6 @@
 package com.example.arrangeit;
 
 import androidx.test.espresso.intent.Intents;
-
-import static com.example.arrangeit.ARCoreScreenTest.clickXY;
-import static com.example.arrangeit.FurnitureCatalogueFragmentTest.waitFor;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -30,15 +27,18 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasMinimumChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.arrangeit.Helpers.clickXY;
+import static com.example.arrangeit.Helpers.getScreenSize;
+import static com.example.arrangeit.Helpers.loginTestUser;
+import static com.example.arrangeit.Helpers.testPlaceFurniture;
+import static com.example.arrangeit.Helpers.waitFor;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
-import android.content.Context;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
-import android.view.WindowManager;
 
 import java.util.Random;
 
@@ -118,7 +118,7 @@ public class SystemTests {
         onView(withId(R.id.emailBox)).check(matches(isDisplayed()));
     }
 
-    // arcore end-to-end test
+    // arcore end-to-end placement test
     @Test
     public void testFurniturePlacementFlow() throws UiObjectNotFoundException {
         loginTestUser();
@@ -159,6 +159,24 @@ public class SystemTests {
                 )));
     }
 
+
+    // arcore end-to-end saved layouts test
+    @Test
+    public void testSavedLayoutsFlow() throws UiObjectNotFoundException {
+        loginTestUser();
+        onView(isRoot()).perform(waitFor(1000));
+        testPlaceFurniture();
+        onView(withId(R.id.save_button)).perform(click());
+        onView(withHint("Enter layout name")).perform(typeText("Test Layout 1"));
+        onView(withText("Save")).perform(click());
+        onView(isRoot()).perform(waitFor(10000));
+        onView(withId(R.id.nav_screenshots)).perform(click());
+        onView(withId(R.id.screenshots_grid))
+                .check(matches(hasMinimumChildCount(1)));
+
+        onView(allOf(withText("Test Layout 1"), isDisplayed()))
+                .check(matches(isDisplayed()));
+    }
 
     // test measure tool end-to-end
     @Test
@@ -221,25 +239,5 @@ public class SystemTests {
         onView(withId(R.id.recyclerView)).check(matches(hasMinimumChildCount(1)));
     }
 
-    // Helper methods
-    private void loginTestUser() {
-        onView(withId(R.id.email)).perform(typeText(TEST_EMAIL), closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText(TEST_PASSWORD), closeSoftKeyboard());
-        onView(withId(R.id.sign_in)).perform(click());
-    }
-
-    private int[] getScreenSize() {
-        int[] size = new int[2];
-        androidx.test.InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            DisplayMetrics metrics = new DisplayMetrics();
-            WindowManager windowManager = (WindowManager)
-                    androidx.test.InstrumentationRegistry.getInstrumentation().getContext()
-                            .getSystemService(Context.WINDOW_SERVICE);
-            windowManager.getDefaultDisplay().getMetrics(metrics);
-            size[0] = metrics.widthPixels;
-            size[1] = metrics.heightPixels;
-        });
-        return size;
-    }
 
 }

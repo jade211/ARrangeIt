@@ -7,11 +7,11 @@
     android:padding="4dp">
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/nav_ar_core"
+        android:id="@+id/nav_screenshots"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Home"
+        android:text="Saved Layouts"
         android:drawableTop="@drawable/ic_home"
         android:background="@drawable/nav_button_selector"
         android:textColor="@android:color/black"
@@ -27,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="Catalogue"
+        android:text="Furniture Catalogue"
         android:drawableTop="@drawable/ic_catalogue"
         android:background="@drawable/nav_button_selector"
         android:textColor="@android:color/black"
