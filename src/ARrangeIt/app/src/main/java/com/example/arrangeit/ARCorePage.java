@@ -88,6 +88,7 @@ public class ARCorePage extends AppCompatActivity {
     private TextView modelNameText;
     private String currentModelName = "";
     private FrameLayout fragmentContainer;
+    private boolean placementCompleted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -413,6 +414,7 @@ public class ARCorePage extends AppCompatActivity {
     }
 
     public void loadModelFromFirebase(String modelUrl) {
+        placementCompleted = false;
         if (modelUrl.equals(currentModelUrl) && furnitureRenderable != null) {
             selectedFurnitureRenderable = furnitureRenderable;
             Toast.makeText(this, "Model ready to place", Toast.LENGTH_SHORT).show();
@@ -472,8 +474,8 @@ public class ARCorePage extends AppCompatActivity {
 
 
     private void placeFurniture(HitResult hitResult) {
-        if (selectedFurnitureRenderable == null) {
-            Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
+        if (selectedFurnitureRenderable == null || placementCompleted) {
+//            Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
             return;
         }
         final float[] lastTouchX = {0};
@@ -558,7 +560,10 @@ public class ARCorePage extends AppCompatActivity {
 
         showManipulationButtons();
         showModelName(currentModelName);
+
+        placementCompleted = true;
     }
+
 
     private void showModelName(String name) {
         runOnUiThread(() -> {
@@ -684,6 +689,8 @@ public class ARCorePage extends AppCompatActivity {
         hideModelName();
         placedModelsCount = 0;
         updateModelCounter();
+        placementCompleted = false;
+
 
     }
 
