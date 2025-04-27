@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_email_header"
+        android:title="Email:"
+        android:enabled="false"/>
+
+    <item
+        android:id="@+id/menu_email_value"
+        android:title="user@example.com"
+        android:enabled="false"/>
+
+    <item
+        android:id="@+id/menu_change_password"
+        android:title="Change Password"
+        android:icon="@drawable/ic_lock"/>
+
+    <item
+        android:id="@+id/menu_delete_account"
+        android:title="Delete Account"
+        android:icon="@drawable/ic_delete"/>
+</menu>
