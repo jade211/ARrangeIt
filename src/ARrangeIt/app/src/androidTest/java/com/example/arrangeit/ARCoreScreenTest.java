@@ -89,6 +89,7 @@ public class ARCoreScreenTest {
     @Test
     public void testNavbarVisibility() {
         onView(withId(R.id.bottom_nav_bar)).check(matches(isDisplayed()));
+        onView(withId(R.id.nav_screenshots)).check(matches(isDisplayed()));
         onView(withId(R.id.nav_catalogue)).check(matches(isDisplayed()));
         onView(withId(R.id.nav_measure)).check(matches(isDisplayed()));
         onView(withId(R.id.nav_log_out)).check(matches(isDisplayed()));
