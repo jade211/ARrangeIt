@@ -77,7 +77,7 @@ public class ARCorePage extends AppCompatActivity {
     private ImageView deleteButton;
     private ImageView rotateButton;
     private ImageView moveButton;
-    private TransformableNode currentFurnitureNode;
+    TransformableNode currentFurnitureNode;
     private boolean isRotateMode = false;
     ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
     private LinearLayout furnitureControlsPanel;

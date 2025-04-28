@@ -126,9 +126,9 @@ public class SystemTests {
 
         // navigate to furniture catalogue
         onView(withId(R.id.nav_catalogue)).perform(click());
-        onView(isRoot()).perform(waitFor(1000));
+        onView(isRoot()).perform(waitFor(2000));
         onView(withId(R.id.recyclerView)).check(matches(isDisplayed()));
-        onView(isRoot()).perform(waitFor(3000));
+        onView(isRoot()).perform(waitFor(2000));
 
         // click on a furniture item
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -142,7 +142,7 @@ public class SystemTests {
 
         // place in AR clicked
         onView(withId(R.id.place_in_ar_button)).perform(click());
-        onView(isRoot()).perform(waitFor(1000));
+        onView(isRoot()).perform(waitFor(5000));
 
 
         // verify furniture model is in environment

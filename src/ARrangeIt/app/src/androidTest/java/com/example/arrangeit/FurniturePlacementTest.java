@@ -18,11 +18,6 @@ import static com.example.arrangeit.Helpers.touchDown;
 import static com.example.arrangeit.Helpers.touchUp;
 import static com.example.arrangeit.Helpers.waitFor;
 
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
@@ -30,7 +25,6 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import com.google.ar.sceneform.math.Quaternion;
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import java.util.Random;
@@ -63,7 +57,7 @@ public class FurniturePlacementTest {
                         .className("android.widget.TextView")
                         .textContains(selectedItem))
                 .click();
-        onView(isRoot()).perform(waitFor(2000));
+        onView(isRoot()).perform(waitFor(5000));
         onView(withId(R.id.itemName)).check(matches(isDisplayed()));
         onView(withId(R.id.itemPrice)).check(matches(isDisplayed()));
         device.swipe(500, 1500, 500, 500, 20);
@@ -112,52 +106,6 @@ public class FurniturePlacementTest {
         onView(isRoot()).perform(clickXY(centerX, centerY));
         onView(isRoot()).perform(waitFor(3000));
         onView(withId(R.id.furniture_controls)).check(matches(isDisplayed()));
-
-//        // test rotate function
-//        onView(withId(R.id.rotate_button)).perform(click());
-//        onView(isRoot()).perform(waitFor(1000));
-//        final float[] initialRotation = new float[4];
-//        activityRule.getScenario().onActivity(activity -> {
-//            if (activity.currentFurnitureNode != null) {
-//                Quaternion quaternion = activity.currentFurnitureNode.getWorldRotation();
-//                initialRotation[0] = quaternion.x;
-//                initialRotation[1] = quaternion.y;
-//                initialRotation[2] = quaternion.z;
-//                initialRotation[3] = quaternion.w;
-//            }
-//        });
-//
-//        int radius = 200;
-//        int rotationSteps = 36;
-//        for (int i = 0; i <= rotationSteps; i++) {
-//            double angle = (i * 360.0) / rotationSteps;
-//            double radians = Math.toRadians(angle);
-//            int x = (int) (centerX + radius * Math.cos(radians));
-//            int y = (int) (centerY + radius * Math.sin(radians));
-//
-//            if (i == 0) {
-//                onView(isRoot()).perform(touchDown(x, y));
-//            } else {
-//                onView(isRoot()).perform(moveTo(x, y));
-//            }
-//            onView(isRoot()).perform(waitFor(50));
-//        }
-//        onView(isRoot()).perform(touchUp());
-//        onView(isRoot()).perform(waitFor(3000));
-//
-//        // compare initial rotation to new rotation
-//        activityRule.getScenario().onActivity(activity -> {
-//            if (activity.currentFurnitureNode != null) {
-//                Quaternion newRotation = activity.currentFurnitureNode.getWorldRotation();
-//                float epsilon = 0.0001f;
-//                boolean rotationChanged = Math.abs(initialRotation[0] - newRotation.x) > epsilon ||
-//                        Math.abs(initialRotation[1] - newRotation.y) > epsilon ||
-//                        Math.abs(initialRotation[2] - newRotation.z) > epsilon ||
-//                        Math.abs(initialRotation[3] - newRotation.w) > epsilon;
-//
-//                assertTrue("Rotation should change", rotationChanged);
-//            }
-//        });
 
         // test rotate function
         onView(withId(R.id.rotate_button)).perform(click());
