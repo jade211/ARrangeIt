@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.arrangeit.Helpers.clickXY;
 import static com.example.arrangeit.Helpers.ensureTestUserLoggedIn;
 import static com.example.arrangeit.Helpers.getScreenSize;
+import static com.example.arrangeit.Helpers.testPlaceFurniture;
 import static com.example.arrangeit.Helpers.waitFor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -200,13 +201,15 @@ public class ARCoreScreenTest {
 
     @Test
     public void navigateToSavedLayouts() {
-        onView(withId(R.id.nav_screenshots)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.clear_button)).perform(click());
+        onView(withId(R.id.nav_screenshots)).check(matches(isDisplayed()));
+        onView(withId(R.id.nav_screenshots)).perform(click());
+        onView(withText("Saved Layouts")).check(matches(isDisplayed()));
     }
 
     // SAVED LAYOUTS SCREENSHOT UI TESTS
     @Test
-    public void testScreenshotButton() {
+    public void testScreenshotButton() throws UiObjectNotFoundException {
+        testPlaceFurniture();
         ensureTestUserLoggedIn();
         Espresso.onView(ViewMatchers.withId(R.id.save_button))
                 .perform(ViewActions.click());
@@ -229,7 +232,8 @@ public class ARCoreScreenTest {
     }
 
     @Test
-    public void testScreenshotDialogue(){
+    public void testScreenshotDialogue() throws UiObjectNotFoundException {
+        testPlaceFurniture();
         Espresso.onView(withId(R.id.save_button))
                 .perform(click());
 

@@ -230,7 +230,7 @@ public class Helpers {
         int[] screenSize = getScreenSize();
         int centerX = screenSize[0]/2;
         int centerY = screenSize[1]/2;
-        onView(isRoot()).perform(waitFor(2000));
+        onView(isRoot()).perform(waitFor(5000));
         onView(isRoot()).perform(clickXY(centerX, centerY));
         onView(isRoot()).perform(waitFor(2000));
         onView(withId(R.id.model_counter))

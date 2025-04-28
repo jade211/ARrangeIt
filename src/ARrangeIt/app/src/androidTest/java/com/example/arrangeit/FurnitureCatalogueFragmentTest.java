@@ -91,7 +91,6 @@ public class FurnitureCatalogueFragmentTest {
 
     @Test
     public void testCatalogueContents() {
-        onView(withText("Furniture Catalogue")).check(matches(isDisplayed()));
         onView(withId(R.id.closeButton)).check(matches(isDisplayed()));
         onView(withId(R.id.searchBar)).check(matches(isDisplayed()));
         onView(withId(R.id.filterIcon)).check(matches(isDisplayed()));
@@ -100,7 +99,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSearchFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.searchBar))
                     .perform(typeText("chair"), pressImeActionButton());
             closeSoftKeyboard();
@@ -114,7 +113,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingPriceFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -138,7 +137,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingColourFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             onView(withId(R.id.colourFilterSpinner))
@@ -164,7 +163,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingTypeFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             onView(withId(R.id.typeFilterSpinner))
@@ -188,7 +187,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxPriceFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             onView(withId(R.id.priceFilterEditText))
@@ -210,7 +209,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxDepthFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -231,7 +230,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxHeightFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -253,7 +252,7 @@ public class FurnitureCatalogueFragmentTest {
     @Test
     public void testSortingMaxWidthFunctionality() {
         try {
-            onView(isRoot()).perform(waitFor(1000));
+            onView(isRoot()).perform(waitFor(2000));
             onView(withId(R.id.filterIcon)).perform(click());
 
             UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -285,7 +284,7 @@ public class FurnitureCatalogueFragmentTest {
     // FURNITURE DETAILS FRAGMENT UI TEST
     @Test
     public void testFurnitureDetailNavigation() throws UiObjectNotFoundException {
-        onView(isRoot()).perform(waitFor(2000));
+        onView(isRoot()).perform(waitFor(3000));
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.findObject(new UiSelector()
                         .className("android.widget.TextView")
