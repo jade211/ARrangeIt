@@ -41,7 +41,7 @@ public class FurnitureCatalogueFragment extends Fragment {
     FirebaseFirestore db;
     private ImageButton filterIcon;
     EditText searchBar;
-    private Spinner sortByPriceSpinner;
+    Spinner sortByPriceSpinner;
 
 
     @Override
