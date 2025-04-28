@@ -3,10 +3,12 @@ package com.example.arrangeit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -31,10 +33,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
+import android.widget.EditText;
+import com.google.android.material.textfield.TextInputEditText;
+
 public class SavedScreenshotsActivity extends AppCompatActivity {
     private GridView gridView;
     private List<ScreenshotItem> screenshotItems = new ArrayList<>();
     private ScreenshotAdapter adapter;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +52,13 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saved_screenshots);
 
+        mAuth = FirebaseAuth.getInstance();
+
         ImageButton backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> finish());
+
+        ImageButton profileButton = findViewById(R.id.profile_button);
+        profileButton.setOnClickListener(v -> showProfileMenu(v));
 
         gridView = findViewById(R.id.screenshots_grid);
         adapter = new ScreenshotAdapter(this, screenshotItems);
@@ -106,54 +121,6 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         });
     }
 
-//    private void loadScreenshots() {
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        if (user == null) {
-//            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
-//            finish();
-//            return;
-//        }
-//
-//        FirebaseFirestore.getInstance().collection("savedLayouts")
-//                .whereEqualTo("userId", user.getUid())
-//                .orderBy("timestamp", Query.Direction.DESCENDING)
-//                .get()
-//                .addOnSuccessListener(queryDocumentSnapshots -> {
-//                    screenshotItems.clear();
-//
-//                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-//                        ScreenshotItem item = new ScreenshotItem();
-//                        item.setImageUrl(document.getString("screenshotUrl"));
-//                        item.setName(document.getString("layoutName"));
-//
-//                        Timestamp timestamp = document.getTimestamp("timestamp");
-//                        if (timestamp != null) {
-//                            Date date = timestamp.toDate();
-//                            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault());
-//                            item.setDate(sdf.format(date));
-//                        }
-//
-//                        List<Map<String, Object>> furniture =
-//                                (List<Map<String, Object>>) document.get("furniture");
-//                        item.setModelCount(furniture != null ? furniture.size() : 0);
-//
-//                        screenshotItems.add(item);
-//                    }
-//
-//                    adapter.notifyDataSetChanged();
-//
-//                    if (screenshotItems.isEmpty()) {
-//                        Toast.makeText(this, "No saved layouts found", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                    Toast.makeText(this, "Failed to load screenshots: " + e.getMessage(),
-//                            Toast.LENGTH_SHORT).show();
-//                    Log.e("LoadScreenshots", "Error loading screenshots", e);
-//                });
-//    }
-
-
     private void loadScreenshots() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -210,6 +177,163 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to load screenshots: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                     Log.e("LoadScreenshots", "Error loading screenshots", e);
+                });
+    }
+
+    private void showProfileMenu(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
+        popup.getMenuInflater().inflate(R.menu.profile_menu, popup.getMenu());
+        
+        // Set the actual email value
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null && user.getEmail() != null) {
+            MenuItem emailValueItem = popup.getMenu().findItem(R.id.menu_email_value);
+            emailValueItem.setTitle(user.getEmail());
+        } else {
+            // Hide both email items if no user
+            popup.getMenu().removeItem(R.id.menu_email_header);
+            popup.getMenu().removeItem(R.id.menu_email_value);
+        }
+    
+        popup.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.menu_change_password) {
+                changePassword();
+                return true;
+            } else if (id == R.id.menu_delete_account) {
+                deleteAccount();
+                return true;
+            }
+            return false;
+        });
+        
+        // Force show icons if needed
+        try {
+            Field[] fields = popup.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if ("mPopup".equals(field.getName())) {
+                    field.setAccessible(true);
+                    Object menuPopupHelper = field.get(popup);
+                    Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                    Method setForceShowIcon = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                    setForceShowIcon.invoke(menuPopupHelper, true);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        popup.show();
+    }
+
+    private void changePassword() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String email = user.getEmail();
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(this, "Email not available", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Failed to send reset email", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void deleteAccount() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+    
+        // Create a re-authentication dialog
+        new AlertDialog.Builder(this, R.style.AlertDialogTheme)
+            .setTitle("Re-authentication Required")
+            .setMessage("For security, please enter your password to delete your account")
+            .setView(R.layout.dialog_reauthenticate) // Create this layout
+            .setPositiveButton("Continue", (dialog, which) -> {
+                // Get password from dialog
+                AlertDialog alertDialog = (AlertDialog) dialog;
+                EditText passwordInput = alertDialog.findViewById(R.id.password_input);
+                String password = passwordInput.getText().toString().trim();
+    
+                if (password.isEmpty()) {
+                    Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+    
+                // Re-authenticate user
+                AuthCredential credential = EmailAuthProvider
+                    .getCredential(user.getEmail(), password);
+    
+                user.reauthenticate(credential)
+                    .addOnSuccessListener(aVoid -> {
+                        // After successful re-auth, proceed with deletion
+                        deleteUserData(user.getUid(), () -> {
+                            user.delete()
+                                .addOnSuccessListener(aVoid1 -> {
+                                    Toast.makeText(this, "Account deleted", Toast.LENGTH_SHORT).show();
+                                    finishAffinity();
+                                    startActivity(new Intent(this, MainActivity.class));
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, 
+                                        "Failed to delete account: " + e.getMessage(), 
+                                        Toast.LENGTH_LONG).show();
+                                });
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, 
+                            "Authentication failed: " + e.getMessage(), 
+                            Toast.LENGTH_LONG).show();
+                    });
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
+    private void deleteUserData(String userId, Runnable onComplete) {
+        // Delete all Firestore documents
+        FirebaseFirestore.getInstance().collection("savedLayouts")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                        doc.getReference().delete();
+                    }
+                    
+                    // Delete all storage files
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                            .child("screenshots")
+                            .child(userId);
+                    
+                    storageRef.listAll()
+                            .addOnSuccessListener(listResult -> {
+                                for (StorageReference item : listResult.getItems()) {
+                                    item.delete();
+                                }
+                                onComplete.run();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("DeleteUserData", "Error deleting storage files", e);
+                                onComplete.run();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("DeleteUserData", "Error deleting Firestore documents", e);
+                    onComplete.run();
                 });
     }
 }

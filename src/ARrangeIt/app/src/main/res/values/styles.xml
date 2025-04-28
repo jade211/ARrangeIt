@@ -78,6 +78,21 @@
     <item name="android:elevation">4dp</item>
     <item name="android:fontFamily">sans-serif-medium</item>
   </style>
+
+  <style name="PopupMenu" parent="ThemeOverlay.AppCompat.Dark">
+    <item name="android:textColor">@color/white</item>
+    <item name="android:itemTextAppearance">@style/PopupMenuTextAppearance</item>
+    <item name="android:dividerHeight">0dp</item>
+  </style>
+
+  <style name="PopupMenuTextAppearance">
+    <item name="android:textSize">14sp</item>
+  </style>
+
+  <style name="PopupMenu.EmailItem" parent="PopupMenuTextAppearance">
+    <item name="android:paddingTop">2dp</item>
+    <item name="android:paddingBottom">2dp</item>
+  </style>
 </resources>
 
 
