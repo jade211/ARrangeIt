@@ -174,7 +174,6 @@ public class FurnitureCatalogueFragment extends Fragment {
         colours.add("All");
         colours.add("Red");
         colours.add("Blue");
-        colours.add("Green");
         colours.add("Grey");
         colours.add("Brown");
         colours.add("Brass");
@@ -195,7 +194,7 @@ public class FurnitureCatalogueFragment extends Fragment {
         types.add("All");
         types.add("Chair");
         types.add("Sofa");
-        types.add("Bedside table");
+        types.add("Desk");
         types.add("Lighting");
         types.add("Storage");
         types.add("Bed");
