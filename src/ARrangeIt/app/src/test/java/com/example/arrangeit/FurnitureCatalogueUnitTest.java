@@ -45,6 +45,7 @@ public class FurnitureCatalogueUnitTest {
         fragment.searchBar = mock(EditText.class);
         fragment.colourFilterSpinner = mock(Spinner.class);
         fragment.typeFilterSpinner = mock(Spinner.class);
+        fragment.sortByPriceSpinner = mock(Spinner.class);
 
         testFurnitureItems = new ArrayList<>();
         testFurnitureItems.add(new FurnitureItem(
@@ -138,11 +139,19 @@ public class FurnitureCatalogueUnitTest {
     @Test
     public void testPriceSortingLogic() {
         List<FurnitureItem> itemsToSort = new ArrayList<>(testFurnitureItems);
-        itemsToSort.sort(Comparator.comparingDouble(FurnitureItem::getPrice));
+
+        when(fragment.sortByPriceSpinner.getSelectedItem()).thenReturn("Price: Low to High");
+        if ("Price: Low to High".equals(fragment.sortByPriceSpinner.getSelectedItem())) {
+            itemsToSort.sort(Comparator.comparingDouble(FurnitureItem::getPrice));
+        }
         assertEquals("First item should be the cheapest", "Test Chair", itemsToSort.get(0).getName());
         assertEquals("Last item should be the most expensive", "Test Sofa", itemsToSort.get(2).getName());
 
-        itemsToSort.sort((item1, item2) -> Double.compare(item2.getPrice(), item1.getPrice()));
+        itemsToSort = new ArrayList<>(testFurnitureItems);
+        when(fragment.sortByPriceSpinner.getSelectedItem()).thenReturn("Price: High to Low");
+        if ("Price: High to Low".equals(fragment.sortByPriceSpinner.getSelectedItem())) {
+            itemsToSort.sort((item1, item2) -> Double.compare(item2.getPrice(), item1.getPrice()));
+        }
         assertEquals("First item should be the most expensive", "Test Sofa", itemsToSort.get(0).getName());
         assertEquals("Last item should be the cheapest", "Test Chair", itemsToSort.get(2).getName());
     }
