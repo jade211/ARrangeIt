@@ -202,9 +202,7 @@ public class FurnitureCatalogueFragment extends Fragment {
         types.add("Ottoman");
         types.add("Chest of Drawers");
         types.add("Wardrobe");
-        types.add("Armchair");
         types.add("Bedside Table");
-        types.add("Hanging Chair");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, types);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

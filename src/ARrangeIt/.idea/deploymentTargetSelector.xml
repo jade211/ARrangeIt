@@ -13,13 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="SavedLayoutsTest">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="IntegrationTests">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="SystemTests">
+      <SelectionState runConfigName="testSortingMaxPriceFunctionality()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
