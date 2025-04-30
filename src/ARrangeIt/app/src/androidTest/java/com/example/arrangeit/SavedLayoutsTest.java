@@ -14,6 +14,7 @@ import static com.example.arrangeit.Helpers.ensureTestUserLoggedIn;
 import static com.example.arrangeit.Helpers.testPlaceFurniture;
 import static com.example.arrangeit.Helpers.waitFor;
 import static org.hamcrest.Matchers.allOf;
+
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
