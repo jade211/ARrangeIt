@@ -93,12 +93,9 @@ public class ARCorePage extends AppCompatActivity {
     private String currentModelName = "";
     private FrameLayout fragmentContainer;
     private boolean placementCompleted = false;
-    // private static final float DARK_THRESHOLD = 0.2f;
-    // private boolean isEnvironmentTooDark = false;
-
     private boolean isEnvironmentTooDark = false;
     private boolean planesDetected = false;
-    private static final float DARK_THRESHOLD = 0.2f;
+    private static final float DARK_THRESHOLD = 0.1f;
     private Handler warningHandler = new Handler();
     private Runnable hideWarningRunnable;
 
@@ -284,7 +281,6 @@ public class ARCorePage extends AppCompatActivity {
 
             try {
                 com.google.ar.core.Frame frame = arFragment.getArSceneView().getArFrame();
-                // if (frame == null) return false;
 
                 if (frame == null || isEnvironmentTooDark) {
                     if (isEnvironmentTooDark) {
@@ -508,7 +504,6 @@ public class ARCorePage extends AppCompatActivity {
             return;
         }
         if (selectedFurnitureRenderable == null || placementCompleted) {
-//            Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
             return;
         }
         final float[] lastTouchX = {0};
@@ -849,7 +844,6 @@ public class ARCorePage extends AppCompatActivity {
                 });
     }
 
-
     private void showSaveLayoutDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setTitle("Save Layout");
@@ -881,22 +875,6 @@ public class ARCorePage extends AppCompatActivity {
             );
         }
     }
-
-    // private void checkEnvironmentBrightness(Frame frame) {
-    //     LightEstimate lightEstimate = frame.getLightEstimate();
-    //     if (lightEstimate != null && lightEstimate.getState() == LightEstimate.State.VALID) {
-    //         float pixelIntensity = lightEstimate.getPixelIntensity();
-    //         isEnvironmentTooDark = pixelIntensity < DARK_THRESHOLD;
-            
-    //         if (isEnvironmentTooDark) {
-    //             runOnUiThread(() -> {
-    //                 Toast.makeText(this, 
-    //                     "Environment is too dark. Please improve lighting for better plane detection.", 
-    //                     Toast.LENGTH_LONG).show();
-    //             });
-    //         }
-    //     }
-    // }
 
     private void checkEnvironment() {
         Frame frame = arFragment.getArSceneView().getArFrame();
