@@ -86,7 +86,8 @@ public class SystemTests {
         onView(withId(R.id.sign_up)).check(matches(isDisplayed()));
 
         // enter registration details
-        onView(withId(R.id.email)).perform(typeText(TEST_EMAIL + System.currentTimeMillis()), closeSoftKeyboard());
+        String email = "test" + System.currentTimeMillis() + "@example.com";
+        onView(withId(R.id.email)).perform(typeText(email), closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText(TEST_PASSWORD), closeSoftKeyboard());
 
         // click sign up and redirected back to sign in
@@ -238,6 +239,5 @@ public class SystemTests {
         onView(isRoot()).perform(waitFor(2000));
         onView(withId(R.id.recyclerView)).check(matches(hasMinimumChildCount(1)));
     }
-
 
 }

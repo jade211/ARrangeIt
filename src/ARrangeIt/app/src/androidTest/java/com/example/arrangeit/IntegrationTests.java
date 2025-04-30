@@ -81,7 +81,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void testNavigationToForgotPasswordDialog() {
+    public void testNavigationToForgotPasswordDialogue() {
         onView(withId(R.id.forgot_password)).check(matches(isDisplayed()));
         onView(withId(R.id.forgot_password)).perform(click());
         onView(withId(R.id.emailBox)).inRoot(isDialog()).check(matches(isDisplayed()));

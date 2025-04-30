@@ -15,21 +15,8 @@ import static com.example.arrangeit.Helpers.hasTextInputLayoutErrorText;
 import static com.example.arrangeit.Helpers.testPasswordValidation;
 
 import android.os.SystemClock;
-import android.view.View;
-import android.view.WindowManager;
-
-import androidx.annotation.NonNull;
-import androidx.test.espresso.Root;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.google.android.material.textfield.TextInputLayout;
-
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
-import org.jetbrains.annotations.Contract;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -141,6 +128,7 @@ public class RegisterScreenTest {
 
     @Test
     public void testPasswordTooShort() {
+
         testPasswordValidation("short", expectedPasswordError);
     }
 
