@@ -21,16 +21,4 @@ public final class CameraPermissionHelper {
         ActivityCompat.requestPermissions(
                 activity, new String[] {CAMERA_PERMISSION}, CAMERA_PERMISSION_CODE);
     }
-
-    public static boolean shouldShowRequestPermissionRationale(Activity activity) {
-        return ActivityCompat.shouldShowRequestPermissionRationale(activity, CAMERA_PERMISSION);
-    }
-
-    /** Launchs App after grant permission. */
-    public static void launchPermissionSettings(Activity activity) {
-        Intent intent = new Intent();
-        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.fromParts("package", activity.getPackageName(), null));
-        activity.startActivity(intent);
-    }
 }
