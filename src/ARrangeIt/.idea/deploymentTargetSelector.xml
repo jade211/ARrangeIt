@@ -13,7 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="testSortingMaxPriceFunctionality()">
+      <SelectionState runConfigName="FurnitureCatalogueFragmentTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="FurniturePlacementTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="IntegrationTests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="SystemTests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testUserRegistrationFlow()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
