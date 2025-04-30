@@ -37,6 +37,17 @@ tools:context="com.example.arrangeit.MainActivity">
         android:textSize="16sp"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/low_light_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Too dark to detect surfaces. Please move to a well-lit area"
+        android:background="#CC000000"
+        android:textColor="#FFFFFF"
+        android:padding="16dp"
+        android:gravity="center"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:id="@+id/model_name_container"
         android:layout_width="wrap_content"

@@ -28,8 +28,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.arrangeit.helpers.CameraPermissionHelper;
 import com.google.ar.core.Anchor;
+import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
+import com.google.ar.core.LightEstimate;
+import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
+import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.HitTestResult;
@@ -89,6 +93,14 @@ public class ARCorePage extends AppCompatActivity {
     private String currentModelName = "";
     private FrameLayout fragmentContainer;
     private boolean placementCompleted = false;
+    // private static final float DARK_THRESHOLD = 0.2f;
+    // private boolean isEnvironmentTooDark = false;
+
+    private boolean isEnvironmentTooDark = false;
+    private boolean planesDetected = false;
+    private static final float DARK_THRESHOLD = 0.2f;
+    private Handler warningHandler = new Handler();
+    private Runnable hideWarningRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,6 +273,10 @@ public class ARCorePage extends AppCompatActivity {
 
     private void setupTapListener() {
         arFragment.setOnTapArPlaneListener(null);
+        arFragment.getArSceneView().getScene().addOnUpdateListener(frameTime -> {
+            checkEnvironment();
+        });
+    
         arFragment.getArSceneView().getScene().setOnTouchListener((hitTestResult, motionEvent) -> {
             if (!isMeasuring || motionEvent.getAction() != android.view.MotionEvent.ACTION_DOWN) {
                 return false;
@@ -268,8 +284,17 @@ public class ARCorePage extends AppCompatActivity {
 
             try {
                 com.google.ar.core.Frame frame = arFragment.getArSceneView().getArFrame();
-                if (frame == null) return false;
+                // if (frame == null) return false;
 
+                if (frame == null || isEnvironmentTooDark) {
+                    if (isEnvironmentTooDark) {
+                        runOnUiThread(() -> 
+                            Toast.makeText(this, 
+                                "Cannot measure in low light conditions", 
+                                Toast.LENGTH_SHORT).show());
+                    }
+                    return false;
+                }
                 // FIRST TRY: Plane measurement
                 List<HitResult> hitResults = frame.hitTest(motionEvent);
                 for (HitResult hit : hitResults) {
@@ -474,6 +499,14 @@ public class ARCorePage extends AppCompatActivity {
 
 
     private void placeFurniture(HitResult hitResult) {
+
+        if (isEnvironmentTooDark && !planesDetected) {
+            runOnUiThread(() -> 
+                Toast.makeText(this, 
+                    "Too dark to detect surfaces. Please move to a well-lit area", 
+                    Toast.LENGTH_SHORT).show());
+            return;
+        }
         if (selectedFurnitureRenderable == null || placementCompleted) {
 //            Toast.makeText(this, "No furniture selected", Toast.LENGTH_SHORT).show();
             return;
@@ -847,6 +880,62 @@ public class ARCorePage extends AppCompatActivity {
                     WindowManager.LayoutParams.WRAP_CONTENT
             );
         }
+    }
+
+    // private void checkEnvironmentBrightness(Frame frame) {
+    //     LightEstimate lightEstimate = frame.getLightEstimate();
+    //     if (lightEstimate != null && lightEstimate.getState() == LightEstimate.State.VALID) {
+    //         float pixelIntensity = lightEstimate.getPixelIntensity();
+    //         isEnvironmentTooDark = pixelIntensity < DARK_THRESHOLD;
+            
+    //         if (isEnvironmentTooDark) {
+    //             runOnUiThread(() -> {
+    //                 Toast.makeText(this, 
+    //                     "Environment is too dark. Please improve lighting for better plane detection.", 
+    //                     Toast.LENGTH_LONG).show();
+    //             });
+    //         }
+    //     }
+    // }
+
+    private void checkEnvironment() {
+        Frame frame = arFragment.getArSceneView().getArFrame();
+        if (frame == null) return;
+    
+        // Check light levels
+        LightEstimate lightEstimate = frame.getLightEstimate();
+        if (lightEstimate != null && lightEstimate.getState() == LightEstimate.State.VALID) {
+            float pixelIntensity = lightEstimate.getPixelIntensity();
+            isEnvironmentTooDark = pixelIntensity < DARK_THRESHOLD;
+        }
+    
+        // Check for detected planes
+        planesDetected = false;
+        for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+            if (plane.getTrackingState() == TrackingState.TRACKING) {
+                planesDetected = true;
+                break;
+            }
+        }
+    
+        runOnUiThread(() -> {
+            if (warningHandler != null && hideWarningRunnable != null) {
+                warningHandler.removeCallbacks(hideWarningRunnable);
+            }
+    
+            if (isEnvironmentTooDark && !planesDetected) {
+                findViewById(R.id.low_light_warning).setVisibility(View.VISIBLE);
+                
+                hideWarningRunnable = () -> {
+                    if (planesDetected) {
+                        findViewById(R.id.low_light_warning).setVisibility(View.GONE);
+                    }
+                };
+                warningHandler.postDelayed(hideWarningRunnable, 5000);
+            } else {
+                findViewById(R.id.low_light_warning).setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
