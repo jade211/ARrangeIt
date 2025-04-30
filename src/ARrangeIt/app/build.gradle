@@ -101,10 +101,4 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-
-
-//    implementation 'io.github.sceneview:sceneview:2.2.1'
-//    implementation 'io.github.sceneview:arsceneview:2.2.1'
-//    implementation libs.sceneview;
-//    implementation libs.arsceneview;
 }
