@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -32,13 +31,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import android.widget.EditText;
-import com.google.android.material.textfield.TextInputEditText;
 
 public class SavedScreenshotsActivity extends AppCompatActivity {
     private GridView gridView;
@@ -206,8 +203,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
             }
             return false;
         });
-        
-        // Force show icons if needed
+
         try {
             Field[] fields = popup.getClass().getDeclaredFields();
             for (Field field : fields) {
@@ -261,7 +257,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         new AlertDialog.Builder(this, R.style.AlertDialogTheme)
             .setTitle("Re-authentication Required")
             .setMessage("For security, please enter your password to delete your account")
-            .setView(R.layout.dialog_reauthenticate) // Create this layout
+            .setView(R.layout.dialog_reauthenticate)
             .setPositiveButton("Continue", (dialog, which) -> {
                 // Get password from dialog
                 AlertDialog alertDialog = (AlertDialog) dialog;
@@ -279,7 +275,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
     
                 user.reauthenticate(credential)
                     .addOnSuccessListener(aVoid -> {
-                        // After successful re-auth, proceed with deletion
+                        // After successful re-authenticate, proceed with deletion
                         deleteUserData(user.getUid(), () -> {
                             user.delete()
                                 .addOnSuccessListener(aVoid1 -> {
