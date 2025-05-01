@@ -1,6 +1,4 @@
-<!--
 The video walk through is [here](https://drive.google.com/file/d/1Z7Z2yvAfXOvY6KjRts3hYgNeO1T90mlp/view?usp=sharing).
--->
 
 Instructions:
 
