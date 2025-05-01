@@ -66,16 +66,21 @@ import java.util.Map;
 
 public class ARCorePage extends AppCompatActivity {
     private static final String TAG = "ARCorePage";
+
+    // AR Components
     private ArFragment arFragment;
     private ModelRenderable measurementMarkerRenderable;
     private ModelRenderable selectedFurnitureRenderable;
 
+    // Measurement state variables
     private AnchorNode firstAnchorNode;
     private AnchorNode secondAnchorNode;
     private boolean isFirstPointSet = false;
     private boolean isMeasuring = false;
     private MarkerLineView markerLineView;
     private Button clearButton;
+
+    // Furniture placement variables
     private ModelRenderable furnitureRenderable;
     private String currentModelUrl;
     private ImageView deleteButton;
@@ -84,6 +89,8 @@ public class ARCorePage extends AppCompatActivity {
     TransformableNode currentFurnitureNode;
     private boolean isRotateMode = false;
     ArrayList<AnchorNode> placedFurnitureNodes = new ArrayList<>();
+
+    // UI Components
     private LinearLayout furnitureControlsPanel;
     private TextView modelCounter;
     int placedModelsCount = 0;
@@ -95,7 +102,9 @@ public class ARCorePage extends AppCompatActivity {
     private boolean placementCompleted = false;
     private boolean isEnvironmentTooDark = false;
     private boolean planesDetected = false;
-    private static final float DARK_THRESHOLD = 0.1f;
+    private static final float DARK_THRESHOLD = 0.1f; // Threshold for low light detection
+    
+    // Handlers for UI warnings
     private Handler warningHandler = new Handler();
     private Runnable hideWarningRunnable;
 
@@ -104,11 +113,11 @@ public class ARCorePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ar);
 
+        // Initialize AR fragment container
         fragmentContainer = findViewById(R.id.fragment_container);
-
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.arFragment);
 
-
+        // Load the measurement marker model
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("models/measurement_marker.glb"))
                 .build()
@@ -122,35 +131,45 @@ public class ARCorePage extends AppCompatActivity {
         setupTapListener();
     }
 
+    /**
+     * Initializes all UI components and sets up their event listeners
+     */
     private void setupUI() {
         FrameLayout overlay = findViewById(R.id.overlay);
         markerLineView = new MarkerLineView(this);
         overlay.addView(markerLineView);
 
+        // Navigation buttons
         Button navScreenshots = findViewById(R.id.nav_screenshots);
         Button navLogOut = findViewById(R.id.nav_log_out);
         Button navCatalogue = findViewById(R.id.nav_catalogue);
         Button navMeasure = findViewById(R.id.nav_measure);
         clearButton = findViewById(R.id.clear_button);
 
+        // Furniture manipulation controls
         furnitureControlsPanel = findViewById(R.id.furniture_controls);
         deleteButton = findViewById(R.id.delete_button);
         rotateButton = findViewById(R.id.rotate_button);
         moveButton = findViewById(R.id.move_button);
 
+        // Set up button click listeners
         deleteButton.setOnClickListener(v -> deleteCurrentModel());
         rotateButton.setOnClickListener(v -> setRotateMode(true));
         moveButton.setOnClickListener(v -> setRotateMode(false));
 
+        // Model counter display
         modelCounter = findViewById(R.id.model_counter);
         updateModelCounter();
 
+        // Model name display
         modelNameContainer = findViewById(R.id.model_name_container);
         modelNameText = findViewById(R.id.model_name_text);
 
+        // Clear all models button
         clearAllButton = findViewById(R.id.clear_all_models_button);
         clearAllButton.setOnClickListener(v -> showClearAllConfirmationDialogue());
 
+        // Save layout button
         ImageButton saveButton = findViewById(R.id.save_button);
         saveButton.setOnClickListener(v -> {
             if (placedFurnitureNodes.isEmpty()) {
@@ -163,7 +182,6 @@ public class ARCorePage extends AppCompatActivity {
         navScreenshots.setOnClickListener(v -> {
             startActivity(new Intent(ARCorePage.this, SavedScreenshotsActivity.class));
         });
-
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
 
@@ -190,6 +208,7 @@ public class ARCorePage extends AppCompatActivity {
             finish();
         });
 
+        // Measurement completion button
         Button completeMeasurement = findViewById(R.id.complete_measurement);
         completeMeasurement.setOnClickListener(v -> {
             if (isFirstPointSet) {
@@ -206,6 +225,7 @@ public class ARCorePage extends AppCompatActivity {
             }
         });
 
+        // Measurement mode toggle
         navMeasure.setOnClickListener(v -> {
             hideManipulationButtons();
             if (fragmentContainer.getVisibility() == View.VISIBLE) {
@@ -225,6 +245,7 @@ public class ARCorePage extends AppCompatActivity {
             }
         });
 
+        // Clear measurement button
         clearButton.setOnClickListener(v -> {
             markerLineView.clearPoints();
             clearAnchors();
@@ -237,6 +258,9 @@ public class ARCorePage extends AppCompatActivity {
 
     }
 
+    /**
+     * Shows confirmation dialog for clearing all placed models
+     */
     private void showClearAllConfirmationDialogue() {
         AlertDialog dialogue = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setTitle("Clear All Models")
@@ -247,13 +271,15 @@ public class ARCorePage extends AppCompatActivity {
 
         dialogue.show();
 
-        // Adjust width after showing
         dialogue.getWindow().setLayout(
                 (int)(getResources().getDisplayMetrics().widthPixels * 0.9),
                 WindowManager.LayoutParams.WRAP_CONTENT
         );
     }
 
+    /**
+     * Updates the counter displaying number of placed models
+     */
     void updateModelCounter() {
         runOnUiThread(() -> {
             if (placedModelsCount > 0) {
@@ -267,7 +293,9 @@ public class ARCorePage extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Sets up tap listeners for AR scene interactions
+     */
     private void setupTapListener() {
         arFragment.setOnTapArPlaneListener(null);
         arFragment.getArSceneView().getScene().addOnUpdateListener(frameTime -> {
@@ -291,7 +319,7 @@ public class ARCorePage extends AppCompatActivity {
                     }
                     return false;
                 }
-                // FIRST TRY: Plane measurement
+                // First try plane-based measurement
                 List<HitResult> hitResults = frame.hitTest(motionEvent);
                 for (HitResult hit : hitResults) {
                     if (hit.getTrackable() instanceof com.google.ar.core.Plane) {
@@ -319,7 +347,7 @@ public class ARCorePage extends AppCompatActivity {
             }
         });
 
-        // unchanged plane detection for furniture
+        // Set up plane detection listener for furniture placement
         arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
             if (!isMeasuring && selectedFurnitureRenderable != null) {
                 placeFurniture(hitResult);
@@ -327,13 +355,17 @@ public class ARCorePage extends AppCompatActivity {
         });
     }
 
-
-
+    /**
+     * Handles measurement tap on detected planes
+     */
     private void handleMeasurementTap(HitResult hitResult, float screenX, float screenY) {
         Anchor anchor = hitResult.createAnchor();
         createMeasurementPoint(anchor, screenX, screenY);
     }
 
+    /**
+     * Creates a measurement point at the specified anchor location
+     */
     private void createMeasurementPoint(Anchor anchor, float screenX, float screenY) {
         AnchorNode anchorNode = new AnchorNode(anchor);
         anchorNode.setParent(arFragment.getArSceneView().getScene());
@@ -355,6 +387,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Clears all measurement anchors from the scene
+     */
     private void clearAnchors() {
         if (firstAnchorNode != null) {
             arFragment.getArSceneView().getScene().removeChild(firstAnchorNode);
@@ -366,6 +401,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Adds a visual marker to the specified anchor node
+     */
     private void addMarkerToNode(AnchorNode anchorNode) {
         if (measurementMarkerRenderable == null) return;
 
@@ -379,7 +417,9 @@ public class ARCorePage extends AppCompatActivity {
         markerNode.setEnabled(true);
     }
 
-
+    /**
+     * Calculates distance between the two measurement points
+     */
     private void calculateDistance() {
         if (firstAnchorNode != null && secondAnchorNode != null &&
                 firstAnchorNode.getAnchor() != null && secondAnchorNode.getAnchor() != null) {
@@ -410,6 +450,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Resets all measurement state variables
+     */
     private void clearMeasurementState() {
         runOnUiThread(() -> {
             markerLineView.clearPoints();
@@ -420,6 +463,9 @@ public class ARCorePage extends AppCompatActivity {
         });
     }
 
+    /**
+     * Clears current measurement without resetting the mode
+     */
     private void clearMeasurement() {
         if (firstAnchorNode != null) {
             arFragment.getArSceneView().getScene().removeChild(firstAnchorNode);
@@ -434,8 +480,13 @@ public class ARCorePage extends AppCompatActivity {
         clearButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Loads a 3D model from Firebase Storage
+     */
     public void loadModelFromFirebase(String modelUrl) {
         placementCompleted = false;
+
+        // Return if same model is already loaded
         if (modelUrl.equals(currentModelUrl) && furnitureRenderable != null) {
             selectedFurnitureRenderable = furnitureRenderable;
             Toast.makeText(this, "Model ready to place", Toast.LENGTH_SHORT).show();
@@ -448,11 +499,13 @@ public class ARCorePage extends AppCompatActivity {
         Toast.makeText(this, "Loading 3D model...", Toast.LENGTH_SHORT).show();
 
         try {
+            // Create temp file for model download
             File modelFile = File.createTempFile("model", "glb", getCacheDir());
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference modelRef = storage.getReference(modelUrl);
 
+            // Download model from Firebase
             modelRef.getFile(modelFile)
                     .addOnSuccessListener(taskSnapshot -> {
                         buildModel(modelFile);
@@ -467,6 +520,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Builds a renderable model from the downloaded file
+     */
     private void buildModel(File file) {
         RenderableSource renderableSource = RenderableSource
                 .builder()
@@ -491,9 +547,9 @@ public class ARCorePage extends AppCompatActivity {
                 });
     }
 
-
-
-
+    /**
+     * Places furniture model at the hit result location
+     */
     private void placeFurniture(HitResult hitResult) {
 
         if (isEnvironmentTooDark && !planesDetected) {
@@ -506,13 +562,16 @@ public class ARCorePage extends AppCompatActivity {
         if (selectedFurnitureRenderable == null || placementCompleted) {
             return;
         }
+        // Touch handling variables
         final float[] lastTouchX = {0};
         final boolean[] isRotating = {false};
 
+        // Deselect any existing model
         if (currentFurnitureNode != null) {
             deselectCurrentModel();
         }
 
+        // Create anchor and anchor node at hit location
         Anchor anchor = hitResult.createAnchor();
         AnchorNode anchorNode = new AnchorNode(anchor);
         anchorNode.setParent(arFragment.getArSceneView().getScene());
@@ -521,10 +580,11 @@ public class ARCorePage extends AppCompatActivity {
         placedModelsCount++;
         updateModelCounter();
 
+        // Create transformable node for the furniture
         currentFurnitureNode = new TransformableNode(arFragment.getTransformationSystem()) {
             @Override
             public boolean onTouchEvent(HitTestResult hitTestResult, MotionEvent motionEvent) {
-                // First, update the current selection to this node
+                // Update selection when touched
                 if (currentFurnitureNode != this) {
                     deselectCurrentModel();
                     currentFurnitureNode = this;
@@ -533,6 +593,7 @@ public class ARCorePage extends AppCompatActivity {
                     setRotateMode(isRotateMode);
                 }
 
+                // Handle rotation in rotate mode
                 if (isRotateMode && motionEvent.getPointerCount() == 1) {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
@@ -586,13 +647,16 @@ public class ARCorePage extends AppCompatActivity {
             return;
         });
 
+        // Show UI controls
         showManipulationButtons();
         showModelName(currentModelName);
 
         placementCompleted = true;
     }
 
-
+    /**
+     * Displays the name of the currently selected model
+     */
     private void showModelName(String name) {
         runOnUiThread(() -> {
             if (name != null && !name.isEmpty()) {
@@ -603,16 +667,26 @@ public class ARCorePage extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Sets the name of the current model to be placed
+     */
     public void setCurrentModelName(String name) {
         this.currentModelName = name;
     }
 
+    /**
+     * Hides the model name display
+     */
     private void hideModelName() {
         runOnUiThread(() -> {
             modelNameContainer.setVisibility(View.GONE);
         });
     }
 
+    /**
+     * Deselects the currently selected model
+     */
     private void deselectCurrentModel() {
         if (currentFurnitureNode != null) {
             currentFurnitureNode.getTranslationController().setEnabled(false);
@@ -627,6 +701,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Shows the furniture manipulation buttons
+     */
     void showManipulationButtons() {
         furnitureControlsPanel.setVisibility(View.VISIBLE);
         deleteButton.setVisibility(View.VISIBLE);
@@ -634,6 +711,9 @@ public class ARCorePage extends AppCompatActivity {
         moveButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hides the furniture manipulation buttons
+     */
     private void hideManipulationButtons() {
         furnitureControlsPanel.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
@@ -641,6 +721,9 @@ public class ARCorePage extends AppCompatActivity {
         moveButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Toggles between rotate and move modes
+     */
     private void setRotateMode(boolean rotateMode) {
         isRotateMode = rotateMode;
         if (currentFurnitureNode != null) {
@@ -671,6 +754,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Deletes the currently selected model
+     */
     private void deleteCurrentModel() {
         if (currentFurnitureNode != null) {
             AnchorNode parentAnchor = (AnchorNode) currentFurnitureNode.getParent();
@@ -706,6 +792,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Clears all placed models from the scene
+     */
     private void clearAllModels() {
         for (AnchorNode anchorNode : placedFurnitureNodes) {
             arFragment.getArSceneView().getScene().removeChild(anchorNode);
@@ -722,6 +811,9 @@ public class ARCorePage extends AppCompatActivity {
 
     }
 
+    /**
+     * Takes a screenshot of the current AR scene
+     */
     private void takeScreenshot(String layoutName) {
         Bitmap bitmap = Bitmap.createBitmap(
                 arFragment.getArSceneView().getWidth(),
@@ -738,6 +830,9 @@ public class ARCorePage extends AppCompatActivity {
         }, new Handler());
     }
 
+    /**
+     * Saves screenshot to internal storage
+     */
     private void saveScreenshotToStorage(Bitmap bitmap, String layoutName) {
         // Sanitize the filename by removing special characters and adding extension
         String fileName = layoutName.replaceAll("[^a-zA-Z0-9.-]", "_") + ".jpg";
@@ -754,6 +849,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Uploads screenshot to Firebase Storage
+     */
     private void saveToFirebaseStorage(String fileName, String layoutName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -785,6 +883,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Saves layout data to Firestore
+     */
     private void saveLayoutData(String fileName, String imageUrl, String layoutName) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
@@ -844,6 +945,9 @@ public class ARCorePage extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Shows dialog for saving layout with name
+     */
     private void showSaveLayoutDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
         builder.setTitle("Save Layout");
@@ -876,6 +980,9 @@ public class ARCorePage extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks environmental conditions (lighting and plane detection)
+     */
     private void checkEnvironment() {
         Frame frame = arFragment.getArSceneView().getArFrame();
         if (frame == null) return;

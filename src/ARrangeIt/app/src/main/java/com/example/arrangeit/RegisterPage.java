@@ -21,6 +21,12 @@ import com.example.arrangeit.helpers.FieldValidatorHelper;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.android.material.textfield.TextInputLayout;
 
+/**
+ * RegisterPage handles new user registration with:
+ * - Email and password validation
+ * - Account creation via Firebase Authentication
+ * - Navigation to login page
+ */
 public class RegisterPage extends AppCompatActivity {
     TextInputEditText editTextEmail, editTextPassword;
     Button signUp;
@@ -49,6 +55,7 @@ public class RegisterPage extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Validate email format as user types
                 String emailError = FieldValidatorHelper.validateEmail(editTextEmail.getText().toString());
                 emailInputLayout.setError(emailError);
             }
@@ -59,6 +66,7 @@ public class RegisterPage extends AppCompatActivity {
             }
         });
 
+        // Set up real-time password validation
         editTextPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -77,6 +85,7 @@ public class RegisterPage extends AppCompatActivity {
             }
         });
 
+        // Handle sign in text click - navigate to login page
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,12 +95,14 @@ public class RegisterPage extends AppCompatActivity {
             }
         });
 
+        // Handle sign up button click - register new user
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = editTextEmail.getText().toString();
                 String password = editTextPassword.getText().toString();
 
+                // Validate email and password before registration attempt
                 String emailError = FieldValidatorHelper.validateEmail(email);
                 String passwordError = FieldValidatorHelper.validatePassword(password);
 
@@ -109,10 +120,12 @@ public class RegisterPage extends AppCompatActivity {
                     passwordInputLayout.setError(null);
                 }
 
+                // Attempt to create new user with Firebase Authentication
                 firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            // On successful registration
                             Toast.makeText(RegisterPage.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(RegisterPage.this, MainActivity.class);
                             startActivity(intent);
@@ -121,6 +134,7 @@ public class RegisterPage extends AppCompatActivity {
                             try {
                                 throw task.getException();
                             } catch (FirebaseAuthUserCollisionException e) {
+                                // Handle case where email already exists
                                 emailInputLayout.setError("This email is already in use. Please use a different email.");
                             } catch (Exception e) {
                                 Toast.makeText(RegisterPage.this, "Registration failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();

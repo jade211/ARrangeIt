@@ -37,6 +37,14 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import android.widget.EditText;
 
+/**
+ * Activity for displaying and managing saved AR layout screenshots
+ * Features include:
+ * - Grid display of saved layouts
+ * - Fullscreen view of selected layouts
+ * - Layout deletion
+ * - User account management (password change, account deletion)
+ */
 public class SavedScreenshotsActivity extends AppCompatActivity {
     private GridView gridView;
     private List<ScreenshotItem> screenshotItems = new ArrayList<>();
@@ -61,22 +69,27 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         adapter = new ScreenshotAdapter(this, screenshotItems);
         gridView.setAdapter(adapter);
 
-        // Updated click listener to use screenshotItems
+        // Click listener for viewing screenshots in full screen
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             Intent intent = new Intent(this, FullScreenImageActivity.class);
             intent.putExtra("image_url", screenshotItems.get(position).getImageUrl());
             startActivity(intent);
         });
 
-        // long click listener for deletion
+        // Long click listener for screenshot deletion
         gridView.setOnItemLongClickListener((parent, view, position, id) -> {
             showDeleteConfirmationDialog(position);
             return true;
         });
 
+        // Load saved screenshots from Firebase
         loadScreenshots();
     }
 
+    /**
+     * Shows confirmation dialog before deleting a screenshot
+     * @param position Position of the screenshot in the grid
+     */
     private void showDeleteConfirmationDialog(int position) {
         new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                 .setTitle("Delete Screenshot")
@@ -86,6 +99,10 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Deletes a screenshot from both Storage and Firestore
+     * @param position Position of the screenshot to delete
+     */
     private void deleteScreenshot(int position) {
         ScreenshotItem item = screenshotItems.get(position);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -101,7 +118,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                 .child(filename);
 
         storageRef.delete().addOnSuccessListener(aVoid -> {
-            // Also delete from Firestore
+            // After storage deletion, delete from Firestore
             FirebaseFirestore.getInstance().collection("savedLayouts")
                     .whereEqualTo("screenshotUrl", url)
                     .get()
@@ -118,6 +135,10 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Loads saved screenshots from Firestore for the current user
+     * Orders by timestamp (newest first)
+     */
     private void loadScreenshots() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -126,6 +147,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
             return;
         }
 
+        // Query Firestore for user's saved layouts
         FirebaseFirestore.getInstance().collection("savedLayouts")
                 .whereEqualTo("userId", user.getUid())
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -145,6 +167,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                             item.setDate(sdf.format(date));
                         }
 
+                        // Count furniture models in this layout
                         List<Map<String, Object>> furniture =
                                 (List<Map<String, Object>>) document.get("furniture");
                         item.setModelCount(furniture != null ? furniture.size() : 0);
@@ -177,6 +200,10 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Shows the profile management popup menu
+     * @param view Anchor view for the popup
+     */
     private void showProfileMenu(View view) {
         PopupMenu popup = new PopupMenu(this, view);
         popup.getMenuInflater().inflate(R.menu.profile_menu, popup.getMenu());
@@ -223,6 +250,9 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         popup.show();
     }
 
+    /**
+     * Initiates password reset flow by sending email
+     */
     private void changePassword() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
@@ -246,6 +276,9 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Shows re-authentication dialog and deletes account if successful
+     */
     private void deleteAccount() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
@@ -300,6 +333,11 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
             .show();
     }
 
+    /**
+     * Deletes all user data from Firestore and Storage
+     * @param userId ID of user to delete data for
+     * @param onComplete Callback to run after deletion completes
+     */
     private void deleteUserData(String userId, Runnable onComplete) {
         // Delete all Firestore documents
         FirebaseFirestore.getInstance().collection("savedLayouts")

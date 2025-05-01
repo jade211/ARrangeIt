@@ -48,6 +48,7 @@ public class FurnitureCatalogueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_furniture_catalogue, container, false);
 
+        // Initialize UI components
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         ProgressBar loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
@@ -115,6 +116,11 @@ public class FurnitureCatalogueFragment extends Fragment {
 
         return view;
     }
+
+    /**
+     * Performs search based on text in search bar
+     * Filters items by name containing the search query (case insensitive)
+     */
     void performSearch() {
         String query = searchBar.getText().toString().toLowerCase().trim();
         filteredFurnitureItems.clear();
@@ -126,6 +132,10 @@ public class FurnitureCatalogueFragment extends Fragment {
         furnitureAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Loads furniture catalogue data from Firestore
+     * Shows loading spinner while fetching data
+     */
     void loadFurnitureCatalogue() {
         db.collection("furniture")
                 .get()
@@ -169,6 +179,9 @@ public class FurnitureCatalogueFragment extends Fragment {
                 });
     }
 
+    /**
+     * Initializes colour filter spinner with available options
+     */
     void setupColourFilterSpinner() {
         List<String> colours = new ArrayList<>();
         colours.add("All");
@@ -189,6 +202,9 @@ public class FurnitureCatalogueFragment extends Fragment {
         colourFilterSpinner.setAdapter(adapter);
     }
 
+    /**
+     * Initializes type filter spinner with furniture types
+     */
     void setupTypeFilterSpinner() {
         List<String> types = new ArrayList<>();
         types.add("All");
@@ -209,6 +225,9 @@ public class FurnitureCatalogueFragment extends Fragment {
         typeFilterSpinner.setAdapter(adapter);
     }
 
+    /**
+     * Initializes price sorting spinner options
+     */
     void setupSortByPriceSpinner() {
         List<String> sortOptions = new ArrayList<>();
         sortOptions.add("None");
@@ -220,6 +239,9 @@ public class FurnitureCatalogueFragment extends Fragment {
         sortByPriceSpinner.setAdapter(adapter);
     }
 
+    /**
+     * Applies all active filters and sorting to the furniture list
+     */
     void applyFilters() {
         String selectedColour = colourFilterSpinner.getSelectedItem().toString();
         String selectedType = typeFilterSpinner.getSelectedItem().toString();

@@ -24,7 +24,12 @@ import com.example.arrangeit.helpers.FieldValidatorHelper;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.android.material.textfield.TextInputLayout;
 
-
+/**
+ * MainActivity handles user authentication including:
+ * - Email/password login
+ * - Password reset functionality
+ * - Navigation to registration page
+ */
 public class MainActivity extends AppCompatActivity {
     TextInputEditText editTextEmail, editTextPassword;
     Button signIn;
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         emailInputLayout = findViewById(R.id.email_input_layout);
         forgotPassword = findViewById(R.id.forgot_password);
 
+        // Set up email field validation on text change
         editTextEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -52,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Validate email format in real-time
                 String emailError = FieldValidatorHelper.validateEmail(editTextEmail.getText().toString());
                 emailInputLayout.setError(emailError);
             }
@@ -62,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Handle sign up text click - navigate to RegisterPage
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        // Handle forgot password text click - show password reset dialog
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+                // Handle cancel button click in dialog
                 dialogView.findViewById(R.id.buttonCancel).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -118,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        // Handle sign in button click
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 password = String.valueOf(editTextPassword.getText());
 
 
-
+                // Attempt Firebase authentication
                 firebaseAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
