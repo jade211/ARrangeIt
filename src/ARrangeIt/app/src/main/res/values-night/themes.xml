@@ -3,7 +3,5 @@
     <style name="Base.Theme.ARrangeIt" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/blue</item>
         <item name="colorPrimaryVariant">@color/blue</item>
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 </resources>

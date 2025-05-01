@@ -215,7 +215,6 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
             emailValueItem.setTitle(user.getEmail());
         } else {
             // Hide both email items if no user
-            popup.getMenu().removeItem(R.id.menu_email_header);
             popup.getMenu().removeItem(R.id.menu_email_value);
         }
     
@@ -290,7 +289,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         new AlertDialog.Builder(this, R.style.AlertDialogTheme)
             .setTitle("Re-authentication Required")
             .setMessage("For security, please enter your password to delete your account")
-            .setView(R.layout.dialog_reauthenticate)
+            .setView(R.layout.dialogue_reauthenticate)
             .setPositiveButton("Continue", (dialog, which) -> {
                 // Get password from dialog
                 AlertDialog alertDialog = (AlertDialog) dialog;
