@@ -63,7 +63,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         ImageButton profileButton = findViewById(R.id.profile_button);
-        profileButton.setOnClickListener(v -> showProfileMenu(v));
+        profileButton.setOnClickListener(this::showProfileMenu);
 
         gridView = findViewById(R.id.screenshots_grid);
         adapter = new ScreenshotAdapter(this, screenshotItems);
@@ -130,9 +130,7 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         Toast.makeText(this, "Layout deleted", Toast.LENGTH_SHORT).show();
                     });
-        }).addOnFailureListener(e -> {
-            Toast.makeText(this, "Failed to delete screenshot", Toast.LENGTH_SHORT).show();
-        });
+        }).addOnFailureListener(e -> Toast.makeText(this, "Failed to delete screenshot", Toast.LENGTH_SHORT).show());
     }
 
     /**
@@ -308,25 +306,19 @@ public class SavedScreenshotsActivity extends AppCompatActivity {
                 user.reauthenticate(credential)
                     .addOnSuccessListener(aVoid -> {
                         // After successful re-authenticate, proceed with deletion
-                        deleteUserData(user.getUid(), () -> {
-                            user.delete()
-                                .addOnSuccessListener(aVoid1 -> {
-                                    Toast.makeText(this, "Account deleted", Toast.LENGTH_SHORT).show();
-                                    finishAffinity();
-                                    startActivity(new Intent(this, MainActivity.class));
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(this, 
-                                        "Failed to delete account: " + e.getMessage(), 
-                                        Toast.LENGTH_LONG).show();
-                                });
-                        });
+                        deleteUserData(user.getUid(), () -> user.delete()
+                            .addOnSuccessListener(aVoid1 -> {
+                                Toast.makeText(this, "Account deleted", Toast.LENGTH_SHORT).show();
+                                finishAffinity();
+                                startActivity(new Intent(this, MainActivity.class));
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this,
+                                "Failed to delete account: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show()));
                     })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, 
-                            "Authentication failed: " + e.getMessage(), 
-                            Toast.LENGTH_LONG).show();
-                    });
+                    .addOnFailureListener(e -> Toast.makeText(this,
+                        "Authentication failed: " + e.getMessage(),
+                        Toast.LENGTH_LONG).show());
             })
             .setNegativeButton("Cancel", null)
             .show();

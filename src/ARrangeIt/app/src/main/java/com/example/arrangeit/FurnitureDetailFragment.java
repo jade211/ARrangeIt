@@ -115,7 +115,7 @@ public class FurnitureDetailFragment extends Fragment {
 
     /**
      * Helper method to get FirebaseStorage instance
-     * @return FirebaseStorage instance
+     * @return (FirebaseStorage instance)
      */
     protected FirebaseStorage getFirebaseStorage() {
         return FirebaseStorage.getInstance();

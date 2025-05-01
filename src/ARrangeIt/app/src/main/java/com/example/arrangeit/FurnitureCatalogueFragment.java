@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.arrangeit.helpers.FurnitureAdapter;
 import com.example.arrangeit.helpers.FurnitureItem;
 import com.google.android.flexbox.FlexboxLayout;
@@ -26,6 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
 
+
+/**
+ * A fragment that displays the catalogue of furniture items.
+ * Supports search, sorting and multiple filtering options (price, type, dimensions, colour).
+ */
 public class FurnitureCatalogueFragment extends Fragment {
 
     private RecyclerView recyclerView;
@@ -44,6 +50,13 @@ public class FurnitureCatalogueFragment extends Fragment {
     Spinner sortByPriceSpinner;
 
 
+    /**
+     * Fragment instantiates its user interface view.
+     * @param inflater (LayoutInflater object that can be used to inflate views)
+     * @param container (parent view that the fragments UI should be attached to)
+     * @param savedInstanceState (bundle containing the fragments previously saved state)
+     * @return (root view of the inflated layout)
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_furniture_catalogue, container, false);
@@ -180,7 +193,7 @@ public class FurnitureCatalogueFragment extends Fragment {
     }
 
     /**
-     * Initializes colour filter spinner with available options
+     * Initialises colour filter spinner with available options
      */
     void setupColourFilterSpinner() {
         List<String> colours = new ArrayList<>();
@@ -194,7 +207,6 @@ public class FurnitureCatalogueFragment extends Fragment {
         colours.add("Black");
         colours.add("Teal");
         colours.add("White");
-        colours.add("Pearl Grey");
         colours.add("Beige");
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, colours);
@@ -203,7 +215,7 @@ public class FurnitureCatalogueFragment extends Fragment {
     }
 
     /**
-     * Initializes type filter spinner with furniture types
+     * Initialises type filter spinner with furniture types
      */
     void setupTypeFilterSpinner() {
         List<String> types = new ArrayList<>();
@@ -226,7 +238,7 @@ public class FurnitureCatalogueFragment extends Fragment {
     }
 
     /**
-     * Initializes price sorting spinner options
+     * Initialises price sorting spinner options
      */
     void setupSortByPriceSpinner() {
         List<String> sortOptions = new ArrayList<>();

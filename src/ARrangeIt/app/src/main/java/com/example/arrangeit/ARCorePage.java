@@ -64,6 +64,15 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * Main AR activity that handles 3D model placement, measurement tool and scene management
+ * Provides: (from firebase catalogue)
+ * - Model loading
+ * - AR furniture placement and manipulation
+ * - Distance measure tool
+ * - Scene saving
+ * - Environment detection (lighting and plane)
+ */
 public class ARCorePage extends AppCompatActivity {
     private static final String TAG = "ARCorePage";
 
@@ -105,7 +114,7 @@ public class ARCorePage extends AppCompatActivity {
     private static final float DARK_THRESHOLD = 0.1f; // Threshold for low light detection
     
     // Handlers for UI warnings
-    private Handler warningHandler = new Handler();
+    private final Handler warningHandler = new Handler();
     private Runnable hideWarningRunnable;
 
     @Override
@@ -179,9 +188,7 @@ public class ARCorePage extends AppCompatActivity {
             showSaveLayoutDialogue();
         });
 
-        navScreenshots.setOnClickListener(v -> {
-            startActivity(new Intent(ARCorePage.this, SavedScreenshotsActivity.class));
-        });
+        navScreenshots.setOnClickListener(v -> startActivity(new Intent(ARCorePage.this, SavedScreenshotsActivity.class)));
 
         FrameLayout fragmentContainer = findViewById(R.id.fragment_container);
 
@@ -259,7 +266,7 @@ public class ARCorePage extends AppCompatActivity {
     }
 
     /**
-     * Shows confirmation dialog for clearing all placed models
+     * Shows confirmation dialogue for clearing all placed models
      */
     private void showClearAllConfirmationDialogue() {
         AlertDialog dialogue = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
@@ -280,6 +287,7 @@ public class ARCorePage extends AppCompatActivity {
     /**
      * Updates the counter displaying number of placed models
      */
+
     void updateModelCounter() {
         runOnUiThread(() -> {
             if (placedModelsCount > 0) {
@@ -298,9 +306,7 @@ public class ARCorePage extends AppCompatActivity {
      */
     private void setupTapListener() {
         arFragment.setOnTapArPlaneListener(null);
-        arFragment.getArSceneView().getScene().addOnUpdateListener(frameTime -> {
-            checkEnvironment();
-        });
+        arFragment.getArSceneView().getScene().addOnUpdateListener(frameTime -> checkEnvironment());
     
         arFragment.getArSceneView().getScene().setOnTouchListener((hitTestResult, motionEvent) -> {
             if (!isMeasuring || motionEvent.getAction() != android.view.MotionEvent.ACTION_DOWN) {
@@ -507,9 +513,7 @@ public class ARCorePage extends AppCompatActivity {
 
             // Download model from Firebase
             modelRef.getFile(modelFile)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        buildModel(modelFile);
-                    })
+                    .addOnSuccessListener(taskSnapshot -> buildModel(modelFile))
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "Failed to download model: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "Model download failed", e);
@@ -641,10 +645,9 @@ public class ARCorePage extends AppCompatActivity {
                 deselectCurrentModel();
                 currentFurnitureNode = (TransformableNode) tappedNode;
                 showManipulationButtons();
-                showModelName((String) currentFurnitureNode.getName());
+                showModelName(currentFurnitureNode.getName());
                 setRotateMode(isRotateMode);
             }
-            return;
         });
 
         // Show UI controls
@@ -679,9 +682,7 @@ public class ARCorePage extends AppCompatActivity {
      * Hides the model name display
      */
     private void hideModelName() {
-        runOnUiThread(() -> {
-            modelNameContainer.setVisibility(View.GONE);
-        });
+        runOnUiThread(() -> modelNameContainer.setVisibility(View.GONE));
     }
 
     /**
@@ -870,11 +871,9 @@ public class ARCorePage extends AppCompatActivity {
 
             UploadTask uploadTask = storageRef.putFile(fileUri);
 
-            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    saveLayoutData(fileName, uri.toString(), layoutName);
-                });
-            }).addOnFailureListener(e -> {
+            uploadTask.addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(
+                    uri -> saveLayoutData(fileName, uri.toString(), layoutName))).addOnFailureListener(
+                            e -> {
                 Log.e(TAG, "Upload failed: " + e.getMessage());
                 Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show();
             });
@@ -936,9 +935,7 @@ public class ARCorePage extends AppCompatActivity {
 
         FirebaseFirestore.getInstance().collection("savedLayouts")
                 .add(layoutData)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Layout saved successfully!", Toast.LENGTH_SHORT).show();
-                })
+                .addOnSuccessListener(documentReference -> Toast.makeText(this, "Layout saved successfully!", Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error saving layout: " + e.getMessage());
                     Toast.makeText(this, "Failed to save layout", Toast.LENGTH_SHORT).show();
@@ -946,7 +943,7 @@ public class ARCorePage extends AppCompatActivity {
     }
 
     /**
-     * Shows dialog for saving layout with name
+     * Shows dialogue for saving layout with name
      */
     private void showSaveLayoutDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
@@ -957,7 +954,7 @@ public class ARCorePage extends AppCompatActivity {
         input.setMinWidth(getResources().getDisplayMetrics().widthPixels * 4 / 5);
 
         builder.setView(input);
-        builder.setPositiveButton("Save", (dialog, which) -> {
+        builder.setPositiveButton("Save", (dialogue, which) -> {
             String layoutName = input.getText().toString().trim();
             if (!layoutName.isEmpty()) {
                 Toast.makeText(this, "Saving layout...", Toast.LENGTH_SHORT).show();
@@ -968,10 +965,10 @@ public class ARCorePage extends AppCompatActivity {
         });
         builder.setNegativeButton("Cancel", null);
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        AlertDialog dialogue = builder.create();
+        dialogue.show();
 
-        Window window = dialog.getWindow();
+        Window window = dialogue.getWindow();
         if (window != null) {
             window.setLayout(
                     (int)(getResources().getDisplayMetrics().widthPixels * 0.8),
