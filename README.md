@@ -1,30 +1,66 @@
-# CA400 template repo
+# ARrangeIt: Augmented Reality (AR) Virtual Home Decor App
 
-This is a template for CA400 projects.
+## Project Overview
 
-## 1. Create your repo
+**ARrangeIt** is an Augmented Reality (AR) mobile application that enables users to visualize furniture and decorative items within their own living spaces before making a purchase. Leveraging AR technology, the app overlays virtual 3D models of furniture into real-world environments using a smartphone camera, helping users make informed home decor decisions.
 
-One person from your project team should fork this repo, then add other teammates as project members on GitLab.
+## Team Members
 
-## 2. Name your repo appropriately
+- **Jade Hudson** (ID: 21706905)  
+- **Sruthi Santhosh** (ID: 21377986)  
+- **Supervisor**: Dr. Hyowon Lee
 
-The name of your project must be of the form `2024-ca400-XXXXXXX`, where "`XXXXXXX`"
-should be replaced with your usernames (e.g. `2024-ca400-sblott-pclarke`).
-**Note** that the year should be set as appropriate to your year of study. For example, in the
-2022/2023 academic year this would change to '2023-ca400-sblott-pclarke'), 
-in the 2023/2024 academic year this would change to '2024-ca400-sblott-pclarke'), etc. 
+## Key Features
 
-It is the *name of your repo* which matters (not the name of your project).
+1. **AR Room Visualization**
+   - View 3D furniture and decor items overlaid in real-time through a smartphone camera.
+   - Supports object positioning, movement and rotation for accurate placement in the room.
 
-You can change the name of your repo on GitLab under:
+2. **Furniture Catalogue Integration**
+   - Access a catalogue of 3D furniture models categorized by type (e.g., sofas, tables, decor).
+   - Filter items by color, type, and price.
+   - View detailed information: dimensions, pricing etc.
 
-- Settings / General / Advanced / Change path
+3. **Save Options**
+   - Save room configurations for later viewing.
+   - Maintain a shopping list for potential purchases.
 
-It looks like this:
+4. **AR Measurement Tool**
+   - Measure distance between two selected points using the smartphone camera.
 
-![change-repo-path](./res/repo-change-path.png "Change repo path.")
+## Tech Stack
 
-You should replace all of this file with a README describing your own project.
+| Category           | Technology                        |
+|--------------------|------------------------------------|
+| **Language**       | Java                              |
+| **IDE**            | Android Studio                    |
+| **AR Framework**   | ARCore SDK                        |
+| **3D Rendering**   | Sceneform                         |
+| **Backend**        | Firebase Authentication, Realtime Database, Cloud Storage |
+| **UI**             | Android Fragments, XML Layouts    |
+| **Data Format**    | GLB (for 3D Models)               |
+| **Version Control**| Git, GitLab                       |
+| **Testing Devices**| Pixel 6a, Samsung Galaxy A22   
 
-## Additional resources
+## Learning Challenges
 
+- Integrating AR functionality with accurate real-world scale.
+- Creating responsive and intuitive 3D model interactions.
+- Backend development to manage user sessions, configurations, and catalogue data.
+- Designing a scalable and user-friendly interface.
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Android Studio (latest)
+- Java SDK 11+
+- ARCore-supported Android device (e.g. Pixel 6a, Samsung A22)
+- Firebase project setup
+
+### Clone Repository
+
+```bash
+git clone https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2.git

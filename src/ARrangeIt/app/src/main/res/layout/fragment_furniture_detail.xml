@@ -17,6 +17,7 @@
             android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="back button"
             android:src="@drawable/collapse_catalogue"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_marginTop="16dp"
@@ -27,6 +28,7 @@
             android:id="@+id/itemImage"
             android:layout_width="match_parent"
             android:layout_height="250dp"
+            android:contentDescription="model image"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher"
             android:layout_marginTop="16dp"
@@ -53,7 +55,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Description"
+            android:text="@string/description"
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginTop="16dp"/>
@@ -62,7 +64,7 @@
             android:id="@+id/itemDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Furniture Description"
+            android:text="@string/furniture_description"
             android:textSize="14sp"
             android:layout_marginTop="4dp"/>
 
@@ -76,7 +78,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dimensions"
+            android:text="@string/dimensions"
             android:textSize="16sp"
             android:textStyle="bold"/>
 
@@ -114,7 +116,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Colours"
+            android:text="@string/colours"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -136,7 +138,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Texture"
+            android:text="@string/texture"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -159,7 +161,7 @@
             android:id="@+id/place_in_ar_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Place in AR"
+            android:text="@string/place_in_ar"
             android:textSize="16sp"
             android:background="@drawable/round_btn"
             android:textColor="#FFFFFF"

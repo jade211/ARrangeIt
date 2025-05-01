@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context="com.example.arrangeit.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.arrangeit.MainActivity">
 
     <android.opengl.GLSurfaceView
         android:id="@+id/surfaceview"
@@ -36,6 +36,25 @@ tools:context="com.example.arrangeit.MainActivity">
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/low_light_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/too_dark_to_detect_surfaces_please_move_to_a_well_lit_area"
+        android:background="@drawable/light_warning_background"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:lineSpacingExtra="4dp"
+        android:gravity="center"
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="24dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="24dp"
+        android:visibility="gone"
+        android:elevation="8dp"
+        android:layout_below="@id/clear_all_models_button" />
 
     <LinearLayout
         android:id="@+id/model_name_container"
@@ -106,28 +125,28 @@ tools:context="com.example.arrangeit.MainActivity">
 
 
     <Button
-    android:id="@+id/clear_button"
-    style="@style/RedoButtonStyle"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_above="@id/bottom_nav_bar"
-    android:layout_centerHorizontal="true"
-    android:layout_marginBottom="80dp"
-    android:background="@drawable/redo_button"
-    android:paddingHorizontal="15dp"
-    android:paddingVertical="8dp"
-    android:text="Clear Measurement"
-    android:textSize="16sp" />
+        android:id="@+id/clear_button"
+        style="@style/RedoButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_nav_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/redo_button"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="8dp"
+        android:text="@string/clear_measurement"
+        android:textSize="16sp" />
 
-<Button
-    android:id="@+id/complete_measurement"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Complete Measurement"
-    android:visibility="gone"
-    android:layout_above="@+id/clear_button"
-    android:layout_centerHorizontal="true"
-    android:layout_marginBottom="8dp"/>
+    <Button
+        android:id="@+id/complete_measurement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/complete_measurement"
+        android:visibility="gone"
+        android:layout_above="@+id/clear_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"/>
 
     <LinearLayout
         android:id="@+id/furniture_controls"
@@ -200,10 +219,10 @@ tools:context="com.example.arrangeit.MainActivity">
     </LinearLayout>
 
     <include
-    android:id="@+id/bottom_nav_bar"
-    layout="@layout/bottom_nav_bar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true" />
+        android:id="@+id/bottom_nav_bar"
+        layout="@layout/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

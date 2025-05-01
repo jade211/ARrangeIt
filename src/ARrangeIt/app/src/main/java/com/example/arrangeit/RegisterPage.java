@@ -2,25 +2,26 @@ package com.example.arrangeit;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.text.Editable;
 import android.text.TextWatcher;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.example.arrangeit.helpers.FieldValidatorHelper;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.android.material.textfield.TextInputLayout;
 
+
+
+/**
+ * RegisterPage handles new user registration with:
+ * - Email and password validation
+ * - Account creation via Firebase Authentication
+ * - Navigation to login page
+ */
 public class RegisterPage extends AppCompatActivity {
     TextInputEditText editTextEmail, editTextPassword;
     Button signUp;
@@ -49,6 +50,7 @@ public class RegisterPage extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Validate email format as user types
                 String emailError = FieldValidatorHelper.validateEmail(editTextEmail.getText().toString());
                 emailInputLayout.setError(emailError);
             }
@@ -59,6 +61,7 @@ public class RegisterPage extends AppCompatActivity {
             }
         });
 
+        // Set up real-time password validation
         editTextPassword.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -77,58 +80,55 @@ public class RegisterPage extends AppCompatActivity {
             }
         });
 
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RegisterPage.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        // Handle sign in text click - navigate to login page
+        signIn.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterPage.this, MainActivity.class);
+            startActivity(intent);
+            finish();
         });
 
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = editTextEmail.getText().toString();
-                String password = editTextPassword.getText().toString();
+        // Handle sign up button click - register new user
+        signUp.setOnClickListener(v -> {
+            String email = editTextEmail.getText().toString();
+            String password = editTextPassword.getText().toString();
 
-                String emailError = FieldValidatorHelper.validateEmail(email);
-                String passwordError = FieldValidatorHelper.validatePassword(password);
+            // Validate email and password before registration attempt
+            String emailError = FieldValidatorHelper.validateEmail(email);
+            String passwordError = FieldValidatorHelper.validatePassword(password);
 
-                if (emailError != null) {
-                    emailInputLayout.setError(emailError);
-                    return;
-                } else {
-                    emailInputLayout.setError(null);
-                }
-
-                if (passwordError != null) {
-                    passwordInputLayout.setError(passwordError);
-                    return;
-                } else {
-                    passwordInputLayout.setError(null);
-                }
-
-                firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(RegisterPage.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(RegisterPage.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            try {
-                                throw task.getException();
-                            } catch (FirebaseAuthUserCollisionException e) {
-                                emailInputLayout.setError("This email is already in use. Please use a different email.");
-                            } catch (Exception e) {
-                                Toast.makeText(RegisterPage.this, "Registration failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                });
+            if (emailError != null) {
+                emailInputLayout.setError(emailError);
+                return;
+            } else {
+                emailInputLayout.setError(null);
             }
+
+            if (passwordError != null) {
+                passwordInputLayout.setError(passwordError);
+                return;
+            } else {
+                passwordInputLayout.setError(null);
+            }
+
+            // Attempt to create new user with Firebase Authentication
+            firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // On successful registration
+                    Toast.makeText(RegisterPage.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegisterPage.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    try {
+                        throw task.getException();
+                    } catch (FirebaseAuthUserCollisionException e) {
+                        // Handle case where email already exists
+                        emailInputLayout.setError("This email is already in use. Please use a different email.");
+                    } catch (Exception e) {
+                        Toast.makeText(RegisterPage.this, "Registration failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         });
     }
 }

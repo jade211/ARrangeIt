@@ -26,7 +26,7 @@ before_script:
   - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
   - cd ..
   - cd ..
-  - chmod +x ./gradlew  # Ensure Gradle wrapper is executable
+  - chmod +x ./gradlew
 
 stages:          # List of stages for jobs, and their order of execution
   - build
@@ -43,17 +43,16 @@ build-job:
     paths:
       - src/ARrangeIt/app/build/outputs/**
 
+lint-job:
+  stage: build
+  script:
+    - ./gradlew lintDebug
+  artifacts:
+    paths:
+      - src/ARrangeIt/app/build/reports/lint/**
 
-# lint-job:
-#   stage: build
-#   script:
-#     - ./gradlew lintDebug
-#   artifacts:
-#     paths:
-#       - src/ARrangeIt/app/build/reports/lint/**
-
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
+unit-test-job:
+  stage: test
   script:
     - ./gradlew testDebug
     - ls -R app/build/test-results/testDebugUnitTest/  
@@ -62,8 +61,8 @@ unit-test-job:   # This job runs in the test stage.
     paths:
       - src/ARrangeIt/app/build/test-results/testDebugUnitTest/**
 
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+deploy-job:
+  stage: deploy
   environment: production
   script:
     - echo "Deploying application..."

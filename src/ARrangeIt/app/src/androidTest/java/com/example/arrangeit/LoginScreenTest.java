@@ -14,18 +14,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.arrangeit.Helpers.hasTextInputLayoutErrorText;
 
 import android.os.SystemClock;
-import android.view.View;
-import android.view.WindowManager;
-import androidx.test.espresso.Root;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
-
-import com.google.android.material.textfield.TextInputLayout;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;

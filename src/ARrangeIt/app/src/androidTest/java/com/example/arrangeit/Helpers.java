@@ -30,11 +30,9 @@ import androidx.test.uiautomator.UiSelector;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import java.util.Random;
 
 public class Helpers {
 
@@ -50,7 +48,7 @@ public class Helpers {
                 "Password123!"
         );
 
-        // Wait for auth to complete
+        // Wait for authentication to complete
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {

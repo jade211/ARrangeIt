@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background2"
+    android:background="@drawable/login_register_background"
     android:orientation="vertical"
     android:padding="40dp"
     tools:context="com.example.arrangeit.RegisterPage">
@@ -17,7 +17,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/newlogo" />
+        android:src="@drawable/arrangeit_logo" />
 
 
     <TextView
@@ -75,7 +75,7 @@
         android:textSize="20dp"
         android:text="Register"
         android:background="@drawable/round_btn"
-        android:layout_marginTop="70dp" />
+        android:layout_marginTop="30dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

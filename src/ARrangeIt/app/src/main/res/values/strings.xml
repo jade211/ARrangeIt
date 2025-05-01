@@ -4,27 +4,30 @@
     <string name="select_type">Select Type</string>
     <string name="sort_by_price">Sort By Price</string>
     <string name="app_name" translatable="false">ArrangeIt</string>
-    <string name="depth_use_explanation" translatable="false">When Depth is enabled on supported devices, virtual objects adapt to the environment by blending in with the real world.</string>
-    <string name="button_text_enable_depth" translatable="false">Enable</string>
-    <string name="button_text_disable_depth" translatable="false">Disable</string>
-    <string name="options_title_with_depth" translatable="false">Your device supports depth</string>
-    <string name="options_title_without_depth" translatable="false">Your device does not support depth</string>
-    <string name="done" translatable="false">Done</string>
-    <string-array name="depth_options_array" translatable="false">
-        <item>Enable depth</item>
-        <item>Show depth map</item>
-    </string-array>
-    <string name="options_title_instant_placement" translatable="false">Instant Placement options</string>
-    <string-array name="instant_placement_options_array" translatable="false">
-        <item>Enable Instant Placement</item>
-    </string-array>
+    <string name="too_dark_to_detect_surfaces_please_move_to_a_well_lit_area">Too dark to detect surfaces\nPlease move to a well-lit area</string>
+    <string name="clear_measurement">Clear Measurement</string>
+    <string name="complete_measurement">Complete Measurement</string>
+    <string name="welcome_back">Welcome back</string>
+    <string name="please_enter_your_details_to_sign_in">Please enter your details to sign in</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="login">Login</string>
+    <string name="dont_have_an_account">Don\'t have an account?</string>
+    <string name="register_now">Register now</string>
+    <string name="saved_layouts">Saved Layouts</string>
+    <string name="furniture_catalogue">Furniture Catalogue</string>
+    <string name="measure_tool">Measure Tool</string>
+    <string name="log_out">Log Out</string>
+    <string name="enter_your_email_address">Enter your email address:</string>
+    <string name="cancel">Cancel</string>
+    <string name="reset">Reset</string>
+    <string name="place_in_ar">Place in AR</string>
+    <string name="dimensions">Dimensions</string>
+    <string name="furniture_description">Furniture Description</string>
+    <string name="description">Description</string>
+    <string name="texture">Texture</string>
+    <string name="colours">Colours</string>
+    <string name="furniture_name">Furniture Name</string>
 
 </resources>
-
-
-    <!--<resources>-->
-    <!--    <string name="app_name">ARrangeIt</string>-->
-    <!--</resources>-->
-
-
-

@@ -18,6 +18,10 @@ import com.example.arrangeit.helpers.FurnitureItem;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+/**
+ * Fragment that displays detailed information about a furniture item
+ * and provides option to place it in AR view
+ */
 public class FurnitureDetailFragment extends Fragment {
 
     ImageView itemImage;
@@ -46,6 +50,7 @@ public class FurnitureDetailFragment extends Fragment {
         itemColours = view.findViewById(R.id.itemColours);
         itemTexture = view.findViewById(R.id.itemTexture);
 
+        // Set up the "Place in AR" button click listener
         Button placeInArButton = view.findViewById(R.id.place_in_ar_button);
         placeInArButton.setOnClickListener(v -> {
             if (furnitureItem != null && furnitureItem.getModelUrl() != null) {
@@ -68,6 +73,7 @@ public class FurnitureDetailFragment extends Fragment {
             furnitureItem = (FurnitureItem) args.getSerializable("furniture_item");
             
             if (furnitureItem != null) {
+                // Populate UI with furniture item data
                 itemName.setText(furnitureItem.getName());
                 itemDescription.setText(furnitureItem.getDescription());
                 itemPrice.setText("€" + furnitureItem.getPrice());
@@ -77,6 +83,7 @@ public class FurnitureDetailFragment extends Fragment {
                 itemColours.setText(furnitureItem.getColours());
                 itemTexture.setText(furnitureItem.getTexture());
 
+                // Load image from Firebase Storage using Glide
                 StorageReference imageRef = getFirebaseStorage().getReference(furnitureItem.getImageUrl());
                 imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     Glide.with(requireContext()).load(uri).into(itemImage);
@@ -87,6 +94,7 @@ public class FurnitureDetailFragment extends Fragment {
             }
         }
 
+        // Set up back button to return to catalogue
         View catalogue_button = view.findViewById(R.id.back_button);
         catalogue_button.setOnClickListener(v -> {
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -105,6 +113,10 @@ public class FurnitureDetailFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Helper method to get FirebaseStorage instance
+     * @return (FirebaseStorage instance)
+     */
     protected FirebaseStorage getFirebaseStorage() {
         return FirebaseStorage.getInstance();
     }

@@ -22,7 +22,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Furniture Catalogue"
+        android:text="@string/furniture_catalogue"
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_gravity="center"
