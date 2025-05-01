@@ -20,7 +20,6 @@
     <item name="colorAccent">@color/blue</item>
 
     <item name="android:windowBackground">@drawable/dialogue_rounded_background</item>
-
     <item name="android:windowTitleStyle">@style/DialogTitleWithIcon</item>
 
     <item name="buttonBarPositiveButtonStyle">@style/DialogTextButton.Positive</item>
@@ -94,11 +93,3 @@
     <item name="android:paddingBottom">2dp</item>
   </style>
 </resources>
-
-
-
-
-
-
-
-

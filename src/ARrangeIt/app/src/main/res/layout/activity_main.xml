@@ -17,24 +17,25 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="20dp"
+        android:contentDescription="Application Logo"
         android:src="@drawable/arrangeit_logo" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome back"
+        android:text="@string/welcome_back"
         android:textColor="@color/black"
         android:textStyle="bold"
-        android:textSize="30dp"
+        android:textSize="30sp"
         android:gravity="center"
         android:layout_marginBottom="10dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please enter your details to sign in"
+        android:text="@string/please_enter_your_details_to_sign_in"
         android:textColor="@color/black"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:gravity="center"
         android:layout_marginBottom="20dp" />
 
@@ -49,7 +50,7 @@
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
+            android:hint="@string/email"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,7 +64,7 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,19 +72,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/forgot_password"
-        android:text="Forgot Password"
+        android:text="@string/forgot_password"
         android:textColor="@color/blue"
         android:layout_gravity="center"
         android:padding="1dp"
-        android:textSize="15dp"
+        android:textSize="15sp"
         android:layout_margin="5dp"/>
 
     <Button
         android:id="@+id/sign_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:text="Login"
+        android:textSize="20sp"
+        android:text="@string/login"
         android:background="@drawable/round_btn"
         android:layout_marginTop="10dp" />
 
@@ -97,17 +98,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an account?"
-            android:textSize="15dp"
+            android:text="@string/dont_have_an_account"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/sign_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Register now"
+            android:text="@string/register_now"
             android:textColor="@color/blue"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>
 

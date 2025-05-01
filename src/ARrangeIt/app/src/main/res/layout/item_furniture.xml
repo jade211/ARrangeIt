@@ -25,7 +25,7 @@
             android:id="@+id/itemName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Furniture Name"
+            android:text="@string/furniture_name"
             android:textSize="18sp"
             android:textStyle="bold"/>
 
