@@ -54,7 +54,6 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- Models count with "Models" bolded -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -75,7 +74,7 @@
             android:textSize="12sp"/>
     </LinearLayout>
 
-    <!-- Items list with "Items" bolded -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -5,7 +5,6 @@
     android:fillViewport="true"
     android:paddingBottom="56dp"
     android:background="@drawable/transparent_bg" >
-    <!--    android:background="@drawable/white_box"-->
 
     <LinearLayout
         android:layout_width="match_parent"
