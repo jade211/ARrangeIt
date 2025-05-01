@@ -72,7 +72,7 @@ public class ScreenshotAdapter extends BaseAdapter {
             Glide.with(context)
                     .load(item.getImageUrl())
                     .placeholder(R.drawable.ic_placeholder)
-                    .error(R.drawable.ic_launcher) // image pulled from ARCore
+                    .error(R.drawable.ic_placeholder)
                     .into(imageView);
         }
         return gridItem;

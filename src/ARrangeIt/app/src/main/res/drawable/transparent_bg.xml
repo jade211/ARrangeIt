@@ -4,8 +4,6 @@
     <stroke
         android:color="@color/blue"
         android:width="2dp"/>
-    <solid android:color="#CCFFFFFF"/> <!-- 80% white transparent -->
-    <!--    <solid android:color="#80FFFFFF"/> &lt;!&ndash; 50% white transparent &ndash;&gt;-->
-    <!--    <solid android:color="#80000000"/> &lt;!&ndash; 50% black transparent &ndash;&gt;-->
+    <solid android:color="#CCFFFFFF"/>
     <corners android:radius="8dp"/>
 </shape>

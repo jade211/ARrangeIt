@@ -5,5 +5,5 @@ android:shape="rectangle">
 <stroke
     android:color="@color/blue"
     android:width="2dp"/>
-<solid android:color="#CCFFFFFF"/> <!-- 80% white transparent -->
+<solid android:color="#CCFFFFFF"/>
 </shape>

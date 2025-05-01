@@ -41,12 +41,20 @@ tools:context="com.example.arrangeit.MainActivity">
         android:id="@+id/low_light_warning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Too dark to detect surfaces. Please move to a well-lit area"
-        android:background="#CC000000"
+        android:text="Too dark to detect surfaces\nPlease move to a well-lit area"
+        android:background="@drawable/light_warning_background"
         android:textColor="#FFFFFF"
-        android:padding="16dp"
+        android:textSize="16sp"
+        android:lineSpacingExtra="4dp"
         android:gravity="center"
-        android:visibility="gone"/>
+        android:paddingVertical="14dp"
+        android:paddingHorizontal="24dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="24dp"
+        android:visibility="gone"
+        android:elevation="8dp"
+        android:layout_below="@id/clear_all_models_button" />
 
     <LinearLayout
         android:id="@+id/model_name_container"
