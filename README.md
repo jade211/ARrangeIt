@@ -1,32 +1,35 @@
 # ARrangeIt: Augmented Reality (AR) Virtual Home Decor App
 
-## Project Overview
+<div align="center">
+  <img src="res/arrangeit_logo.png" alt="ARrangeIt Logo" width="300"/>
+</div>
 
+## Project Overview
 **ARrangeIt** is an Augmented Reality (AR) mobile application that enables users to visualize furniture and decorative items within their own living spaces before making a purchase. Leveraging AR technology, the app overlays virtual 3D models of furniture into real-world environments using a smartphone camera, helping users make informed home decor decisions.
 
 ## Team Members
 
-- **Jade Hudson** (ID: 21706905)
-- **Sruthi Santhosh** (ID: 21377986)
-- **Supervisor**: Dr. Hyowon Lee
+##### **Jade Hudson** (ID: 21706905) → jade.hudson5@mail.dcu.ie
+##### **Sruthi Santhosh** (ID: 21377986) → sruthi.santhosh2@mail.dcu.ie
+##### **Supervisor**: Dr. Hyowon Lee
 
 ## Key Features
 
 1. **AR Room Visualization**
-   - View 3D furniture and decor items overlaid in real-time through a smartphone camera.
-   - Supports object positioning, movement and rotation for accurate placement in the room.
+    - View 3D furniture and decor items overlaid in real-time through a smartphone camera.
+    - Supports object positioning, movement and rotation for accurate placement in the room.
 
 2. **Furniture Catalogue Integration**
-   - Access a catalogue of 3D furniture models categorized by type (e.g., sofas, tables, decor).
-   - Filter items by color, type, and price.
-   - View detailed information: dimensions, pricing etc.
+    - Access a catalogue of 3D furniture models categorized by type (e.g., sofas, tables, decor).
+    - Filter items by color, type, and price.
+    - View detailed information: dimensions, pricing etc.
 
 3. **Save Options**
-   - Save room configurations for later viewing.
-   - Maintain a shopping list for potential purchases.
+    - Save room configurations for later viewing.
+    - Maintain a shopping list for potential purchases.
 
 4. **AR Measurement Tool**
-   - Measure distance between two selected points using the smartphone camera.
+    - Measure distance between two selected points using the smartphone camera.
 
 ## Tech Stack
 
@@ -83,14 +86,14 @@ Once the repository is cloned and opened in Android Studio, make sure that the f
 
 #### SDK Platform
 - **Android 15.0 (“VanillaCream”)**
-   - Android SDK Platform 35
-   - Sources for Android 35
-   - Google APIs Intel x86_64 Atom System Image
-   - Google Play Intel x86_64 Atom System Image
+    - Android SDK Platform 35
+    - Sources for Android 35
+    - Google APIs Intel x86_64 Atom System Image
+    - Google Play Intel x86_64 Atom System Image
 
 - **Android 14.0 (“UpsideDownCake”)**
-   - Android SDK Platform 34
-   - Sources for Android 34
+    - Android SDK Platform 34
+    - Sources for Android 34
 
 #### SDK Tools
 - Android SDK Build-Tools 36
@@ -102,8 +105,8 @@ Once the repository is cloned and opened in Android Studio, make sure that the f
 - Deploy APK to Android device using “Run app” button.
 
 ### Installation Steps via APK file (Download Method)
-1. Download the ARrangeIt APK from the repository [here](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/res/ARrangeIt.apk?ref_type=heads) by clicking the download icon on this file.
-2. Go to the device's system settings and enable “Install unknown apps” in Settings > Apps & notifications > Special app access. Allow Chrome to have access enabled.
+1. On your device, download the ARrangeIt APK from the repository [here](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/res/ARrangeIt.apk?ref_type=heads) by clicking the download icon on this file.
+2. Go to the device's system settings and enable “Install unknown apps” in Settings > Apps & notifications > Special app access. Allow Chrome and File Manager to have access enabled.
 3. Navigate to your file manager and locate the downloaded APK file. It should be listed under the name ARrangeIt.apk
 4. Tap the APK file to begin the installation.
 5. Follow the on-screen instructions and navigate to the downloaded ARrangeIt application after
