@@ -16,8 +16,8 @@
    - View 3D furniture and decor items overlaid in real-time through a smartphone camera.
    - Supports object positioning, movement and rotation for accurate placement in the room.
 
-2. **Furniture Catalog Integration**
-   - Access a catalog of 3D furniture models categorized by type (e.g., sofas, tables, decor).
+2. **Furniture Catalogue Integration**
+   - Access a catalogue of 3D furniture models categorized by type (e.g., sofas, tables, decor).
    - Filter items by color, type, and price.
    - View detailed information: dimensions, pricing etc.
 
@@ -46,7 +46,7 @@
 
 - Integrating AR functionality with accurate real-world scale.
 - Creating responsive and intuitive 3D model interactions.
-- Backend development to manage user sessions, configurations, and catalog data.
+- Backend development to manage user sessions, configurations, and catalogue data.
 - Designing a scalable and user-friendly interface.
 
 ---
