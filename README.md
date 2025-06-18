@@ -1,7 +1,7 @@
 # ARrangeIt: Augmented Reality (AR) Virtual Home Decor App
 
 <div align="center">
-  <img src="res/arrangeit_logo.png" alt="ARrangeIt Logo" width="300"/>
+  <img src="res/arrangeit_logo_white.png" alt="ARrangeIt Logo" width="300"/>
 </div>
 
 ## Project Overview
