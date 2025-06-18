@@ -56,12 +56,12 @@
 
 ### ARrangeIt Documentation
 Documentation on the application can be found here:
-- [Project Proposal](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/docs/proposal/proposal.md?ref_type=heads)
-- [Functional Specification](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/docs/functional-spec/FS_Info.pdf?ref_type=heads)
-- [User Manual](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/docs/documentation/ARrangeIt_User_Manual.pdf?ref_type=heads)
-- [Technical Specification](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/docs/documentation/ARrangeIt_Technical_Specification.pdf?ref_type=heads)
+- [Project Proposal](https://github.com/jade211/ARrangeIt/blob/main/docs/proposal/proposal.md)
+- [Functional Specification](https://github.com/jade211/ARrangeIt/blob/main/docs/functional-spec/FS_Info.pdf)
+- [User Manual](https://github.com/jade211/ARrangeIt/blob/main/docs/documentation/ARrangeIt_User_Manual.pdf)
+- [Technical Specification](https://github.com/jade211/ARrangeIt/blob/main/docs/documentation/ARrangeIt_Technical_Specification.pdf)
 - [Video Walk-through](https://drive.google.com/file/d/1Z7Z2yvAfXOvY6KjRts3hYgNeO1T90mlp/view)
-- [Expo Poster](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/docs/poster/ARrangeIt%20Expo%20poster.pdf?ref_type=heads)
+- [Expo Poster](https://github.com/jade211/ARrangeIt/blob/main/docs/poster/ARrangeIt%20Expo%20poster.pdf)
 
 ---
 
@@ -78,7 +78,7 @@ Documentation on the application can be found here:
 ### Clone Repository
 
 ```bash
-git clone https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2.git
+git clone git@github.com:jade211/ARrangeIt.git
 
 ```
 
@@ -105,7 +105,7 @@ Once the repository is cloned and opened in Android Studio, make sure that the f
 - Deploy APK to Android device using “Run app” button.
 
 ### Installation Steps via APK file (Download Method)
-1. On your device, download the ARrangeIt APK from the repository [here](https://gitlab.computing.dcu.ie/hudsonj5/2025-csc1097-hudsonj-5-santhos-2/-/blob/main/res/ARrangeIt.apk?ref_type=heads) by clicking the download icon on this file.
+1. On your device, download the ARrangeIt APK from the repository [here](https://github.com/jade211/ARrangeIt/tree/main/res) by clicking the download icon on this file.
 2. Go to the device's system settings and enable “Install unknown apps” in Settings > Apps & notifications > Special app access. Allow Chrome and File Manager to have access enabled.
 3. Navigate to your file manager and locate the downloaded APK file. It should be listed under the name ARrangeIt.apk
 4. Tap the APK file to begin the installation.
